@@ -1,0 +1,6 @@
+outs:
+- md5: 09f07d1a36eed3146494a6c68c18f8de.dir
+  size: 31596544
+  nfiles: 2
+  hash: md5
+  path: Counties

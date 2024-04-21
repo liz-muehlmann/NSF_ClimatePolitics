@@ -1,0 +1,6 @@
+outs:
+- md5: 48c1252eae157e2ee0b0935d41139fae.dir
+  size: 62143
+  nfiles: 8
+  hash: md5
+  path: ArcGIS

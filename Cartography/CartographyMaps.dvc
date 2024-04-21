@@ -1,0 +1,6 @@
+outs:
+- md5: 7a2ac4fd79f149adf25f4b89bef7237e.dir
+  size: 170886816
+  nfiles: 4
+  hash: md5
+  path: CartographyMaps
