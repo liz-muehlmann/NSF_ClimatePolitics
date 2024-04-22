@@ -1,0 +1,6 @@
+outs:
+- md5: 84dd5ec6076b1f982a7cfde995e239fa.dir
+  size: 4977397961
+  nfiles: 239
+  hash: md5
+  path: Census_NationalSubstateBoundaries

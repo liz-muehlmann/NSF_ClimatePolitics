@@ -11,16 +11,19 @@ Downloads and creates choropleth map of Texas population using U.S. Census data 
 
 # [Cartography Data](/Cartography/CartographyData/)
 
-1. CartographySubstateBoundaries**   
-    * Includes all national substate boundaries as defined by the United States Census
-    [Link](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-geodatabase-file.2020.html#list-tab-1258746043).  
+1. Census_NationalSubstateBoundaries**   
+    * Includes all national substate boundaries as defined by the United States Census for 2020, 2016, and 2014.  
+    [Data](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-geodatabase-file.2020.html#list-tab-1258746043).  
 2. Counties** 
     * Includes 2010 & 2020 county boundaries, downloaded using the tigris package in r, and reprojected into WGS 84.   
-    [Code](/Cartography/CartographyCode/Cartography.r) 
+    [Code](/Cartography/CartographyCode/Cartography.r) | [Methodology](/Methodology/CountiesProcessing.md)
 3. Place 
-    * [read me](/Cartography/CartographyData/Place/PlaceReadMe.md)  
     * [2020_CDPBoundaryIntersection](/Cartography/CartographyData/Place/2020_CDPBoundaryIntersection.csv) includes a list of Census Designated Places across the United States by Place FIPS and name and calculates the percentage that overlaps with county boundaries. 
     * [2020_IncPlaceBoundaryIntersection](/Cartography/CartographyData/Place/2020_IncPlaceBoundaryIntersection.csv) includes a list of Incorporated Places across the United States by Place FIPS and name and calculates the percentage that overlaps with county boundaries. 
+    * [read me](/Cartography/CartographyData/Place/PlaceReadMe.md) | [Methodology](/Methodology/PlaceProcessing.md)
+4. Zip Code**
+    * 2024 boundary file for United States Zip Codes for use with the [FEMA](/FEMA/) data.  
+    [Data](https://hub.arcgis.com/datasets/esri::usa-zip-code-boundaries/about) | [Code](/FEMA/FEMACode/FEMAIndividualAssistance.r) | [Methodology](/Methodology/ZipCodeProcessing.md)
 
 # [Cartography Maps](/Cartography/CartographyMaps/)  
 
@@ -36,4 +39,4 @@ Downloads and creates choropleth map of Texas population using U.S. Census data 
 
 
 
-** these files or folders are not tracked due to github's large file storage limits.
+** these files or folders are tracked using [DVC](dvc.org) due to github's large file storage limits.

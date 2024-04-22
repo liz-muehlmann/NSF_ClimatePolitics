@@ -1,0 +1,6 @@
+outs:
+- md5: 9e1bbff2682b26e973987cb494d8f804.dir
+  size: 1222131423
+  nfiles: 1
+  hash: md5
+  path: Zip_Code

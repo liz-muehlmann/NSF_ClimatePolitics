@@ -1,5 +1,5 @@
 # Place Read Me
-This file is an overview of the processing steps taken to determine the overlap between Census Designated and Incorporated Places and various counties across the United States. For a detailed description of how to complete each step see: [PlaceProcessing.md](/Cartography/CartographyProcessing/PlaceProcessing.md)
+This file is an overview of the processing steps taken to determine the overlap between Census Designated and Incorporated Places and various counties across the United States. For a detailed description of how to complete each step see: [PlaceProcessing.md](/Methodology/PlaceProcessing.md)
 
 1. [2020_CDPBoundaryIntersection](/Cartography/CartographyData/Place/2020_CDPBoundaryIntersection.csv)  & [2020_IncPlaceBoundaryIntersection](/Cartography/CartographyData/Place/2020_IncPlaceBoundaryIntersection.csv)  
     * Table is exported from ArcGIS after using the Tabulate Intersection function. It includes the Census Designated Place (CDP), Incorporated Place (IP) and County FIPS, Name, and Object IDs. The area column calculates the area overlap between the CDP/IP and county. The percentage column is the percentage of the CDP/IP that overlaps with each county.

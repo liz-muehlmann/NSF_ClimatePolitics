@@ -1,0 +1,6 @@
+outs:
+- md5: 9bad1e8e82249b28e187f53b84f7399b.dir
+  size: 7639185137
+  nfiles: 20
+  hash: md5
+  path: LVOriginalData
