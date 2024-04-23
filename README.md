@@ -1,5 +1,5 @@
 # NSF climate change and local politics
-Shared github for NSF DRMS Climate and Local Political Participation Project. The wiki includes detailed processing steps for each file. 
+Shared github for NSF DRMS Climate and Local Political Participation Project. 
 
 
 ## Research Team:  
