@@ -1,6 +1,6 @@
 outs:
-- md5: 7a355834293932843306626fb0ba120d.dir
-  size: 27851956105
-  nfiles: 443
+- md5: 8e7c75285cd03ddb2ca0b1ae17f2621b.dir
+  size: 11862157333
+  nfiles: 65
   hash: md5
   path: LargeFiles
