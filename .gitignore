@@ -1,2 +1,10 @@
-/Cartography/CartographyData/2020_Census_NationalSubstateCartography
-/Cartography/Counties/
+/Cartography/Counties
+/Cartography/Zip_Code
+/Cartography/CartographyData/Census_NationalSubstateBoundaries
+/Cartography/CartographyMaps
+/GIS/ArcGIS
+/GIS/QGIS
+Cartography/CartographyData/Counties
+Cartography/CartographyData/Zip_Code
+Political/PoliticalCode/.Rhistory
+Python/contractions.py

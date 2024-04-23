@@ -20,6 +20,8 @@ Downloads and creates choropleth map of Texas population using U.S. Census data 
 3. Place 
     * [2020_CDPBoundaryIntersection](/Cartography/CartographyData/Place/2020_CDPBoundaryIntersection.csv) includes a list of Census Designated Places across the United States by Place FIPS and name and calculates the percentage that overlaps with county boundaries. 
     * [2020_IncPlaceBoundaryIntersection](/Cartography/CartographyData/Place/2020_IncPlaceBoundaryIntersection.csv) includes a list of Incorporated Places across the United States by Place FIPS and name and calculates the percentage that overlaps with county boundaries. 
+    * [2020_IPCDP_MajorityCounties.csv](/Cartography/CartographyData/Place/2020_IPCDP_MajorityCounties.csv)  
+    Processed Incorporated and Census Designated Places to include geographic majority county.
     * [read me](/Cartography/CartographyData/Place/PlaceReadMe.md) | [Methodology](/Methodology/PlaceProcessing.md)
 4. Zip Code**
     * 2024 boundary file for United States Zip Codes for use with the [FEMA](/FEMA/) data.  
