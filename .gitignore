@@ -1,2 +1,3 @@
-/LargeFiles
-Political/PoliticalCode/.Rhistory
+*.Rhistory
+Data
+Results/IRS/Maps

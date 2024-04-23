@@ -1,7 +1,8 @@
 # NSF climate change and local politics
-Shared github for NSF DRMS Climate and Local Political Participation Project
+Shared github for NSF DRMS Climate and Local Political Participation Project. The wiki includes detailed processing steps for each file. 
 
-Research Team:  
+
+## Research Team:  
 [Sara Constantino](https://cssh.northeastern.edu/faculty/sara-constantino/),  Northeastern University  
 [Alicia Cooperman](https://www.aliciacooperman.com/), George Washington University  
 [Manuela Muñoz](https://bush.tamu.edu/pols/degrees/phd/mmunoz/), Texas A&M  
@@ -9,25 +10,18 @@ Research Team:
 [Allison Donine Deese](https://cssh.northeastern.edu/student/allison-donine/), Northeastern University  
 [Liz Muehlmann](https://liz-muehlmann.github.io/), University of California - Irvine
 
-# contents
-Each folder has an accompanying README file with details about its content.
+## Contents:
+The contents includes three main folders: 
+1. [Code](/Code/)  
+2. Data**
+3. [Results](/Results/)
 
-1. [Cartography](/Cartography/) | [readme](/Cartography/CartographyReadme.md)  
-Stores *pure* cartographic data. This data has not been merged with other data sources and is used primarily for boundaries.
-2. [FEMA](/FEMA/) | [readme](/FEMA/FEMAReadMe.md)  
-All code and data associated with [FEMA](https://www.fema.gov/about/openfema/data-sets#individual) data. 
-3. [GIS](/GIS/) | [readme](/GIS/GISReadMe.md)  
-Contains project files for ArcGIS & QGIS mapping and geospatial analysis. This folder is tracked with DVC as its files are too large for Github.  
-4. [HEvOD](/HEvOD/) | [readme](/HEvOD/HEvODReadMe.md)  
-Contains data downloaded from the University of Virginia's Engineering and Applied Science website that includes Hurricane Evacuations Across the United States. 
-5. [IRS](/IRS/) | [readme](/IRS/IRSReadMe.md)  
-All code and data related to IRS migration statistics. The IRS tracks migration based on the location where an individual files a tax return, aggregated for privacy.
-6. [LocalView](/LocalView/) | [readme](/LocalView/LocalViewReadMe.md)  
-All code and data related to the LocalView Public Meetings Database compiled by Soubhik Barari and Tyler Simko.
-7. [Political](/Political/) | [readme](/Political/PoliticalReadMe.md)
-All data and code related to politics. Including election returns, maps, and demographics from the US Census' American Community Survey.
-8. [Python](/Python/) | [readme](/Python/PythonReadMe.md)  
-Code for text analysis written in Python.   
-9. [Methodology](/Methodology/)  
-Contains the extremely detailed processing steps for each data set.
+Within each subfolder are separate folders for different projects:
+1. Cartography includes pure cartographic code or data. It is primarily used for joining other data by various boundaries.  
+2. FEMA data is used for evaluating the number of FEMA insurance claims by individual owners, aggregated to the Zip Code level.  
+3. IRS data is used to track migration patterns based on where an individual filed a tax return.  
+4. Local View is used for text and sentiment analysis of local political meetings.
+5. Political is election related data for General Elections between 2008-2020.
 
+____
+** not tracked due to github's large file limits
