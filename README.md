@@ -14,7 +14,8 @@ Shared github for NSF DRMS Climate and Local Political Participation Project. Th
 The contents includes three main folders: 
 1. [Code](/Code/)  
 2. Data**
-3. [Results](/Results/)
+3. GIS**
+4. [Results](/Results/)
 
 Within each subfolder are separate folders for different projects:
 1. Cartography includes pure cartographic code or data. It is primarily used for joining other data by various boundaries.  
