@@ -8,7 +8,7 @@
 ################################################################################
 
 # load preliminaries file ######################################################
-source("./LocalView/LVCode/LVTextAnalysis/TAPrelim.r")
+source("./Code/LocalView/LVTextAnalysis/TAPrelim.r")
 
 # filter only videos with transcripts (n = 103,812)
 data <- all_docs  %>% 

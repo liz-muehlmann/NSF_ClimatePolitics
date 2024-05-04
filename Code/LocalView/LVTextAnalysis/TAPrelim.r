@@ -1,11 +1,15 @@
 ################################################################################
 ##                                                                            ##
-## This file handles the preliminary steps necessary for text analysis        ##  
+## This file handles the preliminary steps necessary for text analysis        ##          
+##      Code/LocalView/LVTextAnalysis/TAallDocs.r                             ##  
 ##                                                                            ##  
 ## Local View data is available here:                                         ##
 ## https://doi.org/10.7910/DVN/NJTBEM                                         ##
 ##                                                                            ##     
 ################################################################################
+
+# set working directory ########################################################
+setwd("F:/GitHub/NSF_ClimatePolitics/")
 
 # suppress warnings & increase java heap space #################################
 options(warn = -1)
@@ -20,22 +24,21 @@ library(quanteda.textplots)        # plotting text
 library(tidyverse)                 # data manipulation
 library(ggplot2)                   # data visualization
 library(openxlsx)                  # save summaries
-library(lubridate)                 # dates
 library(stringr)                   # string manipulation
-
-# # set data directory ###########################################################
-setwd("F:/GitHub/NSF_Climate_LocalPolitics/")
+library(tidytext)                  # sentiment analysis
+library(textstem)                  # lemmatization
 
 # load parquet data and convert it to data frame (N = 153,452/ n = 103,812) ####
-all_docs <- open_dataset("./LocalView/LVOriginalData/meetings/")  
+all_docs <- open_dataset("/GitHub/NSF_ClimatePolitics/Data/LocalView/LVOriginalData/meetings/")  
 all_docs <- Scanner$create(all_docs)
 all_docs <- all_docs$ToTable()
 all_docs <- as.data.frame(all_docs)  %>% 
         mutate(year = str_sub(meeting_date, start = 1, end = 4))
 lv0609 <- all_docs  %>% 
-          filter(year <= 2009)
+        filter(year <= 2009)
 all_docs <- all_docs  %>% 
-          filter(year >= 2010)
+        filter(year >= 2010) %>% 
+        select(!(contains("acs")), -caption_text)
 noCap <- all_docs  %>%                                                   #49,640
         filter(caption_text_clean == "<No caption available>")
 
@@ -84,7 +87,8 @@ custom_stopwords <- c("pause",
                       "welcome", 
                       "good",
                       "fellas", 
-                      "y'all")
+                      "y'all",
+                      "yeah")
 
 # disaster words of interest ###################################################
 hazard_disaster <- dictionary(list(hazard = c(

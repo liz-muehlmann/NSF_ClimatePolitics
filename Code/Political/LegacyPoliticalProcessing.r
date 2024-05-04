@@ -57,7 +57,52 @@
 ##                                                                            ##
 ################################################################################
 
+# election data ################################################################
+mit <- read.csv("./Political/PoliticalOriginalData/2000_2020_County_Presidential.csv") %>%     
+      select(-candidate)  %>% 
+      filter(mode == "TOTAL" & year >= 2008)  %>% 
+      pivot_wider(
+        names_from = party,
+        values_from = candidatevotes,
+        values_fill = 0)  %>% 
+      rename(full_fips = county_fips,
+             DEM = DEMOCRAT,
+             REP = REPUBLICAN,
+             total_votes = totalvotes)  %>% 
+      mutate(full_fips = as.character(full_fips),
+             full_fips = str_pad(full_fips, 5, side = "left", pad = 0),
+             DVP = (DEM/total_votes)*100,
+                    RVP = (REP/total_votes)*100,
+             state_fips = str_sub(full_fips, start = 1, end = 2),
+             county_fips = str_sub(full_fips, start = 3, end = 5))  %>% 
+      select(year, state_fips, county_fips, county_name, DEM, REP, total_votes, DVP, RVP, full_fips)  %>% 
+      filter(state_fips != "02")
+             
+mit08 <- mit  %>% 
+    filter(year == 2008)  %>% 
+    add_row(year = 2008,
+            state_fips = "46",
+            county_fips = "102",
+            county_name = "Shannon County",
+            DEM = 2971,
+            REP = 331,
+            total_votes = 3350,
+            DVP = 88.68,
+            RVP = 9.88,
+            full_fips = "46102")
 
+mit1216 <- mit  %>% 
+    filter(year == 2012 | year == 2016)  %>% 
+    add_row(year = 2012,
+            state_fips = "46",
+            county_fips = "102",
+            county_name = "Shannon County",
+            DEM = 2937,
+            REP = 188,
+            total_votes = 3145,
+            DVP = 93.38,
+            RVP = 5.977,
+            full_fips = "46102")
 
 mit20 <- mit  %>% 
   filter(year == 2020)  %>% 
@@ -101,8 +146,6 @@ kaggle20 <- read.csv("./Political/PoliticalOriginalData/2020_US_KaggleGeneral.cs
 kgeo20 <- left_join(counties10, kaggle20, by = c("county_name" = "county")) %>% 
   select(-candidate, - state, - won) %>% 
   st_drop_geometry()
-
-
 
 ar20 <- read.csv("./Political/PoliticalModifiedData/2020_AR_General.csv")  %>%
   rename(state_fips = state_fips)  %>% 
@@ -157,45 +200,38 @@ e20 <- rbind(mit20, upshot20)
 all20 <- rbind(e20, missing)  %>% 
   select(year, state_abbr, full_fips, total_votes, DEM, REP, DVP, RVP)
 
+##  geo #######################################################################
+cupshot20 <- left_join(upshot20, counties10, by = c("county_fips" = "GEOID"))  %>% 
+    select(year, STATEFP, COUNTYFP, NAMELSAD, DEM, REP, DVP, RVP, total_votes, geometry, county_fips)
+
+cvakymit20 <- left_join(vakymit, counties10, by = c("full_fips" = "GEOID"))  %>% 
+    select(year, STATEFP, COUNTYFP, NAMELSAD, DEM, REP, DVP, RVP, total_votes, geometry, full_fips) 
+
+ndup_cvakymit20 <- cupshot20  %>% filter(!(county_fips %in% cvakymit20$full_fips))
+
+noak20 <- rbind(cupshot20, cvakymit20)  %>% 
+    filter(STATEFP != "02")  %>% 
+    mutate(full_fips = paste(STATEFP, COUNTYFP, sep=""))  
+
+mitgeo08 <- left_join(mit08, counties10, by = c("full_fips" = "GEOID"))  %>% 
+    select(year, STATEFP, COUNTYFP, NAMELSAD, DEM, REP, DVP, RVP, total_votes, geometry)  %>% 
+    filter(STATEFP != "02")  %>% 
+    mutate(full_fips = paste(STATEFP, COUNTYFP, sep=""))
+
+mitgeo1216 <- left_join(mit1216, counties10, by = c("full_fips" = "GEOID"))  %>% 
+    select(year, STATEFP, COUNTYFP, NAMELSAD, DEM, REP, DVP, RVP, total_votes, geometry)  %>% 
+    filter(STATEFP != "02") %>% 
+    mutate(full_fips = paste(STATEFP, COUNTYFP, sep=""))
+
+us08 <- rbind(akgeo08, mitgeo08)   %>% 
+    left_join(states, by = "STATEFP")
+us1216 <- rbind(akgeo1216, mitgeo1216) %>% 
+    left_join(states, by = "STATEFP")
+us20 <- rbind(akgeo20, noak20) %>% 
+    left_join(states, by = "STATEFP")
 
 
-mit <- read.csv("./Political/PoliticalOriginalData/2020_MITGeneral.csv")  %>% 
-  mutate(full_fips = as.character(full_fips),
-         full_fips = str_pad(full_fips, 5, side = "left", pad = 0),
-         state_fips = str_sub(full_fips, start = 1, end = 2),
-         county_fips = str_sub(full_fips, start = 3, end = 5))  %>% 
-  filter(state_fips != "02" & mode == "TOTAL" & year >= 2008)  %>% 
-  select(-candidate, -version, -mode)  %>% 
-  pivot_wider(names_from = party,
-              values_from = candidatevotes,
-              values_fill = 0) %>% 
-  rename(DEM = DEMOCRAT,
-         REP = REPUBLICAN)  %>% 
-  mutate(DVP = (DEM/total_votes)*100,
-         RVP = (REP/total_votes)*100,
-         state_name = str_to_sentence(state_name))  %>% 
-  select(-OTHER, -GREEN, -LIBERTARIAN, -office) %>% 
-  add_row(year = 2012,
-          state_fips = "46",
-          county_fips = "102",
-          county_name = "Oglala Lakota County",
-          DEM = 2937,
-          REP = 188,
-          state_name = "South Dakota",
-          state_abbr = "SD",
-          total_votes = 3145,
-          DVP = 93.38,
-          RVP = 5.977,
-          full_fips = "46102") %>%
-  add_row(year = 2008,
-          state_fips = "46",
-          county_fips = "102",
-          county_name = "Oglala Lakota County",
-          DEM = 2971,
-          REP = 331,
-          total_votes = 3350,
-          state_abbr = "SD",
-          state_name = "South Dakota",
-          DVP = 88.68,
-          RVP = 9.88,
-          full_fips = "46102") 
+## write shapefile #############################################################
+# st_write(us08, "./Political/PoliticalModifiedData/Geopackages/us08_election.gpkg")
+# st_write(us1216, "./Political/PoliticalModifiedData/Geopackages/us1216_election.gpkg")
+# st_write(us20, "./Political/PoliticalModifiedData/Geopackages/us20_election.gpkg")
