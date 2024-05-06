@@ -8,9 +8,6 @@
 ##                                                                            ##     
 ################################################################################
 
-# set working directory ########################################################
-setwd("F:/GitHub/NSF_ClimatePolitics/")
-
 # suppress warnings & increase java heap space #################################
 options(warn = -1)
 options(java.parameters = "-Xmx8000m")
@@ -29,7 +26,7 @@ library(tidytext)                  # sentiment analysis
 library(textstem)                  # lemmatization
 
 # load parquet data and convert it to data frame (N = 153,452/ n = 103,812) ####
-all_docs <- open_dataset("/GitHub/NSF_ClimatePolitics/Data/LocalView/LVOriginalData/meetings/")  
+all_docs <- open_dataset("./Data/LocalView/LVOriginalData/meetings/")  
 all_docs <- Scanner$create(all_docs)
 all_docs <- all_docs$ToTable()
 all_docs <- as.data.frame(all_docs)  %>% 

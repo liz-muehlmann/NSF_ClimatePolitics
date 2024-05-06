@@ -132,18 +132,24 @@ lvCC <- corpus_subset(lvCorpus, vid_id %in% kwic_df$vid_id)
 lvTidy <- tidy(lvCorpus) 
 
 lvTidyKW <- lvTidy %>% 
-    select(transcriptYear, state_name, vid_id, county_name, stcounty_fips, text) %>% 
-    mutate(kcount = str_count(text, "climate change")) %>% 
+    select(transcriptYear, vid_id, stcounty_fips, state_name, county_name, text) %>% 
+    mutate(kmentions = str_count(text, "climate change")) %>%                   # how many times climate change is mentioned in each transcript
+    select(-text) %>% 
     group_by(transcriptYear) %>% 
-    mutate(year_count = n()) %>% 
-    group_by(transcriptYear, stcounty_fips) %>% 
-    mutate(county_count = n()) 
+    mutate(kmentions_total = sum(kmentions),                                    # total mentions by year
+           hasKW = ifelse(kmentions >=1, 1, 0),                                 # create binary for if it has a keyword or not
+           kw_total = sum(hasKW),                                               # total number of transcripts that have at least one mention
+           ttotal = n(),
+           kwXyear = kw_total/ttotal,                                           # proportion of transcripts by year with at least one mention of "climate change"     
+           county_total = n_distinct(county_name)) %>% 
+    filter(hasKW == 1) %>% 
+    group_by(transcriptYear, county_name) %>% 
+    mutate(county_count = sum(n(county_name)))
 
-lvYes <- lvTidyKW %>% 
-    filter(kcount == 1)
 
-lvNo <- lvTidyKW %>% 
-    filter(kcount == 0)
+,
+countyXtotal = counties/county_total) %>% 
+    distinct(transcriptYear, county_name, .keep_all=TRUE)
 # subset documents that contain the phrase "climate change" (5,429 mentions)
 lvCC <- filter(lvTidy, grepl("climate change", text, ignore.case = TRUE)) 
     
