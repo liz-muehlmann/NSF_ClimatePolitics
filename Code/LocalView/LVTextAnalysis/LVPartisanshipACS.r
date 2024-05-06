@@ -31,7 +31,6 @@
 ################################################################################
 
 # load preliminaries & packages ################################################
-setwd("F:/GitHub/NSF_ClimatePolitics/")
 source("./Code/LocalView/LVTextAnalysis/TAPrelim.r")
 
 ## load data ###################################################################
@@ -74,7 +73,7 @@ places <- read.csv("./Data/Cartography/CartographyModified/2020_AllPlaces.csv") 
 data_place <- left_join(data, places, by = "match_column") %>% 
     distinct() %>% 
     mutate(state_fips = str_pad(state_fips, 2, "left", 0),
-           county_fips = str_pad(county_fips, 3, "left", 0))
+           county_fips = str_pad(county_fips, 3, "left", 0)) 
 
 # merge local view data with election data
 lvElection <- left_join(data_place, algaraACS, by = "stcounty_fips")
@@ -86,20 +85,35 @@ lvCorpus <- createCorpus(data_place)
 # tokenize the corpus
 tokens <- tokenizeCorpus(lvCorpus)
 docvars_df <- docvars(tokens)
-docvars_df$docname <- paste("text", 1:nrow(docvars_df), sep="")
+docvars_df$docname <- paste("text", 1:nrow(docvars_df), sep="") 
 
 # find climate change in context
 kwic <- kwic(tokens, pattern = phrase("climate change"))
 
-# merge key words in context with document data
+    # merge key words in context with document data
 kwic_df <- merge(kwic, docvars_df, by = "docname")  %>%
     mutate(year = str_sub(meeting_date, start = 1, end = 4))  %>%
-    as.data.frame()
+    as.data.frame(row.names = NULL) %>% 
+    select(vid_id, keyword) 
+
+kdf <- docvars_df %>% 
+    left_join(kwic_df, by = "vid_id") %>% 
+    select(transcriptYear, vid_id, place_name, docname, keyword, county_name) %>% 
+    mutate(kword = ifelse(is.na(keyword), "no", "yes")) %>% 
+    select(-keyword)
 
 # count frequency of climate change use over time
-kwicCount <- kwic_df  %>% 
-    group_by(year, keyword)  %>% 
-    summarize(kcount = n())  
+kwicCount <- kdf  %>% 
+    group_by(transcriptYear) %>% 
+    mutate(n_year = n()) %>% 
+    group_by(transcriptYear, kword) %>% 
+    mutate(n_kword = n()) %>% 
+    group_by(transcript_year)
+
+t <- tokens %>%
+     tokens_select(pattern = phrase("climate change")) %>%
+     dfm()
+
 
 # plot frequency of climate change use over time
 # kwXyear <- ggplot(data = kwicCount,
@@ -115,24 +129,43 @@ lvCC <- corpus_subset(lvCorpus, vid_id %in% kwic_df$vid_id)
 
 ## tidytext ##################################################################
 # convert corpus to tidy text format 
-lvTidy <- tidy(lvCorpus)
+lvTidy <- tidy(lvCorpus) 
 
+lvTidyKW <- lvTidy %>% 
+    select(transcriptYear, state_name, vid_id, county_name, stcounty_fips, text) %>% 
+    mutate(kcount = str_count(text, "climate change")) %>% 
+    group_by(transcriptYear) %>% 
+    mutate(year_count = n()) %>% 
+    group_by(transcriptYear, stcounty_fips) %>% 
+    mutate(county_count = n()) 
+
+lvYes <- lvTidyKW %>% 
+    filter(kcount == 1)
+
+lvNo <- lvTidyKW %>% 
+    filter(kcount == 0)
 # subset documents that contain the phrase "climate change" (5,429 mentions)
-lvCC <- filter(lvTidy, grepl("climate change", text, ignore.case = TRUE))
+lvCC <- filter(lvTidy, grepl("climate change", text, ignore.case = TRUE)) 
+    
+kwords <- lvCC %>% 
+    group_by(year) %>% 
+    mutate(transcript)
 
-lvCCSummary <- lvCC %>% group_by(place_name, state_name) %>% summarize(c = n())
+# %>%
+#     summarise(n = sum(n))
+# 
+# lvCC <- 
 
-write.csv(lvCCSummary, "./Results/LocalView/Summaries/ClimateChangeMentions.csv")
+lvCCSummary <- lvCC %>% 
+    group_by(place_name, state_name) %>% 
+    summarize(c = n())
+
+# write.csv(lvCCSummary, "./Results/LocalView/Summaries/ClimateChangeMentions.csv")
 
 
 lvTidyTokens <- lvCC %>% unnest_tokens(word, text) %>% 
     anti_join(stop_words) %>% 
-    filter(!(word %in% custom_stopwords) &  !(grepl('[0-9]', word))) %>% # remove custom stop words and numbers
-    lemmatize_words()
-
-## lemmetize the text next. 
-
-
+    filter(!(word %in% custom_stopwords) & !(grepl('[0-9]', word))) 
 
 
 

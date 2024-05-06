@@ -126,7 +126,7 @@ summarizeCorpus <- function(c) {
 # tokenize corpus
 tokenizeCorpus <- function(c) {             
         c %>% 
-        tokens(remove_punct = TRUE,
+        quanteda::tokens(remove_punct = TRUE,
         remove_url = TRUE,
         remove_symbols = TRUE,
         remove_numbers = TRUE) %>% 
