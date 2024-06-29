@@ -1,0 +1,6 @@
+outs:
+- md5: f0dd081e1b85b17bb7faf81baff7624f.dir
+  size: 362939977
+  nfiles: 4
+  hash: md5
+  path: LargeFiles

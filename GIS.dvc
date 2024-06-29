@@ -1,0 +1,6 @@
+outs:
+- md5: 8150db06b5302192c923aa6da44b6b5b.dir
+  size: 150679139
+  nfiles: 145
+  hash: md5
+  path: GIS
