@@ -33,8 +33,8 @@
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
-library(arrow)                     # open and work with parquet filepaths
-library(readtext)                  # read filepaths
+library(arrow)                     # open and work with parquet format (Local View)
+library(readtext)                  # read filepaths (Local View)
 library(tidyverse)                 # data manipulation
 library(sf)                        # work with shapefiles
 library(tigris)                    # download geographic boundaries
@@ -61,7 +61,7 @@ majority <- function(df){
 }
 
 ## fix problems with places that don't have an associated county
-fixFIPS <- function(df){
+fix_places <- function(df){
     df %>% mutate(county_name = 
                       case_when(place_fips == "5109816" ~ "Bristol County",
                                 place_fips == "5121344" ~ "Danville County",
@@ -78,16 +78,44 @@ fixFIPS <- function(df){
                                 .default = county_name))
 }
 
+fix_counties <- function(df){
+    df %>% mutate(county_name = 
+                      case_when(stcounty_fips == "51520" ~ "Bristol County",
+                                stcounty_fips == "51590" ~ "Danville County",
+                                stcounty_fips == "51650" ~ "Hampton County", 
+                                stcounty_fips == "51735" ~ "Poquoson County",
+                                stcounty_fips == "51740" ~ "Portsmouth County",
+                                stcounty_fips == "22033" ~ "East Baton Rouge County",
+                                .default = county_name))
+}
+
+rural_urban <- function(df){
+    df %>% mutate(stcounty_fips = ifelse(stcounty_fips == 46113, 46102, stcounty_fips),
+       rural_urban = case_when(rural_urban == 4 ~ 4,
+                              rural_urban == 6 ~ 4,
+                              rural_urban == 8 ~ 4,
+                              rural_urban == 5 ~ 5,
+                              rural_urban == 7 ~ 5,
+                              rural_urban == 9 ~ 5,
+                              .default = as.numeric(rural_urban)),
+       state_fips = str_sub(stcounty_fips, 0, 2),
+       county_fips = str_sub(stcounty_fips, 3, 5)) %>% 
+    filter(stcounty_fips < 57 & stcounty_fips != "02" & stcounty_fips != "15") %>% 
+    select(stcounty_fips, state_fips, county_fips, rural_urban)
+}
+
 ### states #####################################################################
 ##                                                                            ##
 ##             download state information with and without geometry           ##
 ##                                                                            ##
 ################################################################################
 statesGeo <- states() %>%
-    filter(GEOID < 57 & GEOID != "02" & GEOID != "15") %>%
-    rename(state_fips = GEOID,
-           state_name = NAME) %>%
-    select(state_fips, state_name)
+    filter(STATEFP < 57 & STATEFP != "02" & STATEFP != "15") %>%
+    rename(state_fips = STATEFP,
+           state_name = NAME,
+           census_region = REGION,
+           census_division = DIVISION) %>%
+    select(state_fips, state_name, census_region, census_division)
 
 states <- statesGeo %>% 
     st_drop_geometry()
@@ -105,13 +133,16 @@ counties00Geo <- counties(year = 2000, cb = TRUE) %>%
            county_name = ifelse(stcounty_fips == "17099", "LaSalle County", county_name)) %>%
     rename(state_fips = STATEFP,
            county_fips = COUNTY) %>%
+    fix_counties() %>% 
     left_join(states, by = c("STATE" = "state_fips")) %>% 
-    select(state_name, state_fips, county_fips, county_name, stcounty_fips) %>% 
-    add_row(state_name = "Colorado", 
-            state_fips = "08", 
-            county_fips = "014", 
-            county_name = "Broomfield County", 
-            stcounty_fips = "08014")
+    select(state_name, state_fips, county_fips, county_name, stcounty_fips, census_region, census_division) %>%
+    add_row(state_name = "Colorado",
+            state_fips = "08",
+            county_fips = "014",
+            county_name = "Broomfield County",
+            stcounty_fips = "08014",
+            census_region = "4",
+            census_division = "8")
 
 counties00 <- counties00Geo %>% 
     st_drop_geometry()
@@ -122,10 +153,11 @@ counties10Geo <- counties(year = 2010, cb = TRUE) %>%
            county_name = paste(NAME, LSAD, sep=" "),
            county_name = ifelse(stcounty_fips == "35013", "Dona Ana County", county_name ),
            county_name = ifelse(stcounty_fips == "11001", "District of Columbia", county_name)) %>% 
+    fix_counties() %>% 
     rename(state_fips = STATE,
            county_fips = COUNTY) %>%
     left_join(states) %>%
-    select(state_name, state_fips, county_fips, county_name, stcounty_fips) 
+    select(state_name, state_fips, county_fips, county_name, stcounty_fips, census_region, census_division) 
 
 counties10 <- counties10Geo %>% 
     st_drop_geometry()
@@ -140,7 +172,7 @@ counties15Geo <- counties(year = 2015, cb = TRUE) %>%
            county_name = ifelse(stcounty_fips == "35013", "Dona Ana County", county_name),
            county_name = ifelse(county_fips == "11001", "District of Columbia", county_name)) %>% 
     left_join(states) %>%
-    select(state_name, state_fips, county_fips, county_name, stcounty_fips) 
+    select(state_name, state_fips, county_fips, county_name, stcounty_fips, census_region, census_division) 
     
 counties15 <- counties15Geo %>% 
     st_drop_geometry()
@@ -151,11 +183,11 @@ counties20Geo <- counties(year = 2020, cb = TRUE) %>%
            county_name = NAME,
            state_fips = STATEFP,
            county_fips = COUNTYFP) %>%
-    mutate(county_name = ifelse(stcounty_fips == "35013", "Dona Ana County", county_name),
+    mutate(county_name = ifelse(stcounty_fips == "35013", "Dona Ana", county_name),
            county_name = ifelse(county_fips == "11001", "District of Columbia", county_name),
            county_name = paste(county_name, "County", sep = " ")) %>% 
     left_join(states) %>% 
-    select(state_name, state_fips, county_fips, county_name, stcounty_fips) 
+    select(state_name, state_fips, county_fips, county_name, stcounty_fips, census_region, census_division) 
 
 counties20 <- counties20Geo %>% 
     st_drop_geometry()
@@ -169,9 +201,7 @@ counties20 <- counties20Geo %>%
 ip <- majority(read.csv("./GIS/modified/2020_IPIntersections.csv")) 
 cdp <- majority(read.csv("./GIS/modified/2020_CDPIntersections.csv")) 
 ipcdp <- rbind(ip, cdp) %>% 
-    fixFIPS()
-
-# write.csv(ipcdp, "./GIS/modified/2020_IPCDPMajorityCounties.csv", row.names = FALSE)
+    fix_places()
 
 ## bedford county merged with Bedford County in 2013,
 ## the code below ensures it is in the final data
@@ -195,7 +225,7 @@ changes <- read.csv("./GIS/original/2020_PlaceBoundaryChanges.csv") %>%
            placeOnly_fips = str_pad(place_fips, 5, "left", 0),
            place_fips = paste(state_fips, placeOnly_fips, sep=""),
            coverage = 100) %>% 
-    fixFIPS() %>% 
+    fix_places() %>% 
     left_join(counties20, relationship = "many-to-many") %>% 
     select(place_fips, place_name, county_name, state_fips, county_fips, 
            stcounty_fips, coverage) %>% 
@@ -212,23 +242,24 @@ va <- read.csv("./GIS/original/VACountySubdivisions.csv") %>%
 
 ## merge all boundaries together to places
 ## this includes all places in all years. It's later merged with the Local View data.
-places <- rbind(changes, ipcdp) %>% 
-    bind_rows(va) %>% 
-    group_by(stcounty_fips) %>% 
-    mutate(n_places_incounty = n_distinct(place_fips)) 
+places <- rbind(changes, ipcdp) %>%
+    bind_rows(va) %>%
+    group_by(stcounty_fips) %>%
+    mutate(n_places_incounty = n_distinct(place_fips)) %>%
+    ungroup()
 
-n_places <- places %>% 
+n_places <- places %>%
     select(stcounty_fips, n_places_incounty) %>%
+    add_row(stcounty_fips = "51095",
+            n_places_incounty = 0) %>%
     distinct(stcounty_fips, .keep_all = TRUE)
-
-# write.csv(places, "./GIS/modified/2020_AllPlaces.csv")
 
 ### ACS Data ###################################################################
 ##                                                                            ##
 ##        this section loads and processes the American Community Survey      ##
 ##                                                                            ##
 ################################################################################
-acsyears <- list(2010, 2015, 2020)
+acs_years <- list(2010, 2015, 2020)
 acsvars <- c("B02001_002E",               # white
              "B02001_003E",               # Black
              "B02001_004E",               # American Indian
@@ -257,7 +288,7 @@ acsvars <- c("B02001_002E",               # white
              "B15002_035E")               # over 25 female, doctorate
 
 ## download and process acs years 2010, 2015, 2020
-for(y in acsyears) {
+for(y in acs_years) {
     df <- get_acs(geography = "county", year = y, geometry = FALSE, variables = acsvars) %>% 
         select(-moe) %>% 
         rename(stcounty_fips = GEOID) %>% 
@@ -270,10 +301,10 @@ for(y in acsyears) {
                              variable == "B02001_005" ~ "asian",              
                              variable == "B02001_006" ~ "nhapi",              
                              variable == "B03001_003" ~ "hispanic",           
-                             variable == "B01002_001" ~ "medage",             
-                             variable == "B25064_001" ~ "medgrossrent",       
-                             variable == "B19001_001" ~ "medhhic",            
-                             variable == "B01003_001" ~ "totalpop",     
+                             variable == "B01002_001" ~ "med_age",             
+                             variable == "B25064_001" ~ "med_grossRent",       
+                             variable == "B19001_001" ~ "med_hhic",            
+                             variable == "B01003_001" ~ "total_pop",     
                              variable == "B15002_014" ~ "eduM_aa",      
                              variable == "B15002_015" ~ "eduM_ba",      
                              variable == "B15002_016" ~ "eduM_ma",      
@@ -293,18 +324,18 @@ for(y in acsyears) {
         pivot_wider(values_from = estimate,
                     names_from = var_names) %>%
         mutate(edu_percentPop = (eduM_aa + eduF_aa + eduM_ba + eduF_ba + eduM_ma + eduF_ma + 
-                                 eduM_prof + eduF_prof + eduM_phd + eduF_phd)/totalpop,
-               perc_white = white/totalpop,
-               perc_black = black/totalpop,
-               perc_hispanic = hispanic/totalpop,
+                                 eduM_prof + eduF_prof + eduM_phd + eduF_phd)/total_pop,
+               perc_white = white/total_pop,
+               perc_black = black/total_pop,
+               perc_hispanic = hispanic/total_pop,
                other = amind + asian + nhapi,
-               perc_other = other/totalpop,
-               medhhic = medhhic/10000,
-               ACSyear = y,
+               perc_other = other/total_pop,
+               med_hhic = med_hhic/10000,
+               acs_year = y,
                state_fips = str_sub(stcounty_fips, 0, 2),
                county_fips = str_sub(stcounty_fips, 3, 5)) %>%
-        select(stcounty_fips, state_name, ACSyear, medage, totalpop, medgrossrent, 
-               medhhic, perc_white, perc_black, perc_hispanic, perc_other, edu_percentPop) 
+        select(stcounty_fips, state_name, acs_year, med_age, total_pop, med_grossRent, 
+               med_hhic, perc_white, perc_black, perc_hispanic, perc_other, edu_percentPop) 
     assign(paste("acs", y, sep=""), df)
 }
 
@@ -368,41 +399,23 @@ for(y in unique(algara$election_year)){
 ##          This section loads and processes the rural and urban code         ##
 ##                                                                            ##
 ################################################################################
-ru03 <- read_excel("./GIS/original/RuralUrban/2003USDA_RuralUrbanCodes.xls") %>% 
+ru03 <- read_excel("./GIS/original/ruralUrban/2003USDA_ruralUrbanCodes.xls") %>% 
     rename(stcounty_fips = "FIPS Code",
-           ruralUrban = "2003 Rural-urban Continuum Code") %>% 
-    mutate(stcounty_fips = ifelse(stcounty_fips == 46113, 46102, stcounty_fips),
-           ruralUrban = case_when(ruralUrban >= 4 ~ 4,
-                                  .default = as.numeric(ruralUrban)),
-           state_fips = str_sub(stcounty_fips, 0, 2),
-           county_fips = str_sub(stcounty_fips, 3, 5)) %>% 
-    filter(stcounty_fips < 57 & stcounty_fips != "02" & stcounty_fips != "15") %>% 
-    select(stcounty_fips, state_fips, county_fips, ruralUrban) %>% 
+           rural_urban = "2003 Rural-urban Continuum Code") %>% 
+    rural_urban() %>% 
     left_join(counties00)
 
-ru13 <- read_excel("./GIS/original/RuralUrban/2013USDA_RuralUrbanCodes.xls") %>% 
+ru13 <- read_excel("./GIS/original/ruralUrban/2013USDA_ruralUrbanCodes.xls") %>% 
     rename(stcounty_fips = FIPS,
-           ruralUrban = RUCC_2013) %>%
-    mutate(stcounty_fips = ifelse(stcounty_fips == 46113, 46102, stcounty_fips),
-           ruralUrban = case_when(ruralUrban >= 4 ~ 4,
-                                  .default = as.numeric(ruralUrban)),
-           state_fips = str_sub(stcounty_fips, 0, 2),
-           county_fips = str_sub(stcounty_fips, 3, 5)) %>% 
-    select(stcounty_fips, state_fips, county_fips, ruralUrban) %>% 
-    filter(stcounty_fips < 57 & stcounty_fips != "02" & 
-               stcounty_fips != "15" & stcounty_fips != 51515) %>% 
+           rural_urban = RUCC_2013) %>%
+    rural_urban() %>% 
+    filter(stcounty_fips != 51515) %>% 
     left_join(counties10)
 
-ru23 <- read_excel("./GIS/original/RuralUrban/2023USDA_RuralUrbanCodes.xlsx") %>% 
+ru23 <- read_excel("./GIS/original/ruralUrban/2023USDA_ruralUrbanCodes.xlsx") %>% 
     rename(stcounty_fips = FIPS,
-           ruralUrban = RUCC_2023) %>% 
-    mutate(stcounty_fips = ifelse(stcounty_fips == 46113, 46102, stcounty_fips),
-           ruralUrban = case_when(ruralUrban >= 4 ~ 4,
-                                  .default = as.numeric(ruralUrban)),
-           state_fips = str_sub(stcounty_fips, 0, 2),
-           county_fips = str_sub(stcounty_fips, 3, 5)) %>% 
-    filter(stcounty_fips < 57 & stcounty_fips != "02" & stcounty_fips != "15") %>% 
-    select(stcounty_fips, state_fips, county_fips, ruralUrban) %>% 
+           rural_urban = RUCC_2023) %>% 
+    rural_urban() %>% 
     left_join(counties20)
 
 ### CVI ########################################################################
@@ -414,7 +427,7 @@ cvi <- read_xlsx("./LocalView/data/original/202310_CVI.xlsx", sheet = "Domain CV
     rename(state_name = State,
            county_name = County,
            stcounty_fips = `FIPS Code`,
-           overall_CVI = `Overall CVI Score`,
+           overall_cvi = `Overall CVI Score`,
            baseline_all = `Baseline: All`,
            baseline_health = `Baseline: Health`,
            baseline_socioEcon = `Baseline: Social Economic`,
@@ -430,7 +443,7 @@ cvi <- read_xlsx("./LocalView/data/original/202310_CVI.xlsx", sheet = "Domain CV
     group_by(stcounty_fips) %>% 
     mutate(n_counties = n()) %>% 
     reframe(
-        across(c(overall_CVI, baseline_all, baseline_health, baseline_socioEcon, 
+        across(c(overall_cvi, baseline_all, baseline_health, baseline_socioEcon, 
                  baseline_infrastructure, baseline_environ, climate_all, climate_health, 
                  climate_socioEcon, climate_extreme), ~ sum(.x)/n_counties)) %>% 
     distinct(stcounty_fips, .keep_all = TRUE)
@@ -447,9 +460,9 @@ cvi <- rbind(oglalaCVI, cvi)
 ##                                                                            ##
 ################################################################################
 fema <- read.csv("./LocalView/data/original/2023_FEMA.csv") %>% 
-        separate(declarationDate, into = c("femaYear", "femaMonth", "date"), sep = "-") %>%
-        mutate(femaDay = str_sub(date, 0, 2)) %>% 
-        filter(femaYear >= 2009 & femaYear < 2023,
+        separate(declarationDate, into = c("fema_year", "fema_month", "date"), sep = "-") %>%
+        mutate(fema_day = str_sub(date, 0, 2)) %>% 
+        filter(fema_year >= 2009 & fema_year < 2023,
                incidentType == "Coastal Storm"| 
                    incidentType == "Fire" |
                    incidentType == "Flood" |
@@ -471,67 +484,61 @@ fema <- read.csv("./LocalView/data/original/2023_FEMA.csv") %>%
                fipsCountyCode = str_pad(fipsCountyCode, 3, "left", "0"),
                stcounty_fips = paste(fipsStateCode, fipsCountyCode, sep="")) %>% 
         group_by(fyDeclared, stcounty_fips) %>%
-        rename(femaID = id,
+        rename(fema_id = id,
                state_fips = fipsStateCode,
-               county_fips = fipsCountyCode) %>% 
+               county_fips = fipsCountyCode,
+               declaration_type = declarationType,
+               incident_type = incidentType,
+               ) %>% 
         mutate(n_decInYear = n(),
-               n_decTypeYear = n_distinct(declarationType)) %>% 
+               n_decTypeYear = n_distinct(declaration_type)) %>% 
         ungroup()  %>%
-        select(femaID, femaYear, femaMonth, femaDay, declarationType, incidentType, state_fips, 
-               county_fips, stcounty_fips, n_decInYear, n_decTypeYear)
-    
-# write.csv(fema, "./LocalView/data/modified/FEMAdisasterDeclarations.csv", row.names = FALSE)
+        select(fema_id, fema_year, fema_month, fema_day, declaration_type, incident_type, state_fips, 
+               county_fips, stcounty_fips, n_decInYear, n_decTypeYear) 
 
-## uncomment these lines to save FEMA data by year.
-# for(y in unique(fema$femaYear)){
-#     f <- fema %>% 
-#         filter(femaYear == y)
-#     assign(paste("fema", y, sep=""), f)
-# }
-
-## create femaBinary data 
-femaBinary <- fema %>% 
-    select(femaYear, stcounty_fips, state_fips, county_fips, n_decInYear, n_decTypeYear) %>% 
-    distinct(stcounty_fips, .keep_all = TRUE)
-
-## loop through femaBinary and merge it with county data
+## loop through fema and merge it with county data
 f_merged <- list()
-for(y in unique(femaBinary$femaYear)){
-    f <- femaBinary %>%
-        filter(femaYear == y)
+for(y in unique(fema$fema_year)){
+    f <- fema %>%
+        distinct(stcounty_fips, .keep_all = TRUE) %>% 
+        filter(fema_year == y)
     
     if (y == 2009){
         f_merged[[y]] <- f %>%
             select(-state_fips, -county_fips) %>%
             right_join(counties00, by = "stcounty_fips") %>%
-            mutate(femaYear = as.numeric(y),
-                   transcript_year = femaYear + 1) 
+            mutate(fema_year = as.numeric(y),
+                   transcript_year = fema_year + 1, 
+                   fema_binary = ifelse(is.na(n_decInYear), 0, 1)) 
         
     }
     else if (y >= 2010 & y <= 2014) {
         f_merged[[y]] <- f %>%
             select(-state_fips, -county_fips) %>%
             right_join(counties10, by = "stcounty_fips") %>%
-            mutate(femaYear = as.numeric(y),
-                   transcript_year = femaYear + 1) 
+            mutate(fema_year = as.numeric(y),
+                   transcript_year = fema_year + 1,
+                   fema_binary = ifelse(is.na(n_decInYear), 0, 1)) 
     } 
     else if (y >= 2015 & y <= 2019){
         f_merged[[y]] <- f %>%
             select(-state_fips, -county_fips) %>%
             right_join(counties15, by = "stcounty_fips") %>%
-            mutate(femaYear = as.numeric(y),
-                   transcript_year = femaYear + 1) 
+            mutate(fema_year = as.numeric(y),
+                   transcript_year = fema_year + 1,
+                   fema_binary = ifelse(is.na(n_decInYear), 0, 1)) 
     } else{
         f_merged[[y]] <- f %>%
             select(-state_fips, -county_fips) %>%
             right_join(counties20, by = "stcounty_fips") %>%
-            mutate(femaYear = as.numeric(y),
-                   transcript_year = femaYear + 1) 
+            mutate(fema_year = as.numeric(y),
+                   transcript_year = fema_year + 1,
+                   fema_binary = ifelse(is.na(n_decInYear), 0, 1)) 
     }
 }
 
-## n = 43,518
-femaBinaryNA <- bind_rows(f_merged) %>% 
+## n = 43,519
+femaBinary <- bind_rows(f_merged) %>% 
     mutate(transcript_year = as.character(transcript_year))
 
 ### local view data ############################################################
@@ -550,17 +557,17 @@ LVRaw <- as.data.frame(LVRaw)
 docs <- LVRaw %>%
     rename(place_fips = st_fips,
            meeting_type = place_govt) %>% 
-    mutate(transcript_year = str_sub(meeting_date, 1, 4),
-           place_fips = str_pad(place_fips, 7, "left", "0"),
+    mutate(place_fips = str_pad(place_fips, 7, "left", "0"),
            place_fips = case_when(place_fips == "5151650" ~ "5135000",
                                   place_fips == "5151710" ~ "5157000",
                                   place_fips == "5151730" ~ "5161832",
                                   .default = as.character(place_fips))) %>%
+    separate(meeting_date, into = c("transcript_year", "transcript_month", "transcript_day"), sep = "-") %>% 
     filter(transcript_year >= 2010 & 
            !(caption_text_clean == "<No caption available>") & 
            state_name != "Alaska") %>% 
-    select(vid_id, transcript_year, state_name, place_fips, place_name, 
-           meeting_type, caption_text_clean)
+    select(vid_id, transcript_year, transcript_month, transcript_day, state_name, place_fips, place_name, 
+           meeting_type, caption_text_clean) 
 
 ## uncomment for the number of transcripts with No Caption Available (n = 49,640)
 # nrow(LVRaw %>% filter(caption_text_clean == "<No caption available>"))
@@ -569,12 +576,12 @@ docs <- LVRaw %>%
 docsCounty <- docs %>% 
     filter(grepl("County", place_name)) %>% 
     mutate(stcounty_fips = str_sub(place_fips, 3, 7)) %>% 
-    left_join(places, by = "stcounty_fips", multiple = "any") %>% 
-    select(-place_name.y, -place_fips.y) %>%                                           
+    inner_join(places, by = "stcounty_fips", multiple = "any") %>% 
+    select(-place_name.y, -place_fips.y) %>%
     rename(place_name = place_name.x,
-           place_fips = place_fips.x) 
+           place_fips = place_fips.x)
 
-## LV data with correct place data (n = 93,840)
+## LV data with correct place data (n = 93,938)
 docsNoCounty <- docs %>% 
     filter(!grepl("County", place_name)) %>% 
     left_join(places, by = "place_fips", relationship = "many-to-many") %>%      
@@ -582,19 +589,22 @@ docsNoCounty <- docs %>%
     rename(place_name = place_name.x) %>% 
     distinct(vid_id, transcript_year, .keep_all = TRUE)
 
-## local view data by place, county, and transcript year (n = 103,372)
-lvPlaces <- rbind(docsCounty, docsNoCounty) 
+## local view data with transcript and county information (n = 103,372)
+lvOnly_caption <- rbind(docsCounty, docsNoCounty) %>% 
+    mutate(n_ccMentions = str_count(caption_text_clean, "climate change"))   # count total number of CC mentions in each transcript
 
-## local view data by county and year (n = 3,677)
-lvCounty <- lvPlaces %>%
-    select(-state_name, -county_name) %>%
+## aggregate local view data to the county-year level (n = 3,677)
+lvOnly_noCaption <- docs %>% 
     group_by(transcript_year, stcounty_fips) %>%
-    mutate(n_meettype = n_distinct(meeting_type),
-           total_scriptCY = n(),
-           n_scriptCC = ifelse(str_count(caption_text_clean, "climate change") > 0, 1, 0),
-           sum_scriptCC = sum(n_scriptCC),
-           prop_cc = (sum_scriptCC/total_scriptCY)*100) %>%
-    select(transcript_year, stcounty_fips, n_meettype, total_scriptCY, sum_scriptCC, prop_cc) %>%
+    mutate(n_meetTypeCY = n_distinct(meeting_type),
+           n_scriptCY = n(),
+           n_ccBinaryCY = ifelse(n_ccMentions > 0, 1, 0),
+           n_ccScriptCY = sum(n_ccBinaryCY),
+           n_ccMentionsCY = sum(n_ccMentions),
+           prop_cc = (n_ccScriptCY/n_scriptCY)*100) %>% 
+    select(transcript_year, state_name, state_fips, county_name, county_fips, stcounty_fips, 
+           n_places_incounty, n_meetTypeCY, n_scriptCY, n_ccMentionsCY, n_ccBinaryCY, 
+           n_ccScriptCY, prop_cc) %>%
     distinct(transcript_year, stcounty_fips, .keep_all = TRUE) %>%
     ungroup() 
 
@@ -604,123 +614,171 @@ lvCounty <- lvPlaces %>%
 ##                                                                            ##
 ################################################################################  
 ## separate the local view data to combine with counties so NA = no transcript available
-lvCounty10 <- lvCounty %>% 
+lvACSCounty10 <- lvOnly_noCaption %>% 
     filter(transcript_year <= 2015) 
-lvCounty15 <- lvCounty %>% 
+lvACSCounty15 <- lvOnly_noCaption %>% 
     filter(transcript_year >= 2016 & transcript_year <= 2019)
-lvCounty20 <- lvCounty %>% 
+lvACSCounty20 <- lvOnly_noCaption %>% 
     filter(transcript_year >= 2020)
 
 ## merge 2008-2014 LV data with 2010 counties & 2010 ACS
 empty10 <- list()
-for(y in unique(lvCounty10$transcript_year)){
-    empty10[[y]] <- lvCounty10 %>% 
+for(y in unique(lvACSCounty10$transcript_year)){
+    empty10[[y]] <- lvACSCounty10 %>% 
         filter(transcript_year == y) %>% 
-        select(-transcript_year) %>% 
+        select(-transcript_year, -n_places_incounty) %>% 
         right_join(counties10) %>% 
         left_join(acs2010) %>% 
         mutate(transcript_year = y)
 }
-lvCounty10 <- bind_rows(empty10)
+lvACSCounty10 <- bind_rows(empty10)
 
 ## merge 2015-2019 LV data with 2015 counties & 2015 ACS
 empty15 <- list()
-for(y in unique(lvCounty15$transcript_year)){
-    empty15[[y]] <- lvCounty15 %>% 
+for(y in unique(lvACSCounty15$transcript_year)){
+    empty15[[y]] <- lvACSCounty15 %>% 
         filter(transcript_year == y) %>% 
-        select(-transcript_year) %>% 
+        select(-transcript_year, -n_places_incounty) %>% 
         right_join(counties15) %>% 
         left_join(acs2015) %>% 
         mutate(transcript_year = y)
 }
-lvCounty15 <- bind_rows(empty15)
+lvACSCounty15 <- bind_rows(empty15)
 
 ## merge 2020-2023 LV data with 2020 counties & 2020 ACS
 empty20 <- list()
-for(y in unique(lvCounty20$transcript_year)){
-    empty20[[y]] <- lvCounty20 %>% 
+for(y in unique(lvACSCounty20$transcript_year)){
+    empty20[[y]] <- lvACSCounty20 %>% 
         filter(transcript_year == y) %>% 
-        select(-transcript_year) %>% 
+        select(-transcript_year, -n_places_incounty) %>% 
         right_join(counties20) %>% 
         left_join(acs2020) %>% 
         mutate(transcript_year = y)
 }
-lvCounty20 <- bind_rows(empty20)
+lvACSCounty20 <- bind_rows(empty20)
 
 ## n = 43,518
 ## data is at the county-year level
 ## each transcript year (2010-2023) includes all counties (NA if no transcript available)
-lvCountyNA <- rbind(lvCounty10, lvCounty15, lvCounty20) %>% 
+allData <- rbind(lvACSCounty10, lvACSCounty15, lvACSCounty20) %>% 
     left_join(n_places) %>% 
-    filter(!is.na(n_places_incounty))
+    group_by(state_name) %>% 
+    mutate(n_counties = n_distinct(stcounty_fips)) %>% 
+    ungroup() %>% 
+    relocate(n_counties, n_places_incounty, .before = n_meetTypeCY)
 
 ## fema data is merged with a one year lag (i.e., 2011 LV transcript uses 2010 fema declaration)
-allDataNA <- lvCountyNA %>% 
-    left_join(femaBinaryNA)
+allData <- allData %>% 
+    left_join(femaBinary)
 
 ## USDA rural-urban designation
-## 2003 RU data merges with 2010-2013 LV Data
-## 2013 RU data merges with 2014-2022 LV Data
-## 2023 RU data merges with 2023 LV Data
-allDataNA03 <- allDataNA %>% 
+allData03 <- allData %>% 
     filter(transcript_year < 2014) %>% 
     left_join(ru03)
-allDataNA13 <- allDataNA %>% 
+allData13 <- allData %>% 
     filter(transcript_year >= 2014 & transcript_year <= 2022) %>% 
     left_join(ru13)
-allDataNA23 <- allDataNA %>% 
+allData23 <- allData %>% 
     filter(transcript_year == 2023) %>% 
     left_join(ru23)
 
-allDataNA <- rbind(allDataNA03, allDataNA13, allDataNA23)
+allData <- rbind(allData03, allData13, allData23)
 
 ## Algara-Sharif election data
-## 2008 Algara-Sharif data merges with 2010-2011 LV Data
-## 2012 Algara-Sharif data merges with 2012-2015 LV Data
-## 2016 Algara-Sharif data merges with 2016-2019 LV Data
-## 2020 Algara-Sharif data merges with 2020-2023 LV Data
-allDataNA08 <- allDataNA %>% 
+allData08 <- allData %>% 
     filter(transcript_year < 2012) %>% 
     left_join(algara2008)
-allDataNA12 <- allDataNA %>% 
+allData12 <- allData %>% 
     filter(transcript_year >= 2012 & transcript_year <= 2015) %>% 
     left_join(algara2012)
-allDataNA16 <- allDataNA %>% 
+allData16 <- allData %>% 
     filter(transcript_year >= 2016 & transcript_year <= 2019) %>% 
     left_join(algara2016)
-allDataNA20 <- allDataNA %>% 
+allData20 <- allData %>% 
     filter(transcript_year >= 2020) %>% 
     left_join(algara2020)
 
-allDataNA <- rbind(allDataNA08, allDataNA12, allDataNA16, allDataNA20)
-
-## CVI is only available for 2024
-## allDataNA2024 is the data with CVI only merged with 2024
-## allDataNA is the data with CVI data merged for every year 
-## (i.e., 2024 CVI data merges with allprevious years)
-allDataNA24 <- allDataNA %>% 
-    filter(transcript_year == 2023)
-allDataNAcvi <- allDataNA24 %>% 
-    left_join(cvi)
-
-allDataNA <- allDataNA %>%
+allData <- rbind(allData08, allData12, allData16, allData20) %>% 
     left_join(cvi, relationship = "many-to-one") %>% 
-    select(state_name, state_fips, county_name, county_fips, stcounty_fips, transcript_year, n_meettype, total_scriptCY, sum_scriptCC, prop_cc, n_places_incounty, election_year, DVP, RVP, ACSyear, medage, totalpop, medgrossrent, medhhic, perc_white, perc_black, perc_hispanic, perc_other, edu_percentPop, femaYear, n_decInYear, n_decTypeYear, overall_CVI, baseline_all, baseline_health, baseline_socioEcon, baseline_infrastructure, baseline_environ, climate_all, climate_health, climate_socioEcon, climate_extreme)
+    relocate(census_region, census_division, rural_urban, transcript_year,  .before = n_meetTypeCY)
 
-### save county year ###########################################################
+## n = 3677
+allData_noNA <- allData %>% 
+    filter(!(is.na(n_meetTypeCY)))
+
+allData_noNAGeo <- allData_noNA %>% 
+    left_join(counties20Geo)
+
+### state-year  ################################################################
 ##                                                                            ##
-##                  save data with and without county boundaries              ##
+##                          merge all data  - state year                      ##
+##                                                                            ##
+################################################################################
+allData_state <- allData_noNA %>%
+    group_by(transcript_year, state_name) %>%
+    mutate(state_nScriptYear = sum(n_scriptCY, na.rm = TRUE),       # total number of transcripts by state and year
+           state_nCCmentions = sum(n_scriptCY, na.rm=TRUE),                  # number of transcripts with at least one CC mention
+           state_totalCCmentions = sum(n_ccMentionsCY, na.rm = TRUE),           # total number of CC mentions in state
+           state_propCC = ifelse(state_nCCmentions == 0, 0,
+                                 round((state_nCCmentions/state_nScriptYear)*100, 2)),    # state proportion of CC mentions
+           total_vp = sum(DVP) + sum(RVP),                          # state total vote percentage
+           state_dvp = round((sum(DVP)/total_vp)*100, 2),           # state dvp
+           state_rvp = round((sum(RVP)/total_vp)*100, 2),           # state rvp
+           n_county = n_distinct(county_name),
+           state_pop = sum(total_pop),
+           state_med_age = sum(med_age)/n_county,
+           state_med_grossRent = sum(med_grossRent/n_county, na.rm=TRUE),
+           state_med_hhic = sum(med_hhic)/n_county,
+           state_percHispanic = sum(perc_hispanic)/n_county,
+           state_percOther = sum(perc_other)/n_county,
+           state_percWhite = sum(perc_white)/n_county,
+           state_percBlack = sum(perc_black)/n_county,
+           state_overallCVI = sum(overall_cvi)/n_county,
+           state_baselineAll = sum(baseline_all)/n_county,
+           state_baselineHealth = sum(baseline_health)/n_county,
+           state_baselineSocioEcon = sum(baseline_socioEcon)/n_county,
+           state_baselineInfrastucture = sum(baseline_infrastructure)/n_county,
+           state_baselineenvrion = sum(baseline_environ)/n_county,
+           state_climateAll = sum(climate_all)/n_county,
+           state_climateSocioEcon = sum(climate_socioEcon)/n_county,
+           state_climateExtreme = sum(climate_extreme)/n_county,
+           state_decTypeYear = sum(n_decTypeYear, na.rm = TRUE),
+           state_nDecInYear = sum(n_decInYear, na.rm = TRUE),
+           state_nCountyFEMA = sum(fema_binary, na.rm = TRUE),
+           state_femaBinary = ifelse(state_nCountyFEMA == 0, 0, 1),
+           state_propCountyFEMA = state_nDecInYear/n_county) %>%
+    ungroup() %>%
+    distinct(transcript_year, state_name, .keep_all = TRUE) %>%
+    group_by(state_name) %>% 
+    mutate(state_nScriptAY = sum(state_nScriptYear)) %>% 
+    select(state_name, n_counties, n_places_incounty, starts_with("state_"))
+
+
+allData_stateGeo <- allData_state %>%
+    left_join(statesGeo, by = "state_name")
+
+### save data ##################################################################
+##                                                                            ##
+##                                 all saves                                  ##
 ##                                                                            ##
 ################################################################################
 
-# write.csv(allDataNA, "./LocalView/data/modified/LVCounty.csv", row.names = FALSE)
-
-## separate by transcript year and write geopackage
-# for(y in unique(allDataNA$transcript_year)){
-#     a <- allDataNA %>%
+# ## majority place-county overlaps
+# write.csv(ipcdp, "./GIS/modified/2020_IPCDPMajorityCounties.csv", row.names = FALSE)
+# 
+# ## save local view data (counties with transcripts)
+# write.csv(lvNoCaption, "./LocalView/data/modified/lvCounty.csv", row.names = FALSE)
+# 
+# ## save all data at the county-year level
+# write.csv(allData, "./LocalView/data/modified/allData_na.csv", row.names = FALSE)
+# write.csv(allData_noNA, "./LocalView/data/modified/allData_noNA.csv", row.names = FALSE)
+# 
+# ## separate by transcript year and write geopackage
+# for(y in unique(allData$transcript_year)){
+#     a <- allData %>%
 #         filter(transcript_year == y)
 # 
-#     if (y < 2015) {
+#         if (y < 2015) {
 #         a_merged <- a %>%
 #             right_join(counties10Geo)
 #     }
@@ -732,23 +790,23 @@ allDataNA <- allDataNA %>%
 #         a_merged <- a %>%
 #             right_join(counties20Geo)
 #     }
-#     st_write(a_merged, paste0("./GIS/modified/geopackages/TranscriptYears/allDataNA_",y, ".gpkg"))
+#     st_write(a_merged, paste0("./GIS/modified/geopackages/TranscriptYears/allData_",y, ".gpkg"))
 # }
-
-## separate by election year and write geopackage
-# for(y in unique(allDataNA$election_year)){
-#     a <- allDataNA %>%
+# 
+# ## separate by election year and write geopackage
+# for(y in unique(allData$election_year)){
+#     a <- allData %>%
 #         filter(election_year == y)
 # 
-#     if (y == 2008) {
+#     if(y == 2008){
 #         a_merged <- a %>%
 #             right_join(counties00Geo)
 #     }
-#     else if (y == 2012){
+#     else if(y == 2012){
 #         a_merged <- a %>%
 #             right_join(counties10Geo)
 #     }
-#     else if (y == 2016){
+#     else if(y == 2016){
 #         a_merged <- a %>%
 #             right_join(counties15Geo)
 #     }
@@ -756,78 +814,16 @@ allDataNA <- allDataNA %>%
 #         a_merged <- a %>%
 #             right_join(counties20Geo)
 #     }
-#     st_write(a_merged, paste0("./GIS/modified/geopackages/ElectionYears/allDataNA_",y, "Election.gpkg"))
+#     st_write(a_merged, paste0("./GIS/modified/geopackages/ElectionYears/allData_",y, "Election.gpkg"))
 # }
-
-### merges state ###############################################################
-##                                                                            ##
-##                          merge all data  - state year                      ##
-##                                                                            ##
-################################################################################
-
-# allData_state <- allDataNA %>%
-#     group_by(transcript_year, state_name) %>%
-#     mutate(stcounty_fips = str_pad(stcounty_fips, 5, "left", 0),
-#            state_totalScript = sum(total_scriptCY, na.rm = TRUE),   # total number of transcripts
-#            state_cc = sum(sum_scriptCC, na.rm=TRUE),                # sum of transcripts with CC mention
-#            state_propCC = ifelse(state_cc == 0, 0,
-#                     round((state_cc/state_totalScript)*100, 2)),  # state proportion of CC mentions
-#            total_vp = sum(DVP) + sum(RVP),                          # state total vote percentage
-#            state_dvp = round((sum(DVP)/total_vp)*100, 2),           # state dvp
-#            state_rvp = round((sum(RVP)/total_vp)*100, 2),           # state rvp
-#            n_county = n_distinct(county_name),
-#            state_pop = sum(totalpop),
-#            state_medage = sum(medage)/n_county,
-#            state_medgrossrent = (sum(medgrossrent/n_county, na.rm=TRUE)),
-#            state_medhhic = sum(medhhic)/n_county,
-#            state_percHispanic = sum(perc_hispanic)/n_county,
-#            state_percOther = sum(perc_other)/n_county,
-#            state_percWhite = sum(perc_white)/n_county,
-#            state_percBlack = sum(perc_black)/n_county,
-#            state_overallCVI = sum(overall_CVI)/n_county,
-#            state_baselineAll = sum(baseline_all)/n_county,
-#            state_baselineHealth = sum(baseline_health)/n_county,
-#            state_baselineSocioEcon = sum(baseline_socioEcon)/n_county,
-#            state_baselineInfrastucture = sum(baseline_infrastructure)/n_county,
-#            state_baselineEviron = sum(baseline_environ)/n_county,
-#            state_climateAll = sum(climate_all)/n_county,
-#            state_climateSocioEcon = sum(climate_socioEcon)/n_county,
-#            state_climateExtreme = sum(climate_extreme)/n_county) %>%
-#     ungroup() %>%
-#     distinct(transcript_year, state_name, .keep_all = TRUE) %>%
-#     select(state_name, n_places_incounty, starts_with("state_"))
-
-# write.csv(allData_state, "./LocalView/data/modified/LVState.csv")
-
-allData_stateGeo <- allData_state %>%
-    left_join(statesGeo, by = "state_name")
-
-# st_write(allData_stateGeo, "./GIS/modified/geopackages/lvStates.gpkg")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# 
+# ## save state data
+# st_write(allData_stateGeo, "./GIS/modified/geopackages/lvState.gpkg")
+# write.csv(allData_state, "./LocalView/data/modified/lvState.csv", row.names = FALSE)
+# 
+# ## save cleaned data as .rdata object
+# save(allData, allData_noNA, allData_state,  file = "./LocalView/data/AllData_clean.rdata")
+# save(lvOnly_caption, lvOnly_noCaption,  file = "./LocalView/data/LocalView_clean.rdata")
 
 
 

@@ -33,36 +33,36 @@
 library(tidyverse)
 library(plm)
 library(modelsummary)
-df <- read.csv("./LocalView/data/modified/LVCounty.csv") 
+load("./LocalView/data/AllData_clean.rdata")
 
-### v2 #########################################################################
+################################################################################
 ##                                                                            ##
 ##          grouped by transcript year, state name, and county name           ##
 ##                                                                            ##
 ################################################################################
-## model v2 data
-df1 <- df %>% 
+## All Data has NA where transcripts are missing
+allData <- allData %>% 
     group_by(transcript_year, state_name, county_name)
 
-df1_noNA <- df1 %>% filter(!is.na(n_meettype))
+allData_noNA <- allData_noNA
 
 df_binary <- df %>% 
     mutate(hasScript = ifelse(!is.na(sum_scriptCC), 1, 0))
 
 ## Main model: Regression results (meeting level data) with climate change mention (DV) ~ partisanship of county (main IV) 
-main_model <- lm(prop_cc ~ DVP, data = df1)
+main_model <- lm(prop_cc ~ DVP, data = allData)
 
 ## Main model adding controls (population, average income, share white non-hispanic, average age, average education)
-model_controls <- lm(prop_cc ~ DVP + totalpop + edu_percentPop + perc_white, data = df1)
+model_controls <- lm(prop_cc ~ DVP + totalpop + edu_percentPop + perc_white, data = allData)
 
 ## Main model adding state FE (depending on how many meetings per state, in case too few observations per state)
-model_stateFE <- plm(prop_cc ~ DVP + totalpop + edu_percentPop + perc_white, data = df1_noNA, index = c("state_name"), model="within")
+model_stateFE <- plm(prop_cc ~ DVP + totalpop + edu_percentPop + perc_white, data = allData_noNA, index = c("state_name"), model="within")
 
 ## Main model adding time trend as linear variable
-model_linear_time <- lm(prop_cc ~ DVP + as.numeric(transcript_year), data = df1)
+model_linear_time <- lm(prop_cc ~ DVP + as.numeric(transcript_year), data = allData)
 
 ## Main model adding years as dummy variables
-model_dummy_time <- lm(prop_cc ~ DVP + as.factor(transcript_year), data = df1)
+model_dummy_time <- lm(prop_cc ~ DVP + as.factor(transcript_year), data = allData)
 
 ### v3 #########################################################################
 ##                                                                            ##
