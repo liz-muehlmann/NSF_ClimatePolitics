@@ -36,7 +36,9 @@
 ##                                                                            ##
 ################################################################################
 library(tidyverse)
-load("./LocalView/data/Processed_LocalView.rdata")
+load("./LocalView/data/modified/lv_clean_noTranscript.rdata")
+load("./LocalView/data/modified/lv_countyYear_noNA.rdata")
+load("./LocalView/data/modified/allData_state.rdata")
 
 ### original summaries #########################################################
 ##                                                                            ##
@@ -46,66 +48,55 @@ load("./LocalView/data/Processed_LocalView.rdata")
 ##                        include election or ACS data.                       ##
 ##                                                                            ##
 ################################################################################
-lv <- lvCountyNA %>% filter(!is.na(n_meetTypeCY))
-
 ## transcripts available by year and state
-yearState <- lv %>% 
+yearState <- lvClean_noScript %>% 
     group_by(transcript_year, state_name) %>% 
     count()
 
-# write.csv(yearState, "./LocalView/results/summaries/YearState.csv")
+# write.csv(yearState, "./LocalView/results/summaries/YearState.csv", row.names = FALSE)
 
-yearStateCounty <- lv %>% 
-    filter(!is.na(n_meetTypeCY)) %>% 
-    select(transcript_year, state_name, stcounty_fips, n_counties, n_scriptCY, n_ccScriptCY, prop_cc) %>% 
-    group_by(state_name, transcript_year) %>% 
-    mutate(nws = n_distinct(stcounty_fips),
-           n_withScript = sum(nws),
-           nwCC = ifelse(n_scriptCY > 0,1,0),
-           n_scriptCC = sum(nwCC, na.rm=TRUE)) %>% 
-    distinct(state_name, .keep_all = TRUE) %>% 
-    select(state_name, transcript_year, n_counties, n_withScript, n_scriptCC)
+yearStateCounty <- allData_state %>% 
+    select(state_name, transcript_year, n_countiesInState, state_n_transcripts, state_n_scriptCCMention)
 
-write.csv(yearStateCounty, "./LocalView/results/summaries/YearStateCounty.csv", row.names = FALSE)
+# write.csv(yearStateCounty, "./LocalView/results/summaries/YearStateCounty.csv", row.names = FALSE)
 
 ## transcripts available by year, state, and meeting_type
-stateType <- lv %>%
+stateType <- lvClean_noScript %>%
     group_by(transcript_year, state_name, meeting_type) %>% 
     count()
 
-# write.csv(stateType, "./Results/LocalView/Summaries/YearStateMeetingType.csv", row.names = FALSE)
+# write.csv(stateType, "./LocalView/results/summaries/YearStateMeetingType.csv", row.names = FALSE)
 
 ## transcripts available by year, state, and place name
-statePlace <- lv %>%
+statePlace <- lvClean_noScript %>%
     group_by(transcript_year, state_name, place_name) %>% 
     count()
 
-# write.csv(statePlace, "./Results/LocalView/Summaries/YearStatePlace.csv", row.names = FALSE)
+# write.csv(statePlace, "./LocalView/results/summaries/YearStatePlace.csv", row.names = FALSE)
 
-stateSummary <- lv %>%
+stateSummary <- lvClean_noScript %>%
     group_by(state_name) %>% 
     count()
 
 ## count and proportion of climate change use by year
-prop_CCuse <- lv %>% 
-    select(transcript_year, vid_id, stcounty_fips, state_name, county_name, 
-           caption_text_clean, n_ccMentions) %>% 
+prop_CCuse <- lvClean_noScript %>% 
+    select(transcript_year, stcounty_fips, n_ccMentions, ccBinary) %>% 
     group_by(transcript_year) %>% 
-    mutate(n_county = n_distinct(stcounty_fips),                                # number of unique counties represented in LV data
-           total_ccMentionYear = sum(n_ccMentions),                             # total climate change mentions in a year
-           n_ccBinaryYear = ifelse(n_ccMentions > 0, 1, 0),                     # 1 = transcript has cc mention, 0 = no cc mention
-           n_scriptYear = n(),                                                  # total number of transcripts in a year
-           n_scriptCCYear = sum(n_ccBinaryYear),                                # total number of transcripts with at least one climate change mention
-           prop_scriptCCYear = (n_scriptCCYear/n_scriptYear)*100,               # proportion of transcripts with at least one climate change mention
-           prop_ccMentionYear = (total_ccMentionYear/n_scriptYear)*100) %>%     # proportion of all climate change mentions in a give year
-    filter(n_ccBinaryYear == 1) %>% 
-    mutate(n_counties_ccMention = n_distinct(stcounty_fips),
-           prop_countiesCCMention = n_counties_ccMention/n_county) %>%          # proportion of climate change mentions in counties represented in LV
-    select(transcript_year, prop_scriptCCYear, prop_ccMentionYear, n_county, 
-           n_counties_ccMention, prop_countiesCCMention) %>% 
+    mutate(year_nCounties = n_distinct(stcounty_fips),                                       # total distinct counties in the LV data by year
+           year_n_transcripts = n(),                                                         # total number of transcripts in a year
+           year_nScriptCC = sum(ccBinary),                                                   # number of transcripts in a year with at least one mention of climate change
+           year_nCCmentions = sum(n_ccMentions),                                             # total number of climate change mentions in a year
+           year_propScriptCC = year_nScriptCC/year_n_transcripts,                            # proportion of transcripts with at least one climate change mention
+           year_propCCmentions = year_nCCmentions/year_n_transcripts,                        # proportion of all metions of climate change in a given year
+           year_ccBinary = ifelse(ccBinary > 0, 1, 0)) %>%                                   # binary indicator of whether there's at least one mention of climate change in that year
+    filter(year_ccBinary == 1) %>%  
+    mutate(n_countiesCCmention = n_distinct(stcounty_fips),                                  # number of unique counties that mention climate change in a year 
+           prop_countiesCCMention = n_countiesCCmention/year_nCounties) %>%                  # proportion of counties in the data that mention climate change at least once
+    select(transcript_year, n_ccMentions, prop_countiesCCMention, starts_with("year_")) %>% 
     distinct(transcript_year, .keep_all = TRUE)
 
-# write.csv(prop_CCuse, "./LocalView/results/summaries/sample_propCCuse.csv", row.names = FALSE)
+
+# write.csv(prop_CCuse, "./LocalView/results/summaries/prop_ccUse.csv", row.names = FALSE)
 
 ### state summaries ############################################################
 ##                                                                            ##
@@ -115,22 +106,11 @@ prop_CCuse <- lv %>%
 ################################################################################
 
 ## number of counties in each state-year with a transcript
-data_noNA <- allData %>% 
+data_noNA <- lv_countyYear_noNA %>% 
     group_by(stcounty_fips) %>% 
     mutate(state_nScriptAY = n()) %>% 
     ungroup() 
 
 ## balanced panel check
 table(data_noNA$state_nScriptAY)
-
-# write.csv(states_noNA, "./Results/Samples/statesACAY.csv", row.names = FALSE)
-
-### county summaries ###########################################################
-##                                                                            ##
-##        counties with any transcript & number of total transcripts          ##
-##                                                                            ##
-################################################################################
-
-
-
 

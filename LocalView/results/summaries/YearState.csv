@@ -1,701 +1,578 @@
-"state_name","transcript_year","n_counties","n_withScript","n_scriptCC"
-"California","2010",58,5,0
-"Florida","2010",67,2,0
-"Missouri","2010",115,2,0
-"North Carolina","2010",100,3,0
-"South Carolina","2010",46,2,0
-"Alabama","2010",67,3,0
-"Arkansas","2010",75,1,1
-"Illinois","2010",102,2,1
-"Indiana","2010",92,1,0
-"Michigan","2010",83,2,0
-"Minnesota","2010",87,4,0
-"Mississippi","2010",82,1,0
-"New York","2010",62,1,0
-"Oregon","2010",36,2,0
-"South Dakota","2010",66,1,0
-"Tennessee","2010",95,2,0
-"Massachusetts","2010",14,1,0
-"New Jersey","2010",21,2,0
-"Ohio","2010",88,1,0
-"Pennsylvania","2010",67,2,0
-"Texas","2010",254,5,0
-"Virginia","2010",134,1,0
-"Colorado","2010",64,1,0
-"Arizona","2010",15,0,0
-"Connecticut","2010",8,0,0
-"Delaware","2010",3,0,0
-"District of Columbia","2010",1,0,0
-"Georgia","2010",159,0,0
-"Hawaii","2010",5,0,0
-"Idaho","2010",44,0,0
-"Iowa","2010",99,0,0
-"Kansas","2010",105,0,0
-"Kentucky","2010",120,0,0
-"Louisiana","2010",64,0,0
-"Maine","2010",16,0,0
-"Maryland","2010",24,0,0
-"Montana","2010",56,0,0
-"Nebraska","2010",93,0,0
-"Nevada","2010",17,0,0
-"New Hampshire","2010",10,0,0
-"New Mexico","2010",33,0,0
-"North Dakota","2010",53,0,0
-"Oklahoma","2010",77,0,0
-"Rhode Island","2010",5,0,0
-"Utah","2010",29,0,0
-"Vermont","2010",14,0,0
-"Washington","2010",39,0,0
-"West Virginia","2010",55,0,0
-"Wisconsin","2010",72,0,0
-"Wyoming","2010",23,0,0
-"California","2011",58,6,1
-"Georgia","2011",159,2,0
-"Nebraska","2011",93,1,0
-"New Hampshire","2011",10,2,0
-"North Carolina","2011",100,8,1
-"Pennsylvania","2011",67,3,0
-"South Carolina","2011",46,2,0
-"Virginia","2011",134,3,1
-"Alabama","2011",67,3,0
-"Arizona","2011",15,2,0
-"Arkansas","2011",75,2,0
-"Colorado","2011",64,1,0
-"Florida","2011",67,1,0
-"Illinois","2011",102,2,1
-"Indiana","2011",92,1,0
-"Michigan","2011",83,2,0
-"Minnesota","2011",87,2,0
-"Missouri","2011",115,2,0
-"Nevada","2011",17,1,0
-"New Jersey","2011",21,3,0
-"New York","2011",62,3,0
-"Ohio","2011",88,5,0
-"Oklahoma","2011",77,3,0
-"Oregon","2011",36,4,1
-"Tennessee","2011",95,2,0
-"Texas","2011",254,8,0
-"Washington","2011",39,2,0
-"Wisconsin","2011",72,1,0
-"Maine","2011",16,1,0
-"Massachusetts","2011",14,1,0
-"West Virginia","2011",55,1,0
-"Connecticut","2011",8,0,0
-"Delaware","2011",3,0,0
-"District of Columbia","2011",1,0,0
-"Hawaii","2011",5,0,0
-"Idaho","2011",44,0,0
-"Iowa","2011",99,0,0
-"Kansas","2011",105,0,0
-"Kentucky","2011",120,0,0
-"Louisiana","2011",64,0,0
-"Maryland","2011",24,0,0
-"Mississippi","2011",82,0,0
-"Montana","2011",56,0,0
-"New Mexico","2011",33,0,0
-"North Dakota","2011",53,0,0
-"Rhode Island","2011",5,0,0
-"South Dakota","2011",66,0,0
-"Utah","2011",29,0,0
-"Vermont","2011",14,0,0
-"Wyoming","2011",23,0,0
-"Virginia","2012",134,6,0
-"Alabama","2012",67,4,0
-"California","2012",58,8,0
-"Georgia","2012",159,3,0
-"Kentucky","2012",120,1,0
-"Michigan","2012",83,8,1
-"Minnesota","2012",87,3,0
-"Missouri","2012",115,7,0
-"Nebraska","2012",93,1,0
-"New Hampshire","2012",10,1,0
-"New Jersey","2012",21,7,0
-"North Carolina","2012",100,9,0
-"Oklahoma","2012",77,4,0
-"Pennsylvania","2012",67,6,1
-"South Carolina","2012",46,2,0
-"South Dakota","2012",66,2,0
-"Tennessee","2012",95,5,0
-"Texas","2012",254,11,0
-"Arizona","2012",15,2,0
-"Arkansas","2012",75,2,0
-"Colorado","2012",64,1,0
-"Florida","2012",67,1,0
-"Illinois","2012",102,5,1
-"Massachusetts","2012",14,4,0
-"Montana","2012",56,1,0
-"Nevada","2012",17,1,0
-"New York","2012",62,6,0
-"Ohio","2012",88,11,0
-"Oregon","2012",36,5,1
-"Utah","2012",29,2,0
-"Washington","2012",39,3,0
-"West Virginia","2012",55,1,0
-"Wisconsin","2012",72,1,0
-"Connecticut","2012",8,0,0
-"Delaware","2012",3,0,0
-"District of Columbia","2012",1,0,0
-"Hawaii","2012",5,0,0
-"Idaho","2012",44,0,0
-"Indiana","2012",92,0,0
-"Iowa","2012",99,0,0
-"Kansas","2012",105,0,0
-"Louisiana","2012",64,0,0
-"Maine","2012",16,0,0
-"Maryland","2012",24,0,0
-"Mississippi","2012",82,0,0
-"New Mexico","2012",33,0,0
-"North Dakota","2012",53,0,0
-"Rhode Island","2012",5,0,0
-"Vermont","2012",14,0,0
-"Wyoming","2012",23,0,0
-"Virginia","2013",134,7,0
-"Alabama","2013",67,7,1
-"California","2013",58,12,4
-"Colorado","2013",64,3,0
-"Georgia","2013",159,4,0
-"Kentucky","2013",120,3,0
-"Michigan","2013",83,11,0
-"Missouri","2013",115,10,1
-"Nebraska","2013",93,2,0
-"New Hampshire","2013",10,3,0
-"New Mexico","2013",33,1,0
-"New York","2013",62,6,1
-"North Carolina","2013",100,14,1
-"Oklahoma","2013",77,6,1
-"South Carolina","2013",46,3,0
-"South Dakota","2013",66,4,1
-"Tennessee","2013",95,5,0
-"Texas","2013",254,15,0
-"Washington","2013",39,4,0
-"Wisconsin","2013",72,6,2
-"Arizona","2013",15,3,0
-"Arkansas","2013",75,2,0
-"Florida","2013",67,1,0
-"Illinois","2013",102,8,0
-"Indiana","2013",92,1,0
-"Iowa","2013",99,1,0
-"Massachusetts","2013",14,4,0
-"Minnesota","2013",87,8,0
-"Mississippi","2013",82,1,0
-"Nevada","2013",17,1,0
-"New Jersey","2013",21,8,1
-"Ohio","2013",88,16,0
-"Oregon","2013",36,6,1
-"Utah","2013",29,2,0
-"Vermont","2013",14,1,0
-"West Virginia","2013",55,1,0
-"Maine","2013",16,1,0
-"Rhode Island","2013",5,1,0
-"Montana","2013",56,1,0
-"Pennsylvania","2013",67,7,1
-"Wyoming","2013",23,1,0
-"Connecticut","2013",8,0,0
-"Delaware","2013",3,0,0
-"District of Columbia","2013",1,0,0
-"Hawaii","2013",5,0,0
-"Idaho","2013",44,0,0
-"Kansas","2013",105,0,0
-"Louisiana","2013",64,0,0
-"Maryland","2013",24,0,0
-"North Dakota","2013",53,0,0
-"Virginia","2014",134,8,1
-"Alabama","2014",67,8,2
-"California","2014",58,16,4
-"Georgia","2014",159,4,0
-"Michigan","2014",83,12,2
-"Missouri","2014",115,8,0
-"Nebraska","2014",93,5,0
-"New Mexico","2014",33,3,1
-"New York","2014",62,9,3
-"North Carolina","2014",100,12,2
-"Oklahoma","2014",77,5,0
-"Oregon","2014",36,7,2
-"Pennsylvania","2014",67,9,0
-"South Carolina","2014",46,5,0
-"South Dakota","2014",66,3,1
-"Tennessee","2014",95,5,0
-"Texas","2014",254,16,2
-"Washington","2014",39,6,2
-"Arizona","2014",15,4,0
-"Arkansas","2014",75,4,0
-"Colorado","2014",64,4,0
-"Florida","2014",67,3,0
-"Idaho","2014",44,1,0
-"Illinois","2014",102,8,1
-"Indiana","2014",92,2,0
-"Iowa","2014",99,2,0
-"Kansas","2014",105,1,0
-"Kentucky","2014",120,2,0
-"Louisiana","2014",64,1,0
-"Maine","2014",16,1,0
-"Massachusetts","2014",14,4,0
-"Minnesota","2014",87,11,1
-"Mississippi","2014",82,1,0
-"Nevada","2014",17,1,0
-"New Jersey","2014",21,10,2
-"Ohio","2014",88,19,2
-"Rhode Island","2014",5,1,0
-"Utah","2014",29,2,0
-"Vermont","2014",14,1,0
-"West Virginia","2014",55,1,0
-"Wisconsin","2014",72,6,0
-"New Hampshire","2014",10,2,0
-"Maryland","2014",24,1,0
-"Montana","2014",56,1,0
-"Wyoming","2014",23,1,0
-"Connecticut","2014",8,0,0
-"Delaware","2014",3,0,0
-"District of Columbia","2014",1,0,0
-"Hawaii","2014",5,0,0
-"North Dakota","2014",53,0,0
-"Virginia","2015",134,12,2
-"Alabama","2015",67,11,1
-"California","2015",58,17,5
-"Georgia","2015",159,3,0
-"Illinois","2015",102,10,1
-"Michigan","2015",83,14,0
-"Missouri","2015",115,13,0
-"Nebraska","2015",93,5,0
-"New Hampshire","2015",10,2,0
-"New Jersey","2015",21,12,0
-"New Mexico","2015",33,1,0
-"North Carolina","2015",100,19,1
-"Ohio","2015",88,23,1
-"Oklahoma","2015",77,6,1
-"Oregon","2015",36,7,2
-"Pennsylvania","2015",67,10,0
-"South Carolina","2015",46,8,0
-"South Dakota","2015",66,5,0
-"Tennessee","2015",95,4,0
-"Texas","2015",254,18,1
-"Washington","2015",39,7,2
-"Arizona","2015",15,3,0
-"Arkansas","2015",75,8,0
-"Colorado","2015",64,4,0
-"Florida","2015",67,2,0
-"Idaho","2015",44,2,0
-"Indiana","2015",92,2,0
-"Iowa","2015",99,3,0
-"Kansas","2015",105,1,0
-"Kentucky","2015",120,1,0
-"Maine","2015",16,3,0
-"Massachusetts","2015",14,5,0
-"Minnesota","2015",87,12,1
-"Mississippi","2015",82,2,0
-"Nevada","2015",17,2,1
-"New York","2015",62,8,2
-"Rhode Island","2015",5,1,0
-"Utah","2015",29,2,0
-"Vermont","2015",14,1,0
-"West Virginia","2015",55,1,0
-"Wisconsin","2015",72,10,0
-"Maryland","2015",24,1,0
-"Louisiana","2015",64,1,0
-"Connecticut","2015",8,0,0
-"Delaware","2015",3,0,0
-"District of Columbia","2015",1,0,0
-"Hawaii","2015",5,0,0
-"Montana","2015",56,0,0
-"North Dakota","2015",53,0,0
-"Wyoming","2015",23,0,0
-"Virginia","2017",133,10,0
-"Alabama","2017",67,14,1
-"California","2017",58,20,11
-"Colorado","2017",64,10,2
-"Connecticut","2017",8,2,0
-"Georgia","2017",159,7,0
-"Illinois","2017",102,15,3
-"Indiana","2017",92,4,0
-"Michigan","2017",83,14,0
-"Minnesota","2017",87,18,2
-"Mississippi","2017",82,3,0
-"Missouri","2017",115,16,2
-"Montana","2017",56,4,1
-"Nebraska","2017",93,6,1
-"New Hampshire","2017",10,3,0
-"New Jersey","2017",21,11,5
-"New Mexico","2017",33,3,2
-"North Carolina","2017",100,25,6
-"Oklahoma","2017",77,8,1
-"Oregon","2017",36,10,4
-"Pennsylvania","2017",67,11,0
-"South Carolina","2017",46,6,0
-"South Dakota","2017",66,5,1
-"Tennessee","2017",95,8,0
-"Texas","2017",254,18,3
-"Utah","2017",29,6,0
-"Washington","2017",39,8,3
-"Wisconsin","2017",72,10,5
-"Arizona","2017",15,5,0
-"Arkansas","2017",75,4,0
-"Florida","2017",67,2,2
-"Idaho","2017",44,3,0
-"Iowa","2017",99,4,0
-"Kansas","2017",105,2,1
-"Kentucky","2017",120,2,1
-"Louisiana","2017",64,1,0
-"Maine","2017",16,5,0
-"Maryland","2017",24,1,0
-"Massachusetts","2017",14,7,4
-"Nevada","2017",17,2,1
-"New York","2017",62,9,3
-"North Dakota","2017",53,1,0
-"Ohio","2017",88,23,4
-"Rhode Island","2017",5,1,1
-"Vermont","2017",14,1,1
-"West Virginia","2017",55,1,0
-"Wyoming","2017",23,2,0
-"Delaware","2017",3,0,0
-"District of Columbia","2017",1,0,0
-"Hawaii","2017",5,0,0
-"Virginia","2018",133,12,2
-"Alabama","2018",67,13,1
-"Arkansas","2018",75,5,0
-"California","2018",58,21,13
-"Colorado","2018",64,9,2
-"Connecticut","2018",8,1,0
-"Georgia","2018",159,4,0
-"Illinois","2018",102,15,3
-"Indiana","2018",92,4,1
-"Kentucky","2018",120,3,1
-"Michigan","2018",83,16,3
-"Mississippi","2018",82,3,1
-"Missouri","2018",115,18,2
-"Montana","2018",56,2,1
-"Nebraska","2018",93,7,1
-"New Hampshire","2018",10,3,1
-"New Mexico","2018",33,4,2
-"North Carolina","2018",100,25,4
-"Oklahoma","2018",77,11,1
-"Oregon","2018",36,11,6
-"Pennsylvania","2018",67,11,2
-"South Carolina","2018",46,7,0
-"South Dakota","2018",66,6,1
-"Tennessee","2018",95,10,0
-"Texas","2018",254,22,3
-"Utah","2018",29,5,1
-"Washington","2018",39,9,4
-"Wisconsin","2018",72,10,4
-"Arizona","2018",15,7,0
-"Florida","2018",67,3,2
-"Idaho","2018",44,2,0
-"Iowa","2018",99,4,2
-"Kansas","2018",105,2,0
-"Maine","2018",16,4,1
-"Maryland","2018",24,1,0
-"Massachusetts","2018",14,7,6
-"Minnesota","2018",87,19,3
-"Nevada","2018",17,2,1
-"New Jersey","2018",21,11,7
-"New York","2018",62,8,1
-"North Dakota","2018",53,1,0
-"Ohio","2018",88,22,3
-"Rhode Island","2018",5,1,0
-"Vermont","2018",14,1,1
-"West Virginia","2018",55,3,0
-"Wyoming","2018",23,2,0
-"Delaware","2018",3,0,0
-"District of Columbia","2018",1,0,0
-"Hawaii","2018",5,0,0
-"Louisiana","2018",64,0,0
-"Virginia","2019",133,12,3
-"Alabama","2019",67,12,3
-"Arkansas","2019",75,6,0
-"California","2019",58,22,15
-"Colorado","2019",64,9,4
-"Connecticut","2019",8,2,1
-"Georgia","2019",159,3,1
-"Idaho","2019",44,3,0
-"Illinois","2019",102,15,7
-"Indiana","2019",92,3,0
-"Kentucky","2019",120,3,2
-"Michigan","2019",83,15,4
-"Minnesota","2019",87,17,6
-"Mississippi","2019",82,3,0
-"Missouri","2019",115,17,2
-"Nebraska","2019",93,7,2
-"New Hampshire","2019",10,3,0
-"New Mexico","2019",33,3,2
-"North Carolina","2019",100,25,8
-"Oklahoma","2019",77,11,2
-"Oregon","2019",36,10,6
-"Pennsylvania","2019",67,9,1
-"South Carolina","2019",46,9,0
-"South Dakota","2019",66,6,1
-"Tennessee","2019",95,8,2
-"Texas","2019",254,22,4
-"Utah","2019",29,7,2
-"Washington","2019",39,9,4
-"Wisconsin","2019",72,9,5
-"Arizona","2019",15,7,3
-"Florida","2019",67,3,2
-"Iowa","2019",99,4,1
-"Kansas","2019",105,2,1
-"Maine","2019",16,3,2
-"Maryland","2019",24,1,0
-"Massachusetts","2019",14,7,7
-"Montana","2019",56,2,1
-"Nevada","2019",17,1,1
-"New Jersey","2019",21,11,5
-"New York","2019",62,9,3
-"Ohio","2019",88,24,3
-"Rhode Island","2019",5,1,0
-"Vermont","2019",14,1,1
-"West Virginia","2019",55,1,0
-"Wyoming","2019",23,2,0
-"Delaware","2019",3,0,0
-"District of Columbia","2019",1,0,0
-"Hawaii","2019",5,0,0
-"Louisiana","2019",64,0,0
-"North Dakota","2019",53,0,0
-"Alabama","2016",67,13,1
-"California","2016",58,19,5
-"Georgia","2016",159,5,0
-"Illinois","2016",102,15,2
-"Indiana","2016",92,4,0
-"Michigan","2016",83,13,0
-"Mississippi","2016",82,2,0
-"Missouri","2016",115,13,2
-"Montana","2016",56,3,1
-"Nebraska","2016",93,6,0
-"New Hampshire","2016",10,2,0
-"New Mexico","2016",33,2,0
-"North Carolina","2016",100,27,0
-"Ohio","2016",88,23,1
-"Oklahoma","2016",77,7,1
-"Oregon","2016",36,8,3
-"Pennsylvania","2016",67,10,0
-"South Carolina","2016",46,4,0
-"South Dakota","2016",66,6,0
-"Tennessee","2016",95,3,0
-"Texas","2016",254,18,3
-"Virginia","2016",133,12,1
-"Washington","2016",39,8,0
-"Wisconsin","2016",72,10,0
-"Arizona","2016",15,3,0
-"Arkansas","2016",75,5,0
-"Colorado","2016",64,5,0
-"Florida","2016",67,3,0
-"Idaho","2016",44,3,0
-"Iowa","2016",99,4,1
-"Kansas","2016",105,1,0
-"Kentucky","2016",120,2,0
-"Louisiana","2016",64,1,0
-"Maine","2016",16,5,0
-"Massachusetts","2016",14,7,2
-"Minnesota","2016",87,13,1
-"Nevada","2016",17,2,0
-"New Jersey","2016",21,11,1
-"New York","2016",62,10,1
-"Rhode Island","2016",5,1,0
-"Utah","2016",29,4,0
-"Vermont","2016",14,1,0
-"Wyoming","2016",23,2,0
-"Maryland","2016",24,1,0
-"Connecticut","2016",8,0,0
-"Delaware","2016",3,0,0
-"District of Columbia","2016",1,0,0
-"Hawaii","2016",5,0,0
-"North Dakota","2016",53,0,0
-"West Virginia","2016",55,0,0
-"Virginia","2020",133,14,0
-"Alabama","2020",67,13,0
-"Arkansas","2020",75,4,0
-"California","2020",58,20,15
-"Colorado","2020",64,9,3
-"Connecticut","2020",8,1,1
-"Georgia","2020",159,3,0
-"Idaho","2020",44,3,1
-"Illinois","2020",102,14,5
-"Indiana","2020",92,2,0
-"Kentucky","2020",120,3,0
-"Massachusetts","2020",14,6,6
-"Michigan","2020",83,15,4
-"Mississippi","2020",82,3,1
-"Missouri","2020",115,16,2
-"Nebraska","2020",93,6,2
-"Nevada","2020",17,3,2
-"New Hampshire","2020",10,2,0
-"North Carolina","2020",100,25,8
-"Ohio","2020",88,25,8
-"Oklahoma","2020",77,10,4
-"Oregon","2020",36,9,6
-"Pennsylvania","2020",67,13,1
-"South Carolina","2020",46,8,2
-"South Dakota","2020",66,8,0
-"Tennessee","2020",95,11,2
-"Utah","2020",29,6,4
-"Washington","2020",39,8,3
-"Wisconsin","2020",72,9,6
-"Arizona","2020",15,7,3
-"Florida","2020",67,3,2
-"Iowa","2020",99,4,3
-"Kansas","2020",105,2,0
-"Louisiana","2020",64,1,0
-"Maine","2020",16,3,1
-"Maryland","2020",24,1,0
-"Minnesota","2020",87,19,5
-"Montana","2020",56,1,1
-"New Jersey","2020",21,12,6
-"New Mexico","2020",33,3,1
-"New York","2020",62,11,3
-"Rhode Island","2020",5,1,1
-"Texas","2020",254,19,3
-"Vermont","2020",14,1,1
-"West Virginia","2020",55,1,0
-"Wyoming","2020",23,2,0
-"Hawaii","2020",5,0,0
-"North Dakota","2020",53,0,0
-"Delaware","2020",3,0,0
-"District of Columbia","2020",1,0,0
-"Virginia","2021",133,13,4
-"Alabama","2021",67,11,2
-"Arkansas","2021",75,2,1
-"California","2021",58,18,16
-"Colorado","2021",64,10,3
-"Connecticut","2021",8,2,1
-"Georgia","2021",159,3,0
-"Idaho","2021",44,2,1
-"Indiana","2021",92,2,0
-"Kentucky","2021",120,2,0
-"Michigan","2021",83,17,7
-"Mississippi","2021",82,4,1
-"Missouri","2021",115,16,3
-"Montana","2021",56,2,1
-"Nebraska","2021",93,6,2
-"Nevada","2021",17,3,3
-"New Jersey","2021",21,11,7
-"North Carolina","2021",100,23,9
-"Oklahoma","2021",77,7,4
-"Oregon","2021",36,9,6
-"Pennsylvania","2021",67,9,3
-"South Carolina","2021",46,8,1
-"South Dakota","2021",66,6,2
-"Tennessee","2021",95,8,2
-"Utah","2021",29,6,1
-"Vermont","2021",14,1,1
-"Washington","2021",39,9,4
-"Wisconsin","2021",72,8,5
-"Arizona","2021",15,7,1
-"Florida","2021",67,3,2
-"Illinois","2021",102,15,6
-"Iowa","2021",99,4,1
-"Kansas","2021",105,2,0
-"Maine","2021",16,2,0
-"Maryland","2021",24,1,0
-"Massachusetts","2021",14,6,6
-"Minnesota","2021",87,19,5
-"New Hampshire","2021",10,3,2
-"New Mexico","2021",33,3,1
-"New York","2021",62,10,2
-"Ohio","2021",88,22,5
-"Rhode Island","2021",5,1,1
-"Texas","2021",254,21,2
-"West Virginia","2021",55,1,0
-"Wyoming","2021",23,1,0
-"Louisiana","2021",64,0,0
-"Hawaii","2021",5,0,0
-"North Dakota","2021",53,0,0
-"Delaware","2021",3,0,0
-"District of Columbia","2021",1,0,0
-"Virginia","2022",133,14,2
-"Arkansas","2022",75,2,0
-"California","2022",58,21,15
-"Colorado","2022",64,7,7
-"Connecticut","2022",8,2,1
-"Georgia","2022",159,4,1
-"Idaho","2022",44,2,0
-"Indiana","2022",92,3,0
-"Kentucky","2022",120,2,0
-"Michigan","2022",83,16,5
-"Mississippi","2022",82,3,1
-"Missouri","2022",115,16,3
-"Montana","2022",56,2,1
-"Nebraska","2022",93,7,2
-"Nevada","2022",17,3,2
-"New Jersey","2022",21,11,7
-"North Carolina","2022",100,25,12
-"Ohio","2022",88,21,5
-"Oklahoma","2022",77,9,2
-"Oregon","2022",36,8,7
-"Pennsylvania","2022",67,11,2
-"South Carolina","2022",46,7,0
-"South Dakota","2022",66,6,3
-"Tennessee","2022",95,8,4
-"Utah","2022",29,7,2
-"Vermont","2022",14,1,1
-"Washington","2022",39,8,6
-"Wisconsin","2022",72,9,3
-"Alabama","2022",67,9,0
-"Arizona","2022",15,7,3
-"Florida","2022",67,4,4
-"Illinois","2022",102,12,4
-"Iowa","2022",99,4,2
-"Kansas","2022",105,2,1
-"Maine","2022",16,3,2
-"Maryland","2022",24,1,0
-"Massachusetts","2022",14,6,6
-"Minnesota","2022",87,16,5
-"New Hampshire","2022",10,2,0
-"New Mexico","2022",33,3,3
-"New York","2022",62,9,6
-"Rhode Island","2022",5,1,1
-"Texas","2022",254,20,7
-"West Virginia","2022",55,2,0
-"Wyoming","2022",23,3,0
-"Louisiana","2022",64,0,0
-"Hawaii","2022",5,0,0
-"North Dakota","2022",53,0,0
-"Delaware","2022",3,0,0
-"District of Columbia","2022",1,0,0
-"Virginia","2023",133,10,1
-"North Carolina","2023",100,24,9
-"Indiana","2023",92,3,0
-"Tennessee","2023",95,7,2
-"South Carolina","2023",46,8,3
-"Georgia","2023",159,2,0
-"South Dakota","2023",66,6,3
-"Michigan","2023",83,13,7
-"Washington","2023",39,6,4
-"Pennsylvania","2023",67,9,2
-"Connecticut","2023",8,2,1
-"Kentucky","2023",120,3,0
-"Utah","2023",29,6,2
-"Oregon","2023",36,7,5
-"New Jersey","2023",21,10,6
-"New York","2023",62,5,1
-"Arizona","2023",15,5,2
-"Nebraska","2023",93,6,2
-"Minnesota","2023",87,11,5
-"Illinois","2023",102,11,6
-"Wyoming","2023",23,2,1
-"California","2023",58,19,14
-"Missouri","2023",115,11,2
-"Arkansas","2023",75,2,0
-"Montana","2023",56,1,1
-"Colorado","2023",64,6,2
-"Texas","2023",254,16,3
-"Alabama","2023",67,6,1
-"Massachusetts","2023",14,7,5
-"Ohio","2023",88,17,2
-"Rhode Island","2023",5,1,1
-"West Virginia","2023",55,1,0
-"Iowa","2023",99,3,2
-"Oklahoma","2023",77,7,1
-"Florida","2023",67,4,3
-"Wisconsin","2023",72,6,3
-"Idaho","2023",44,2,0
-"Maine","2023",16,2,2
-"New Mexico","2023",33,3,2
-"Nevada","2023",17,1,1
-"Mississippi","2023",82,1,0
-"Kansas","2023",105,2,0
-"Maryland","2023",24,1,0
-"New Hampshire","2023",10,0,0
-"Louisiana","2023",64,0,0
-"Hawaii","2023",5,0,0
-"North Dakota","2023",53,0,0
-"Delaware","2023",3,0,0
-"District of Columbia","2023",1,0,0
-"Vermont","2023",14,0,0
+"","transcript_year","state_name","n"
+"1","2010","Alabama",5
+"2","2010","Arkansas",3
+"3","2010","California",266
+"4","2010","Colorado",1
+"5","2010","Florida",7
+"6","2010","Illinois",80
+"7","2010","Indiana",4
+"8","2010","Massachusetts",45
+"9","2010","Michigan",2
+"10","2010","Minnesota",30
+"11","2010","Mississippi",1
+"12","2010","Missouri",24
+"13","2010","New Jersey",20
+"14","2010","New York",370
+"15","2010","North Carolina",15
+"16","2010","Ohio",1
+"17","2010","Oregon",7
+"18","2010","Pennsylvania",38
+"19","2010","South Carolina",4
+"20","2010","South Dakota",1
+"21","2010","Tennessee",2
+"22","2010","Texas",38
+"23","2010","Virginia",1
+"24","2011","Alabama",52
+"25","2011","Arizona",5
+"26","2011","Arkansas",17
+"27","2011","California",304
+"28","2011","Colorado",1
+"29","2011","Florida",16
+"30","2011","Georgia",11
+"31","2011","Illinois",75
+"32","2011","Indiana",1
+"33","2011","Maine",1
+"34","2011","Massachusetts",22
+"35","2011","Michigan",21
+"36","2011","Minnesota",14
+"37","2011","Missouri",31
+"38","2011","Nebraska",40
+"39","2011","Nevada",3
+"40","2011","New Hampshire",4
+"41","2011","New Jersey",35
+"42","2011","New York",73
+"43","2011","North Carolina",78
+"44","2011","Ohio",45
+"45","2011","Oklahoma",8
+"46","2011","Oregon",58
+"47","2011","Pennsylvania",11
+"48","2011","South Carolina",9
+"49","2011","Tennessee",22
+"50","2011","Texas",85
+"51","2011","Virginia",52
+"52","2011","Washington",3
+"53","2011","West Virginia",2
+"54","2011","Wisconsin",1
+"55","2012","Alabama",110
+"56","2012","Arizona",13
+"57","2012","Arkansas",6
+"58","2012","California",302
+"59","2012","Colorado",42
+"60","2012","Florida",15
+"61","2012","Georgia",23
+"62","2012","Illinois",126
+"63","2012","Kentucky",1
+"64","2012","Massachusetts",13
+"65","2012","Michigan",70
+"66","2012","Minnesota",25
+"67","2012","Missouri",71
+"68","2012","Montana",4
+"69","2012","Nebraska",37
+"70","2012","Nevada",7
+"71","2012","New Hampshire",1
+"72","2012","New Jersey",61
+"73","2012","New York",53
+"74","2012","North Carolina",113
+"75","2012","Ohio",127
+"76","2012","Oklahoma",44
+"77","2012","Oregon",84
+"78","2012","Pennsylvania",81
+"79","2012","South Carolina",5
+"80","2012","South Dakota",55
+"81","2012","Tennessee",64
+"82","2012","Texas",97
+"83","2012","Utah",31
+"84","2012","Virginia",52
+"85","2012","Washington",71
+"86","2012","West Virginia",10
+"87","2012","Wisconsin",8
+"88","2013","Alabama",194
+"89","2013","Arizona",8
+"90","2013","Arkansas",5
+"91","2013","California",480
+"92","2013","Colorado",13
+"93","2013","Florida",19
+"94","2013","Georgia",28
+"95","2013","Illinois",238
+"96","2013","Indiana",4
+"97","2013","Iowa",39
+"98","2013","Kentucky",7
+"99","2013","Maine",1
+"100","2013","Massachusetts",55
+"101","2013","Michigan",144
+"102","2013","Minnesota",58
+"103","2013","Mississippi",2
+"104","2013","Missouri",104
+"105","2013","Montana",7
+"106","2013","Nebraska",55
+"107","2013","Nevada",8
+"108","2013","New Hampshire",8
+"109","2013","New Jersey",91
+"110","2013","New Mexico",4
+"111","2013","New York",109
+"112","2013","North Carolina",183
+"113","2013","Ohio",185
+"114","2013","Oklahoma",99
+"115","2013","Oregon",91
+"116","2013","Pennsylvania",52
+"117","2013","Rhode Island",2
+"118","2013","South Carolina",13
+"119","2013","South Dakota",223
+"120","2013","Tennessee",182
+"121","2013","Texas",119
+"122","2013","Utah",40
+"123","2013","Vermont",9
+"124","2013","Virginia",82
+"125","2013","Washington",86
+"126","2013","West Virginia",5
+"127","2013","Wisconsin",51
+"128","2013","Wyoming",3
+"129","2014","Alabama",168
+"130","2014","Arizona",21
+"131","2014","Arkansas",10
+"132","2014","California",921
+"133","2014","Colorado",27
+"134","2014","Florida",13
+"135","2014","Georgia",23
+"136","2014","Idaho",7
+"137","2014","Illinois",229
+"138","2014","Indiana",13
+"139","2014","Iowa",16
+"140","2014","Kansas",8
+"141","2014","Kentucky",13
+"142","2014","Louisiana",1
+"143","2014","Maine",2
+"144","2014","Maryland",1
+"145","2014","Massachusetts",40
+"146","2014","Michigan",179
+"147","2014","Minnesota",149
+"148","2014","Mississippi",13
+"149","2014","Missouri",110
+"150","2014","Montana",3
+"151","2014","Nebraska",66
+"152","2014","Nevada",1
+"153","2014","New Hampshire",17
+"154","2014","New Jersey",100
+"155","2014","New Mexico",33
+"156","2014","New York",89
+"157","2014","North Carolina",121
+"158","2014","Ohio",253
+"159","2014","Oklahoma",64
+"160","2014","Oregon",148
+"161","2014","Pennsylvania",94
+"162","2014","Rhode Island",41
+"163","2014","South Carolina",24
+"164","2014","South Dakota",190
+"165","2014","Tennessee",98
+"166","2014","Texas",167
+"167","2014","Utah",36
+"168","2014","Vermont",7
+"169","2014","Virginia",71
+"170","2014","Washington",88
+"171","2014","West Virginia",2
+"172","2014","Wisconsin",48
+"173","2014","Wyoming",1
+"174","2015","Alabama",198
+"175","2015","Arizona",35
+"176","2015","Arkansas",34
+"177","2015","California",967
+"178","2015","Colorado",43
+"179","2015","Florida",14
+"180","2015","Georgia",17
+"181","2015","Idaho",29
+"182","2015","Illinois",318
+"183","2015","Indiana",8
+"184","2015","Iowa",47
+"185","2015","Kansas",7
+"186","2015","Kentucky",6
+"187","2015","Louisiana",1
+"188","2015","Maine",32
+"189","2015","Maryland",3
+"190","2015","Massachusetts",67
+"191","2015","Michigan",315
+"192","2015","Minnesota",187
+"193","2015","Mississippi",3
+"194","2015","Missouri",141
+"195","2015","Nebraska",95
+"196","2015","Nevada",11
+"197","2015","New Hampshire",56
+"198","2015","New Jersey",136
+"199","2015","New Mexico",10
+"200","2015","New York",100
+"201","2015","North Carolina",154
+"202","2015","Ohio",396
+"203","2015","Oklahoma",129
+"204","2015","Oregon",234
+"205","2015","Pennsylvania",58
+"206","2015","Rhode Island",20
+"207","2015","South Carolina",58
+"208","2015","South Dakota",238
+"209","2015","Tennessee",107
+"210","2015","Texas",327
+"211","2015","Utah",80
+"212","2015","Vermont",2
+"213","2015","Virginia",138
+"214","2015","Washington",137
+"215","2015","West Virginia",1
+"216","2015","Wisconsin",158
+"217","2016","Alabama",212
+"218","2016","Arizona",55
+"219","2016","Arkansas",91
+"220","2016","California",820
+"221","2016","Colorado",45
+"222","2016","Florida",6
+"223","2016","Georgia",66
+"224","2016","Idaho",39
+"225","2016","Illinois",364
+"226","2016","Indiana",29
+"227","2016","Iowa",39
+"228","2016","Kansas",7
+"229","2016","Kentucky",12
+"230","2016","Louisiana",1
+"231","2016","Maine",37
+"232","2016","Maryland",7
+"233","2016","Massachusetts",110
+"234","2016","Michigan",312
+"235","2016","Minnesota",243
+"236","2016","Mississippi",15
+"237","2016","Missouri",224
+"238","2016","Montana",9
+"239","2016","Nebraska",104
+"240","2016","Nevada",8
+"241","2016","New Hampshire",87
+"242","2016","New Jersey",134
+"243","2016","New Mexico",3
+"244","2016","New York",123
+"245","2016","North Carolina",220
+"246","2016","Ohio",589
+"247","2016","Oklahoma",189
+"248","2016","Oregon",342
+"249","2016","Pennsylvania",66
+"250","2016","Rhode Island",16
+"251","2016","South Carolina",61
+"252","2016","South Dakota",230
+"253","2016","Tennessee",89
+"254","2016","Texas",365
+"255","2016","Utah",77
+"256","2016","Vermont",18
+"257","2016","Virginia",87
+"258","2016","Washington",102
+"259","2016","Wisconsin",202
+"260","2016","Wyoming",31
+"261","2017","Alabama",352
+"262","2017","Arizona",102
+"263","2017","Arkansas",52
+"264","2017","California",1044
+"265","2017","Colorado",99
+"266","2017","Connecticut",25
+"267","2017","Florida",39
+"268","2017","Georgia",71
+"269","2017","Idaho",34
+"270","2017","Illinois",485
+"271","2017","Indiana",34
+"272","2017","Iowa",103
+"273","2017","Kansas",32
+"274","2017","Kentucky",28
+"275","2017","Louisiana",3
+"276","2017","Maine",62
+"277","2017","Maryland",14
+"278","2017","Massachusetts",282
+"279","2017","Michigan",442
+"280","2017","Minnesota",501
+"281","2017","Mississippi",40
+"282","2017","Missouri",267
+"283","2017","Montana",68
+"284","2017","Nebraska",117
+"285","2017","Nevada",23
+"286","2017","New Hampshire",209
+"287","2017","New Jersey",275
+"288","2017","New Mexico",44
+"289","2017","New York",217
+"290","2017","North Carolina",397
+"291","2017","North Dakota",3
+"292","2017","Ohio",455
+"293","2017","Oklahoma",175
+"294","2017","Oregon",454
+"295","2017","Pennsylvania",160
+"296","2017","Rhode Island",28
+"297","2017","South Carolina",97
+"298","2017","South Dakota",978
+"299","2017","Tennessee",130
+"300","2017","Texas",304
+"301","2017","Utah",137
+"302","2017","Vermont",75
+"303","2017","Virginia",134
+"304","2017","Washington",219
+"305","2017","West Virginia",3
+"306","2017","Wisconsin",286
+"307","2017","Wyoming",44
+"308","2018","Alabama",400
+"309","2018","Arizona",176
+"310","2018","Arkansas",75
+"311","2018","California",1299
+"312","2018","Colorado",135
+"313","2018","Connecticut",57
+"314","2018","Florida",73
+"315","2018","Georgia",109
+"316","2018","Idaho",51
+"317","2018","Illinois",622
+"318","2018","Indiana",84
+"319","2018","Iowa",156
+"320","2018","Kansas",43
+"321","2018","Kentucky",47
+"322","2018","Maine",64
+"323","2018","Maryland",19
+"324","2018","Massachusetts",584
+"325","2018","Michigan",668
+"326","2018","Minnesota",671
+"327","2018","Mississippi",47
+"328","2018","Missouri",380
+"329","2018","Montana",50
+"330","2018","Nebraska",239
+"331","2018","Nevada",21
+"332","2018","New Hampshire",259
+"333","2018","New Jersey",474
+"334","2018","New Mexico",69
+"335","2018","New York",281
+"336","2018","North Carolina",633
+"337","2018","North Dakota",2
+"338","2018","Ohio",593
+"339","2018","Oklahoma",350
+"340","2018","Oregon",451
+"341","2018","Pennsylvania",127
+"342","2018","Rhode Island",24
+"343","2018","South Carolina",159
+"344","2018","South Dakota",727
+"345","2018","Tennessee",353
+"346","2018","Texas",508
+"347","2018","Utah",235
+"348","2018","Vermont",89
+"349","2018","Virginia",196
+"350","2018","Washington",348
+"351","2018","West Virginia",5
+"352","2018","Wisconsin",309
+"353","2018","Wyoming",54
+"354","2019","Alabama",437
+"355","2019","Arizona",162
+"356","2019","Arkansas",88
+"357","2019","California",1588
+"358","2019","Colorado",119
+"359","2019","Connecticut",62
+"360","2019","Florida",68
+"361","2019","Georgia",72
+"362","2019","Idaho",160
+"363","2019","Illinois",587
+"364","2019","Indiana",63
+"365","2019","Iowa",168
+"366","2019","Kansas",32
+"367","2019","Kentucky",42
+"368","2019","Maine",86
+"369","2019","Maryland",18
+"370","2019","Massachusetts",526
+"371","2019","Michigan",583
+"372","2019","Minnesota",727
+"373","2019","Mississippi",292
+"374","2019","Missouri",476
+"375","2019","Montana",34
+"376","2019","Nebraska",143
+"377","2019","Nevada",9
+"378","2019","New Hampshire",171
+"379","2019","New Jersey",454
+"380","2019","New Mexico",35
+"381","2019","New York",256
+"382","2019","North Carolina",601
+"383","2019","Ohio",666
+"384","2019","Oklahoma",321
+"385","2019","Oregon",405
+"386","2019","Pennsylvania",140
+"387","2019","Rhode Island",13
+"388","2019","South Carolina",118
+"389","2019","South Dakota",733
+"390","2019","Tennessee",405
+"391","2019","Texas",541
+"392","2019","Utah",271
+"393","2019","Vermont",71
+"394","2019","Virginia",195
+"395","2019","Washington",303
+"396","2019","West Virginia",27
+"397","2019","Wisconsin",285
+"398","2019","Wyoming",48
+"399","2020","Alabama",452
+"400","2020","Arizona",239
+"401","2020","Arkansas",69
+"402","2020","California",2023
+"403","2020","Colorado",143
+"404","2020","Connecticut",64
+"405","2020","Florida",76
+"406","2020","Georgia",109
+"407","2020","Idaho",213
+"408","2020","Illinois",611
+"409","2020","Indiana",74
+"410","2020","Iowa",189
+"411","2020","Kansas",45
+"412","2020","Kentucky",27
+"413","2020","Louisiana",1
+"414","2020","Maine",121
+"415","2020","Maryland",6
+"416","2020","Massachusetts",787
+"417","2020","Michigan",636
+"418","2020","Minnesota",638
+"419","2020","Mississippi",132
+"420","2020","Missouri",562
+"421","2020","Montana",10
+"422","2020","Nebraska",141
+"423","2020","Nevada",30
+"424","2020","New Hampshire",143
+"425","2020","New Jersey",649
+"426","2020","New Mexico",77
+"427","2020","New York",288
+"428","2020","North Carolina",854
+"429","2020","Ohio",702
+"430","2020","Oklahoma",451
+"431","2020","Oregon",511
+"432","2020","Pennsylvania",205
+"433","2020","Rhode Island",20
+"434","2020","South Carolina",177
+"435","2020","South Dakota",701
+"436","2020","Tennessee",687
+"437","2020","Texas",466
+"438","2020","Utah",346
+"439","2020","Vermont",154
+"440","2020","Virginia",186
+"441","2020","Washington",365
+"442","2020","West Virginia",34
+"443","2020","Wisconsin",429
+"444","2020","Wyoming",39
+"445","2021","Alabama",497
+"446","2021","Arizona",206
+"447","2021","Arkansas",91
+"448","2021","California",1562
+"449","2021","Colorado",227
+"450","2021","Connecticut",55
+"451","2021","Florida",79
+"452","2021","Georgia",125
+"453","2021","Idaho",159
+"454","2021","Illinois",637
+"455","2021","Indiana",58
+"456","2021","Iowa",144
+"457","2021","Kansas",44
+"458","2021","Kentucky",20
+"459","2021","Maine",79
+"460","2021","Maryland",18
+"461","2021","Massachusetts",779
+"462","2021","Michigan",656
+"463","2021","Minnesota",507
+"464","2021","Mississippi",175
+"465","2021","Missouri",602
+"466","2021","Montana",42
+"467","2021","Nebraska",166
+"468","2021","Nevada",68
+"469","2021","New Hampshire",173
+"470","2021","New Jersey",792
+"471","2021","New Mexico",129
+"472","2021","New York",238
+"473","2021","North Carolina",785
+"474","2021","Ohio",798
+"475","2021","Oklahoma",334
+"476","2021","Oregon",539
+"477","2021","Pennsylvania",177
+"478","2021","Rhode Island",43
+"479","2021","South Carolina",130
+"480","2021","South Dakota",721
+"481","2021","Tennessee",673
+"482","2021","Texas",544
+"483","2021","Utah",296
+"484","2021","Vermont",249
+"485","2021","Virginia",298
+"486","2021","Washington",431
+"487","2021","West Virginia",24
+"488","2021","Wisconsin",454
+"489","2021","Wyoming",28
+"490","2022","Alabama",398
+"491","2022","Arizona",180
+"492","2022","Arkansas",76
+"493","2022","California",1170
+"494","2022","Colorado",285
+"495","2022","Connecticut",42
+"496","2022","Florida",91
+"497","2022","Georgia",126
+"498","2022","Idaho",94
+"499","2022","Illinois",567
+"500","2022","Indiana",43
+"501","2022","Iowa",76
+"502","2022","Kansas",44
+"503","2022","Kentucky",19
+"504","2022","Maine",89
+"505","2022","Maryland",14
+"506","2022","Massachusetts",550
+"507","2022","Michigan",608
+"508","2022","Minnesota",484
+"509","2022","Mississippi",136
+"510","2022","Missouri",350
+"511","2022","Montana",24
+"512","2022","Nebraska",148
+"513","2022","Nevada",78
+"514","2022","New Hampshire",100
+"515","2022","New Jersey",692
+"516","2022","New Mexico",138
+"517","2022","New York",239
+"518","2022","North Carolina",792
+"519","2022","Ohio",535
+"520","2022","Oklahoma",286
+"521","2022","Oregon",431
+"522","2022","Pennsylvania",202
+"523","2022","Rhode Island",60
+"524","2022","South Carolina",115
+"525","2022","South Dakota",641
+"526","2022","Tennessee",336
+"527","2022","Texas",488
+"528","2022","Utah",330
+"529","2022","Vermont",180
+"530","2022","Virginia",241
+"531","2022","Washington",459
+"532","2022","West Virginia",29
+"533","2022","Wisconsin",356
+"534","2022","Wyoming",31
+"535","2023","Alabama",119
+"536","2023","Arizona",80
+"537","2023","Arkansas",16
+"538","2023","California",688
+"539","2023","Colorado",107
+"540","2023","Connecticut",28
+"541","2023","Florida",77
+"542","2023","Georgia",18
+"543","2023","Idaho",40
+"544","2023","Illinois",222
+"545","2023","Indiana",14
+"546","2023","Iowa",38
+"547","2023","Kansas",19
+"548","2023","Kentucky",23
+"549","2023","Maine",75
+"550","2023","Maryland",1
+"551","2023","Massachusetts",294
+"552","2023","Michigan",339
+"553","2023","Minnesota",272
+"554","2023","Mississippi",25
+"555","2023","Missouri",135
+"556","2023","Montana",10
+"557","2023","Nebraska",91
+"558","2023","Nevada",37
+"559","2023","New Jersey",314
+"560","2023","New Mexico",82
+"561","2023","New York",49
+"562","2023","North Carolina",438
+"563","2023","Ohio",200
+"564","2023","Oklahoma",95
+"565","2023","Oregon",231
+"566","2023","Pennsylvania",109
+"567","2023","Rhode Island",53
+"568","2023","South Carolina",76
+"569","2023","South Dakota",112
+"570","2023","Tennessee",49
+"571","2023","Texas",260
+"572","2023","Utah",185
+"573","2023","Virginia",98
+"574","2023","Washington",205
+"575","2023","West Virginia",20
+"576","2023","Wisconsin",102
+"577","2023","Wyoming",44
