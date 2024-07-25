@@ -36,7 +36,8 @@
 ##                                                                            ##
 ################################################################################
 library(tidyverse)
-library(openxlsx)
+library(openxlsx)                                  # save tables
+library(gt)                                        # make tables
 library(strcode)                                   # easy code separators
 options(strcode = list(insert_with_shiny = FALSE,  # set options
                        char_length = 100, 
@@ -205,49 +206,27 @@ ca <- lvClean_noScript %>%
     mutate(n_counties_inYear = n_distinct(county_name),
            nScript_nCC = paste(n_script, n_script_ccMention, sep = " "))
 
-library(gt)
-prop_table <- ca %>% 
+unique_counties <- ca %>%
+    select(transcript_year, county_name) %>%
+    distinct(county_name, .keep_all = TRUE) %>%
+    group_by(transcript_year) %>%
+    summarize(n_counties_inYear = n()) %>%
+    ungroup() %>% 
+    pivot_wider(names_from = transcript_year, values_from = n_counties_inYear) 
+
+ca %>% 
     select(transcript_year, county_name, nScript_nCC) %>% 
     distinct(county_name, .keep_all = TRUE ) %>% 
     pivot_wider(names_from = transcript_year, values_from = nScript_nCC) %>% 
-    gt()
-    
-
-gt_propTable <- prop_table %>% 
+    gt(rowname_col = "county_name") %>% 
     tab_header(
         title = md("**Local View**"),
         subtitle = "Transcripts & Climate Change Mentions") %>% 
     tab_source_note(
-        source_note = md("Number of transcripts in county-year (Number of transcripts with at least one climate change mention) in parentheses.")) %>% 
-    tab_stubhead(label = "County Name")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        source_note = md("Number of transcripts in county-year (Number of transcripts with at 
+                         least one climate change mention) in parentheses. 
+                         --- represents no transcripts in that county-year")) %>% 
+    tab_stubhead(label = "County Name") %>% 
+    sub_missing(rows = everything(), 
+                missing_text = "---") %>% 
+    tab_spanner(unique_counties, label = "n_counties")
