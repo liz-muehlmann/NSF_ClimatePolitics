@@ -127,106 +127,112 @@ table(data_noNA$state_nScriptAY)
 ##                                                                            ##
 ################################################################################
 
-state_tables <- createWorkbook()
-prop_tables <- createWorkbook()
+# state_tables <- createWorkbook()
+# prop_tables <- createWorkbook()
+# 
+# for (state in unique(lvClean_noScript$state_name)) {
+#     
+#     df <- lvClean_noScript %>% 
+#         filter(state_name == state)
+#     
+#     d_state <- df %>% 
+#         group_by(transcript_year, county_name) %>% 
+#         summarize(n_script = n(),
+#                   n_script_ccMention = sum(ccBinary),
+#                   total_ccMention = sum(n_ccMentions)) %>% 
+#         ungroup() %>% 
+#         mutate(n_distinct_counties = n_distinct(county_name)) %>% 
+#         group_by(transcript_year) %>% 
+#         mutate(n_counties_inYear = n_distinct(county_name),
+#                nScript_nCC = paste(n_script, "(", n_script_ccMention, ")", sep = " "))
+#     
+#     table <- d_state %>% 
+#         select(county_name, transcript_year, n_script, n_distinct_counties, n_counties_inYear)
+#     
+#     addWorksheet(state_tables, sheetName = state)
+#     
+#     writeData(state_tables, sheet = state, x = table)
+#     
+#     prop_table <- d_state %>% 
+#         select(transcript_year, county_name, nScript_nCC) %>% 
+#         distinct(county_name, .keep_all = TRUE ) %>% 
+#         pivot_wider(names_from = transcript_year, values_from = nScript_nCC)
+#     
+#     addWorksheet(prop_tables, sheetName = state)
+#     
+#     writeData(prop_tables, sheet = state, x = prop_table)
+#     
+# }
+# 
+# save_loc <- "./LocalView/results/summaries/"
+# 
+# saveWorkbook(state_tables, file = paste(save_loc, "state_tables.xlsx", sep = ""), overwrite = TRUE)
+# saveWorkbook(prop_tables, file = paste(save_loc, "prop_tables.xlsx", sep = ""), overwrite = TRUE)
 
-for (state in unique(lvClean_noScript$state_name)) {
-    
-    df <- lvClean_noScript %>% 
-        filter(state_name == state)
-    
-    d_state <- df %>% 
+
+####################################
+## gt to put the number of unique counties at the top row?
+## comment for # of counties in the state
+## comment for # of counties represented in all years.
+
+#########################################
+
+all_states <- gt_group()
+
+for(state in unique(lvClean_noScript$state_name)){
+    s <- lvClean_noScript %>% 
+        filter(state_name == state) %>% 
         group_by(transcript_year, county_name) %>% 
         summarize(n_script = n(),
                   n_script_ccMention = sum(ccBinary),
                   total_ccMention = sum(n_ccMentions)) %>% 
         ungroup() %>% 
-        mutate(n_distinct_counties = n_distinct(county_name)) %>% 
+        mutate(n_distinct_counties = n_distinct(county_name), 
+               n_script_ccMention = paste("(", n_script_ccMention, ")", sep = "")) %>% 
         group_by(transcript_year) %>% 
         mutate(n_counties_inYear = n_distinct(county_name),
-               nScript_nCC = paste(n_script, "(", n_script_ccMention, ")", sep = " "))
+               nScript_nCC = paste(n_script, n_script_ccMention, sep = " "))
     
-    table <- d_state %>% 
-        select(county_name, transcript_year, n_script, n_distinct_counties, n_counties_inYear)
+    unique_counties <- s %>%
+        select(transcript_year, n_counties_inYear) %>%
+        distinct(transcript_year, .keep_all = TRUE) %>%
+        pivot_wider(names_from = transcript_year, values_from=n_counties_inYear) %>% 
+        mutate(across(where(is.numeric), as.character))
     
-    addWorksheet(state_tables, sheetName = state)
+    n_unique_allYears <- s %>% 
+        ungroup() %>% 
+        select(n_distinct_counties) %>% 
+        distinct(n_distinct_counties)
     
-    writeData(state_tables, sheet = state, x = table)
+    n_counties_inState <- lv_countyYear_noNA %>% 
+        filter(state_name == state) %>% 
+        select(n_countiesInState) %>% 
+        distinct(n_countiesInState)
     
-    prop_table <- d_state %>% 
+    all_states[[state]] <- s %>%
         select(transcript_year, county_name, nScript_nCC) %>% 
-        distinct(county_name, .keep_all = TRUE ) %>% 
-        pivot_wider(names_from = transcript_year, values_from = nScript_nCC)
+        pivot_wider(names_from = transcript_year, values_from = nScript_nCC) %>% 
+        mutate(across(where(is.numeric), as.character)) %>% 
+        bind_rows(unique_counties) %>% 
+        mutate(county_name = ifelse(is.na(county_name), "Unique Counties in Year", county_name)) %>% 
+        gt(rowname_col = "county_name") %>% 
+        tab_header(
+            title = md(paste("**", state, "**", sep="")),
+            subtitle = "Transcripts & Climate Change Mentions") %>% 
+        tab_source_note(
+            source_note = "Number of transcripts in county-year (Number of transcripts with at 
+                             least one climate change mention) in parentheses") %>%
+        tab_source_note("`---` represents no transcripts in that county-year") %>% 
+        tab_source_note(paste("Number of Counties in State:", n_counties_inState)) %>% 
+        tab_source_note(paste("Number of Unique Counties in All Years:", n_unique_allYears)) %>% 
+        tab_stubhead(label = "County Name") %>% 
+        sub_missing(rows = everything(), 
+                    missing_text = "---")
     
-    addWorksheet(prop_tables, sheetName = state)
-    
-    writeData(prop_tables, sheet = state, x = prop_table)
+        grp_add(all_states, all_states[[state]] )
     
 }
 
-save_loc <- "./LocalView/results/summaries/"
-
-saveWorkbook(state_tables, file = paste(save_loc, "state_tables.xlsx", sep = ""), overwrite = TRUE)
-saveWorkbook(prop_tables, file = paste(save_loc, "prop_tables.xlsx", sep = ""), overwrite = TRUE)
-# 
-# ca <- lvClean_noScript %>% 
-#     filter(state_name == "California") %>% 
-# group_by(transcript_year, county_name) %>% 
-#     summarize(n_script = n(),
-#               n_script_ccMention = sum(ccBinary),
-#               total_ccMention = sum(n_ccMentions)) %>% 
-#     ungroup() %>% 
-#     mutate(n_distinct_counties = n_distinct(county_name)) %>% 
-#     group_by(transcript_year) %>% 
-#     mutate(n_counties_inYear = n_distinct(county_name),
-#            nScript_nCC = paste(n_script, "(", n_script_ccMention, ")", sep = " "))
-# 
-# prop_table <- ca %>% 
-#     select(transcript_year, county_name, nScript_nCC) %>% 
-#     distinct(county_name, .keep_all = TRUE ) %>% 
-#     pivot_wider(names_from = transcript_year, values_from = nScript_nCC)
 
 
-
-####################################
-## model summary to put the number of unique counties at the top row?
-
-
-#########################################
-ca <- lvClean_noScript %>% 
-    filter(state_name == "California") %>% 
-    group_by(transcript_year, county_name) %>% 
-    summarize(n_script = n(),
-              n_script_ccMention = sum(ccBinary),
-              total_ccMention = sum(n_ccMentions)) %>% 
-    ungroup() %>% 
-    mutate(n_distinct_counties = n_distinct(county_name), 
-           n_script_ccMention = paste("(", n_script_ccMention, ")", sep = "")) %>% 
-    group_by(transcript_year) %>% 
-    mutate(n_counties_inYear = n_distinct(county_name),
-           nScript_nCC = paste(n_script, n_script_ccMention, sep = " "))
-
-unique_counties <- ca %>%
-    select(transcript_year, county_name) %>%
-    distinct(county_name, .keep_all = TRUE) %>%
-    group_by(transcript_year) %>%
-    summarize(n_counties_inYear = n()) %>%
-    ungroup() %>% 
-    pivot_wider(names_from = transcript_year, values_from = n_counties_inYear) 
-
-ca %>% 
-    select(transcript_year, county_name, nScript_nCC) %>% 
-    distinct(county_name, .keep_all = TRUE ) %>% 
-    pivot_wider(names_from = transcript_year, values_from = nScript_nCC) %>% 
-    gt(rowname_col = "county_name") %>% 
-    tab_header(
-        title = md("**Local View**"),
-        subtitle = "Transcripts & Climate Change Mentions") %>% 
-    tab_source_note(
-        source_note = md("Number of transcripts in county-year (Number of transcripts with at 
-                         least one climate change mention) in parentheses. 
-                         --- represents no transcripts in that county-year")) %>% 
-    tab_stubhead(label = "County Name") %>% 
-    sub_missing(rows = everything(), 
-                missing_text = "---") %>% 
-    tab_spanner(unique_counties, label = "n_counties")
+gtsave(all_states, file = "all_states_summary.html")
