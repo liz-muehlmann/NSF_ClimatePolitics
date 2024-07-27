@@ -37,7 +37,7 @@
 ################################################################################
 library(tidyverse)
 library(openxlsx)                                  # save tables
-library(gt)                                        # make tables
+library(flextable)                                 # make tables
 library(strcode)                                   # easy code separators
 options(strcode = list(insert_with_shiny = FALSE,  # set options
                        char_length = 100, 
@@ -89,16 +89,16 @@ stateSummary <- lvClean_noScript %>%
 prop_CCuse <- lvClean_noScript %>% 
     select(transcript_year, stcounty_fips, n_ccMentions, ccBinary) %>% 
     group_by(transcript_year) %>% 
-    mutate(year_nCounties = n_distinct(stcounty_fips),                                       # total distinct counties in the LV data by year
-           year_n_transcripts = n(),                                                         # total number of transcripts in a year
-           year_nScriptCC = sum(ccBinary),                                                   # number of transcripts in a year with at least one mention of climate change
-           year_nCCmentions = sum(n_ccMentions),                                             # total number of climate change mentions in a year
-           year_propScriptCC = year_nScriptCC/year_n_transcripts,                            # proportion of transcripts with at least one climate change mention
-           year_propCCmentions = year_nCCmentions/year_n_transcripts,                        # proportion of all metions of climate change in a given year
-           year_ccBinary = ifelse(ccBinary > 0, 1, 0)) %>%                                   # binary indicator of whether there's at least one mention of climate change in that year
+    mutate(year_nCounties = n_distinct(stcounty_fips),                          # total distinct counties in the LV data by year
+           year_n_transcripts = n(),                                            # total number of transcripts in a year
+           year_nScriptCC = sum(ccBinary),                                      # number of transcripts in a year with at least one mention of climate change
+           year_nCCmentions = sum(n_ccMentions),                                # total number of climate change mentions in a year
+           year_propScriptCC = year_nScriptCC/year_n_transcripts,               # proportion of transcripts with at least one climate change mention
+           year_propCCmentions = year_nCCmentions/year_n_transcripts,           # proportion of all mentions of climate change in a given year
+           year_ccBinary = ifelse(ccBinary > 0, 1, 0)) %>%                      # binary indicator of whether there's at least one mention of climate change in that year
     filter(year_ccBinary == 1) %>%  
-    mutate(n_countiesCCmention = n_distinct(stcounty_fips),                                  # number of unique counties that mention climate change in a year 
-           prop_countiesCCMention = n_countiesCCmention/year_nCounties) %>%                  # proportion of counties in the data that mention climate change at least once
+    mutate(n_countiesCCmention = n_distinct(stcounty_fips),                     # number of unique counties that mention climate change in a year 
+           prop_countiesCCMention = n_countiesCCmention/year_nCounties) %>%     # proportion of counties in the data that mention climate change at least once
     select(transcript_year, n_ccMentions, prop_countiesCCMention, starts_with("year_")) %>% 
     distinct(transcript_year, .keep_all = TRUE)
 
@@ -126,58 +126,6 @@ table(data_noNA$state_nScriptAY)
 ##                           proportion tables by county                      ##
 ##                                                                            ##
 ################################################################################
-
-# state_tables <- createWorkbook()
-# prop_tables <- createWorkbook()
-# 
-# for (state in unique(lvClean_noScript$state_name)) {
-#     
-#     df <- lvClean_noScript %>% 
-#         filter(state_name == state)
-#     
-#     d_state <- df %>% 
-#         group_by(transcript_year, county_name) %>% 
-#         summarize(n_script = n(),
-#                   n_script_ccMention = sum(ccBinary),
-#                   total_ccMention = sum(n_ccMentions)) %>% 
-#         ungroup() %>% 
-#         mutate(n_distinct_counties = n_distinct(county_name)) %>% 
-#         group_by(transcript_year) %>% 
-#         mutate(n_counties_inYear = n_distinct(county_name),
-#                nScript_nCC = paste(n_script, "(", n_script_ccMention, ")", sep = " "))
-#     
-#     table <- d_state %>% 
-#         select(county_name, transcript_year, n_script, n_distinct_counties, n_counties_inYear)
-#     
-#     addWorksheet(state_tables, sheetName = state)
-#     
-#     writeData(state_tables, sheet = state, x = table)
-#     
-#     prop_table <- d_state %>% 
-#         select(transcript_year, county_name, nScript_nCC) %>% 
-#         distinct(county_name, .keep_all = TRUE ) %>% 
-#         pivot_wider(names_from = transcript_year, values_from = nScript_nCC)
-#     
-#     addWorksheet(prop_tables, sheetName = state)
-#     
-#     writeData(prop_tables, sheet = state, x = prop_table)
-#     
-# }
-# 
-# save_loc <- "./LocalView/results/summaries/"
-# 
-# saveWorkbook(state_tables, file = paste(save_loc, "state_tables.xlsx", sep = ""), overwrite = TRUE)
-# saveWorkbook(prop_tables, file = paste(save_loc, "prop_tables.xlsx", sep = ""), overwrite = TRUE)
-
-
-####################################
-## gt to put the number of unique counties at the top row?
-## comment for # of counties in the state
-## comment for # of counties represented in all years.
-
-#########################################
-
-all_states <- gt_group()
 
 for(state in unique(lvClean_noScript$state_name)){
     s <- lvClean_noScript %>% 
@@ -209,7 +157,7 @@ for(state in unique(lvClean_noScript$state_name)){
         select(n_countiesInState) %>% 
         distinct(n_countiesInState)
     
-    all_states[[state]] <- s %>%
+    s_table <- s %>%
         select(transcript_year, county_name, nScript_nCC) %>% 
         pivot_wider(names_from = transcript_year, values_from = nScript_nCC) %>% 
         mutate(across(where(is.numeric), as.character)) %>% 
@@ -227,12 +175,10 @@ for(state in unique(lvClean_noScript$state_name)){
         tab_source_note(paste("Number of Unique Counties in All Years:", n_unique_allYears)) %>% 
         tab_stubhead(label = "County Name") %>% 
         sub_missing(rows = everything(), 
-                    missing_text = "---")
+                    missing_text = "---") %>% 
+        grand_summary_rows(columns = everything(),
+                     funs = sum)
     
-        grp_add(all_states, all_states[[state]] )
+        # gtsave(s_table, file = paste("./LocalView/results/summaries/state_tables/", state, ".docx"))
     
 }
-
-
-
-gtsave(all_states, file = "all_states_summary.html")
