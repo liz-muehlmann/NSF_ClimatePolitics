@@ -1,6 +1,6 @@
 library(tidyverse)
 library(openxlsx)                                  # save tables
-library(flextable)                                 # make tables
+library(pivottabler)                                 # make tables
 library(strcode)                                   # easy code separators
 options(strcode = list(insert_with_shiny = FALSE,  # set options
                        char_length = 100, 
@@ -12,28 +12,11 @@ load("./LocalView/data/modified/allData_state.rdata")
 
 ca <- lvClean_noScript %>% 
     select(transcript_year, state_name, county_name, n_ccMentions, ccBinary) %>% 
-    filter(state_name == "California") %>% 
-    group_by(transcript_year, county_name) %>% 
-    summarize(n_script = n(),
-              n_script_ccMention = sum(ccBinary),
-              total_ccMention = sum(n_ccMentions))
+    filter(state_name == "California")  
 
-%>% 
-    pivot_wider(names_from = transcript_year, 
-                values_from = c(n_script, n_script_ccMention, total_ccMention))
-### flextable
-
-ca %>% 
-  as_flextable()
-
-
-
-
-
-
-
-
-
-
+# %>% 
+#     summarize(n_script = n(),
+#               n_script_ccMention = sum(ccBinary),
+#               total_ccMention = sum(n_ccMentions)) 
 
 
