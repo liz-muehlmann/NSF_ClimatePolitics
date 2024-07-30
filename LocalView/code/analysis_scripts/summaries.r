@@ -113,12 +113,11 @@ prop_CCuse <- lvClean_noScript %>%
     filter(year_ccBinary == 1) %>%  
     mutate(n_countiesCCmention = n_distinct(stcounty_fips),                     # number of unique counties that mention climate change in a year 
            prop_countiesCCMention = n_countiesCCmention/year_nCounties) %>%     # proportion of counties in the data that mention climate change at least once
-    select(transcript_year, n_ccMentions, prop_countiesCCMention, 
-           starts_with("year_")) %>% 
+    select(transcript_year, starts_with("year_")) %>% 
     distinct(transcript_year, .keep_all = TRUE)
 
 
-# write.csv(prop_CCuse, "./LocalView/results/summaries/prop_ccUse.csv", 
+# write.csv(prop_CCuse, "./LocalView/results/summaries/prop_ccUse.csv",
 #           row.names = FALSE)
 
 ### state summaries ############################################################
