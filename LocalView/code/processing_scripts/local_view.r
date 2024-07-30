@@ -1,42 +1,48 @@
-### file description ###############################################################################
-##                                                                                                ##
-## This file handles the processing steps necessary for the local view data                       ##
-##      Data included:                                                                            ##
-##          Local View (2010-2023)                                                                ##
-##              https://doi.org/10.7910/DVN/NJTBEM                                                ##  
-##                                                                                                ##    
-#################################################################################################### 
+### file description ###########################################################
+##                                                                            ##
+## This file handles the processing steps necessary for the local view data   ##
+##      Data included:                                                        ##
+##          Local View (2010-2023)                                            ##
+##              https://doi.org/10.7910/DVN/NJTBEM                            ##  
+## Output:                                                                    ##
+##      /LocalView/data/modified/lv_clean_transcript.rdata                    ##
+##      /LocalView/data/modified/lv_clean_noTranscript.rdata                  ##
+##      /LocalView/data/modified/lv_countyYear_noNA.rdata                     ##
+##      /LocalView/data/modified/lv_countyYear_withNA.rdata                   ##
+##                                                                            ##    
+################################################################################ 
 
-#   ________________________________________________________________________________________________
-#   load packages                                                                               ####
+#   ____________________________________________________________________________
+#   load packages                                                           ####
 #       Note: the tidyverse() package is loaded below through the geographic_processing.r file
 
 library(arrow)                                     # open and work with parquet format (Local View)
 library(readtext)                                  # read filepaths (Local View)
 
 
-#   ________________________________________________________________________________________________
-#   state and county information is necessary for aggregating to the county-year level          ####
-#      processing the geography data is done in the /processing_scripts/geography.r file
-#      this will also load the preliminaries file at /processing_scripts/prelims.r
+#   ____________________________________________________________________________
+#   state and county information is necessary for aggregating to            ####
+#   the county-year level processing the geography data is done in the 
+#   /processing_scripts/geography.r file
+#   this will also load the preliminaries file at /processing_scripts/prelims.r
 
 source("./LocalView/code/processing_scripts/geography.r")
 
-#   ________________________________________________________________________________________________
-#   local view                                                                                  ####
+#   ____________________________________________________________________________
+#   local view                                                              ####
 
-##  ................................................................................................
-##  load raw data: n = 153,452                                                                  ####
+##  ............................................................................
+##  load raw data: n = 153,452                                              ####
 lvRaw <- open_dataset("./LocalView/data/original/meetings/")  
 lvRaw <- Scanner$create(lvRaw)
 lvRaw <- lvRaw$ToTable()
 lvRaw <- as.data.frame(lvRaw) 
 
-##  ................................................................................................
-##  create sample: n = 103,379                                                                  ####
+##  ............................................................................
+##  create sample: n = 103,379                                              ####
 ##      years: 2010+ 
-##      discard: ACS columns, original caption columns, and rows with no caption available
-##      five places use incorrect fips and are manually fixed.
+##      discard: ACS columns, original caption columns, and rows with no 
+##      caption available five places use incorrect fips and are manually fixed.
 
 lv <- lvRaw %>% 
     rename(place_fips = st_fips,
@@ -47,19 +53,20 @@ lv <- lvRaw %>%
     filter(transcript_year >= 2010 &
                !(caption_text_clean == "<No caption available>") &
                state_name != "Alaska") %>% 
-    mutate(place_fips = ifelse(place_fips == "5151650", "5135000", place_fips),          # hampton city, VA
-           place_fips = ifelse(place_fips == "5151710", "5157000", place_fips),          # norfolk city, VA
-           place_fips = ifelse(place_fips == "5151730", "5161832", place_fips),          # petersburg city, VA
-           place_fips = ifelse(place_fips == "2501325", "2501370", place_fips),          # amherst town, MA
-           place_fips = ifelse(place_fips == "2527100", "2527060", place_fips),          # greenfield, MA (incorrect place fips)
-           place_fips = ifelse(place_name == "Gadsden city", "0128696", place_fips)) %>% # does not have fips
+    mutate(place_fips = ifelse(place_fips == "5151650", "5135000", place_fips), # hampton city, VA
+           place_fips = ifelse(place_fips == "5151710", "5157000", place_fips), # norfolk city, VA
+           place_fips = ifelse(place_fips == "5151730", "5161832", place_fips), # petersburg city, VA
+           place_fips = ifelse(place_fips == "2501325", "2501370", place_fips), # amherst town, MA
+           place_fips = ifelse(place_fips == "2527100", "2527060", place_fips), # greenfield, MA (incorrect place fips)
+           place_fips = ifelse(place_name == "Gadsden city", "0128696", 
+                               place_fips)) %>%                                 # does not have fips
     rename(transcript_id = vid_id) %>% 
     select(-starts_with(c("acs_", "channel", "vid_")), -caption_text)
 
-##  ................................................................................................
-##  merge lv with county, county subdivision, and place data                                  ####
+##  ............................................................................
+##  merge lv with county, county subdivision, and place data                ####
 
-## 9,434 transcripts use two digit state + five digit county fips as their place fips
+## 9,434 transcripts use two digit state + five digit county fips as place fips
 lvCounty <- lv %>% 
     filter(grepl("County", place_name)) %>% 
     mutate(stcounty_fips = str_sub(place_fips, 3, 7),
@@ -92,8 +99,8 @@ lvClean_transcript <- rbind(lvPlace, lvCounty, lvCountySub) %>%
 
 # save(lvClean_transcript, file = "./LocalView/data/modified/lv_clean_transcript.rdata")
 
-#   ________________________________________________________________________________________________
-#   calculate climate change use by meeting                                                     ####
+#   ____________________________________________________________________________
+#   calculate climate change use by meeting                                 ####
 
 lvClean_noScript <- lvClean_transcript %>% 
     mutate(n_ccMentions = str_count(caption_text_clean, "climate change"),   # number of climate change mentions in each transcript
@@ -102,8 +109,8 @@ lvClean_noScript <- lvClean_transcript %>%
 
 # save(lvClean_noScript, file = "./LocalView/data/modified/lv_clean_noTranscript.rdata")
 
-#   ________________________________________________________________________________________________
-#   aggregate local view data to the county level (n 3,668)                                     ####
+#   ____________________________________________________________________________
+#   aggregate local view data to the county level (n 3,668)                 ####
 
 lv_countyYear_noNA <- lvClean_noScript %>% 
     group_by(transcript_year, stcounty_fips) %>% 
@@ -116,14 +123,16 @@ lv_countyYear_noNA <- lvClean_noScript %>%
            prop_scriptCCMention = n_scriptCCMention/n_transcripts) %>%        # proportion of transcripts with at least one climate change mention in a given county-year         
     distinct(transcript_year, stcounty_fips, .keep_all = TRUE) %>% 
     ungroup() %>% 
-    select(state_name, state_fips, county_name, county_fips, transcript_year, ccBinary, starts_with(c("n_", "prop_"))) %>% 
+    select(state_name, state_fips, county_name, county_fips, transcript_year, 
+           ccBinary, starts_with(c("n_", "prop_"))) %>% 
     left_join(counties)
 
 # save(lv_countyYear_noNA, file = "./LocalView/data/modified/lv_countyYear_noNA.rdata")
 
-#   ________________________________________________________________________________________________
-#   merge with all counties                                                                     ####
-#       NA indicates there was no transcript in that county for that year (n = 43,512)
+#   ____________________________________________________________________________
+#   merge with all counties                                                 ####
+#     NA indicates there was no transcript in that county for that year 
+#     (n = 43,512)
 
 lv_countyYear_withNA <- list()
 for(y in unique(lv_countyYear_noNA$transcript_year)) {

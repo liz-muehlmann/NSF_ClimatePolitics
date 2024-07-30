@@ -1,19 +1,23 @@
-### file description ###############################################################################
-##                                                                                                ##
-## This file handles the processing steps necessary for the USDA Rural Urban designations         ##
-##      Data included:                                                                            ##
-##          USDA Rural-Urban (2003, 2013, 2023)                                                   ## 
-##              https://www.ers.usda.gov/data-products/rural-urban-continuum-codes/documentation/ ##
-##                                                                                                ##    
-#################################################################################################### 
+### file description ###########################################################
+##                                                                            ##
+## This file handles the processing steps necessary for the USDA Rural        ##
+##      Urban designations                                                    ##
+##      Data included:                                                        ##
+##          USDA Rural-Urban (2003, 2013, 2023)                               ## 
+##              https://www.ers.usda.gov/data-products/rural-urban-continuum-codes/documentation/
+##                                                                            ## 
+## Output:                                                                    ##
+##  /LocalView/data/modified/rural_urban.rdata                                ##
+##                                                                            ## 
+################################################################################ 
 
-#   ________________________________________________________________________________________________
-#   load libraries and custom functions                                                         ####
+#   ____________________________________________________________________________
+#   load libraries and custom functions                                     ####
 
 source("./LocalView/code/processing_scripts/preliminaries.r")      
 
-#   ________________________________________________________________________________________________    
-#   USDA Rural-Urban Designations                                                               ####            
+#   ____________________________________________________________________________    
+#   USDA Rural-Urban Designations                                           ####            
 
 ru03 <- read_excel("./GIS/original/ruralUrban/2003USDA_ruralUrbanCodes.xls") %>% 
     rename(stcounty_fips = "FIPS Code",

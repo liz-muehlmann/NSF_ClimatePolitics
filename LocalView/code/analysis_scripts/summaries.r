@@ -6,9 +6,10 @@
 ##          Local View (2010-2023)                                            ##
 ##              https://doi.org/10.7910/DVN/NJTBEM                            ##              
 ##          Algara-Sharif (2008-2020)                                         ##
-##              Sharif (2021) "Replication Data for: Partisanship & Nationalization
-##              in American Elections: Evidence from Presidential, Senatorial, &   
-##              Gubernatorial Elections in the U.S. Counties, 1872-2020",     ##      
+##              Sharif (2021) "Replication Data for: Partisanship &           ##
+##              Nationalization in American Elections: Evidence from          ##
+##              Presidential, Senatorial, & Gubernatorial Elections in        ## 
+##              the U.S. Counties, 1872-2020",                                ##      
 ##              https://doi.org/10.7910/DVN/DGUMFI                            ##      
 ##          American Community Survey (2010, 2015, 2020)                      ##
 ##              2006-2010 ACS > 2008                                          ##
@@ -17,10 +18,11 @@
 ##          FEMA (2010-2023)                                                  ## 
 ##              https://www.fema.gov/openfema-data-page/disaster-declarations-summaries-v2
 ##          Climate Change Vulnerability (2010-2023)                          ## 
-##              https://github.com/wachiuphd/CVI
+##              https://github.com/wachiuphd/CVI                              ##
 ##          USDA Rural-Urban                                                  ## 
 ##          Incorporated/Census Designated Places (2023)                      ## 
-##              IP/CDP csvs were saved using the tabulate intersection function in ArcGIS 
+##              IP/CDP csvs were saved using the tabulate intersection        ##
+##              function in ArcGIS                                            ##
 ##          Virginia                                                          ##
 ##              https://www.census.gov/library/reference/code-lists/ansi.2020.html#cousub
 ##          Counties (2010, 2015, 2020)                                       ##
@@ -28,6 +30,14 @@
 ##          States                                                            ##
 ##              tigris                                                        ##   
 ##                                                                            ##
+## Output:                                                                    ##    
+##          /LocalView/results/summaries/YearState.csv                        ##
+##          /LocalView/results/summaries/YearStateCounty.csv                  ##
+##          /LocalView/results/summaries/YearStateMeetingType.csv             ##
+##          /LocalView/results/summaries/YearStatePlace.csv                   ##
+##          /LocalView/results/summaries/prop_ccUse.csv                       ##
+##          /LocalView/results/summaries/state_tables/                        ##
+##                                                                            ##    
 ################################################################################ 
 
 ### libraries ##################################################################
@@ -60,26 +70,30 @@ yearState <- lvClean_noScript %>%
     group_by(transcript_year, state_name) %>% 
     count()
 
-# write.csv(yearState, "./LocalView/results/summaries/YearState.csv", row.names = FALSE)
+# write.csv(yearState, "./LocalView/results/summaries/YearState.csv", 
+#           row.names = FALSE)
 
 yearStateCounty <- allData_state %>% 
     select(state_name, transcript_year, n_countiesInState, state_n_transcripts, state_n_scriptCCMention)
 
-# write.csv(yearStateCounty, "./LocalView/results/summaries/YearStateCounty.csv", row.names = FALSE)
+# write.csv(yearStateCounty, "./LocalView/results/summaries/YearStateCounty.csv", 
+#           row.names = FALSE)
 
 ## transcripts available by year, state, and meeting_type
 stateType <- lvClean_noScript %>%
     group_by(transcript_year, state_name, meeting_type) %>% 
     count()
 
-# write.csv(stateType, "./LocalView/results/summaries/YearStateMeetingType.csv", row.names = FALSE)
+# write.csv(stateType, "./LocalView/results/summaries/YearStateMeetingType.csv", 
+#           row.names = FALSE)
 
 ## transcripts available by year, state, and place name
 statePlace <- lvClean_noScript %>%
     group_by(transcript_year, state_name, place_name) %>% 
     count()
 
-# write.csv(statePlace, "./LocalView/results/summaries/YearStatePlace.csv", row.names = FALSE)
+# write.csv(statePlace, "./LocalView/results/summaries/YearStatePlace.csv", 
+#           row.names = FALSE)
 
 stateSummary <- lvClean_noScript %>%
     group_by(state_name) %>% 
@@ -99,11 +113,13 @@ prop_CCuse <- lvClean_noScript %>%
     filter(year_ccBinary == 1) %>%  
     mutate(n_countiesCCmention = n_distinct(stcounty_fips),                     # number of unique counties that mention climate change in a year 
            prop_countiesCCMention = n_countiesCCmention/year_nCounties) %>%     # proportion of counties in the data that mention climate change at least once
-    select(transcript_year, n_ccMentions, prop_countiesCCMention, starts_with("year_")) %>% 
+    select(transcript_year, n_ccMentions, prop_countiesCCMention, 
+           starts_with("year_")) %>% 
     distinct(transcript_year, .keep_all = TRUE)
 
 
-# write.csv(prop_CCuse, "./LocalView/results/summaries/prop_ccUse.csv", row.names = FALSE)
+# write.csv(prop_CCuse, "./LocalView/results/summaries/prop_ccUse.csv", 
+#           row.names = FALSE)
 
 ### state summaries ############################################################
 ##                                                                            ##
@@ -136,7 +152,8 @@ for(state in unique(lvClean_noScript$state_name)){
                   total_ccMention = sum(n_ccMentions)) %>% 
         ungroup() %>% 
         mutate(n_distinct_counties = n_distinct(county_name), 
-               n_script_ccMention = paste("(", n_script_ccMention, ")", sep = "")) %>% 
+               n_script_ccMention = paste("(", n_script_ccMention, ")", 
+                                          sep = "")) %>% 
         group_by(transcript_year) %>% 
         mutate(n_counties_inYear = n_distinct(county_name),
                nScript_nCC = paste(n_script, n_script_ccMention, sep = " "))
@@ -144,7 +161,8 @@ for(state in unique(lvClean_noScript$state_name)){
     unique_counties <- s %>%
         select(transcript_year, n_counties_inYear) %>%
         distinct(transcript_year, .keep_all = TRUE) %>%
-        pivot_wider(names_from = transcript_year, values_from=n_counties_inYear) %>% 
+        pivot_wider(names_from = transcript_year, 
+                    values_from=n_counties_inYear) %>% 
         mutate(across(where(is.numeric), as.character))
     
     n_unique_allYears <- s %>% 
@@ -162,23 +180,29 @@ for(state in unique(lvClean_noScript$state_name)){
         pivot_wider(names_from = transcript_year, values_from = nScript_nCC) %>% 
         mutate(across(where(is.numeric), as.character)) %>% 
         bind_rows(unique_counties) %>% 
-        mutate(county_name = ifelse(is.na(county_name), "Unique Counties in Year", county_name)) %>% 
+        mutate(county_name = ifelse(is.na(county_name), 
+                                    "Unique Counties in Year", county_name)) %>% 
         gt(rowname_col = "county_name") %>% 
         tab_header(
             title = md(paste("**", state, "**", sep="")),
             subtitle = "Transcripts & Climate Change Mentions") %>% 
         tab_source_note(
-            source_note = "Number of transcripts in county-year (Number of transcripts with at 
-                             least one climate change mention) in parentheses") %>%
-        tab_source_note("`---` represents no transcripts in that county-year") %>% 
-        tab_source_note(paste("Number of Counties in State:", n_counties_inState)) %>% 
-        tab_source_note(paste("Number of Unique Counties in All Years:", n_unique_allYears)) %>% 
+            source_note = "Number of transcripts in county-year 
+            (Number of transcripts with at least one climate change mention) 
+            in parentheses") %>%
+        tab_source_note("`---` represents no transcripts 
+                        in that county-year") %>% 
+        tab_source_note(paste("Number of Counties in State:", 
+                              n_counties_inState)) %>% 
+        tab_source_note(paste("Number of Unique Counties in All Years:",
+                              n_unique_allYears)) %>% 
         tab_stubhead(label = "County Name") %>% 
         sub_missing(rows = everything(), 
                     missing_text = "---") %>% 
         grand_summary_rows(columns = everything(),
                      funs = sum)
     
-        # gtsave(s_table, file = paste("./LocalView/results/summaries/state_tables/", state, ".docx"))
+        # gtsave(s_table, file = paste("./LocalView/results/summaries/state_tables/", 
+        #                              state, ".docx"))
     
 }

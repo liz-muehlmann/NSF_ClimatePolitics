@@ -1,22 +1,26 @@
-### file description ###############################################################################
-##                                                                                                ##
-## This file handles the processing steps necessary for the Algara-Sharif election data           ##
-##      Data included:                                                                            ##
-##          Algara-Sharif (2008-2020)                                                             ##
-##              Sharif (2021) "Replication Data for: Partisanship & Nationalization               ##
-##              in American Elections: Evidence from Presidential, Senatorial, &                  ##
-##              Gubernatorial Elections in the U.S. Counties, 1872-2020",                         ##      
-##              https://doi.org/10.7910/DVN/DGUMFI                                                ##      
-##                                                                                                ##    
-#################################################################################################### 
+### file description ###########################################################
+##                                                                            ##
+## This file handles the processing steps necessary for the Algara-Sharif     ##
+##      election data                                                         ##
+##      Data included:                                                        ##
+##          Algara-Sharif (2008-2020)                                         ##
+##              Sharif (2021) "Replication Data for: Partisanship &           ##
+##              Nationalization in American Elections: Evidence from          ##
+##              Presidential, Senatorial, &                                   ##
+##              Gubernatorial Elections in the U.S. Counties, 1872-2020",     ##      
+##              https://doi.org/10.7910/DVN/DGUMFI                            ##  
+## Output:                                                                    ##
+##      /LocalView/data/modified/algara.rdata                                 ##
+##                                                                            ##    
+################################################################################ 
 
-#   ________________________________________________________________________________________________
-#   load libraries and custom functions                                                         ####
+#   ____________________________________________________________________________
+#   load libraries and custom functions                                     ####
 
 source("./LocalView/code/processing_scripts/preliminaries.r")      
 
-#   ________________________________________________________________________________________________
-#   algara-sharif election                                                                      ####
+#   ____________________________________________________________________________
+#   algara-sharif election                                                  ####
 
 load("./LocalView/data/original/AlgaraSharif.Rdata")
 

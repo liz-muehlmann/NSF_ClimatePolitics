@@ -1,27 +1,29 @@
-## file description ################################################################################
-##                                                                                                ##
-## This file handles the geography data needed to for working with the local view data            ##
-##          Incorporated/Census Designated Places (2023)                                          ## 
-##              IP/CDP csvs were saved using the tabulate intersection function in ArcGIS         ##
-##          County Subdivisions                                                                   ##
-##              https://www.census.gov/library/reference/code-lists/ansi.html#cousub              ##
-##          Counties (2010, 2015, 2020)                                                           ##
-##              tigris                                                                            ##
-##          States                                                                                ##
-##              tigris                                                                            ## 
-##                                                                                                ##
-## Output:                                                                                        ##    
-##          None                                                                                  ##
-####################################################################################################
+## file description ############################################################
+##                                                                            ##
+## This file handles the geography data needed to for working with the        ## 
+##          local view data                                                   ##
+##          Incorporated/Census Designated Places (2023)                      ## 
+##              IP/CDP csvs were saved using the tabulate intersection        ##
+##              function in ArcGIS                                            ##
+##          County Subdivisions                                               ##
+##              https://www.census.gov/library/reference/code-lists/ansi.html#cousub
+##          Counties (2010, 2015, 2020)                                       ##
+##              tigris                                                        ##
+##          States                                                            ##
+##              tigris                                                        ## 
+##                                                                            ##
+## Output:                                                                    ##    
+##          None                                                              ##
+################################################################################
 
-#   ________________________________________________________________________________________________
-#   load libraries and custom functions                                                         ####
+#   ____________________________________________________________________________
+#   load libraries and custom functions                                     ####
 source("./LocalView/code/processing_scripts/preliminaries.r")
-library(tigris)                                    # download geographic boundaries
-library(sf)                                        # work with shapefiles
+library(tigris)                                 # download geographic boundaries
+library(sf)                                     # work with shapefiles
 
-#   ________________________________________________________________________________________________
-##  state boundaries                                                                            ####
+#   ____________________________________________________________________________
+##  state boundaries                                                        ####
 
 statesGeo <- states()
 st_crs(statesGeo) <- "EPSG:4326"
@@ -36,8 +38,8 @@ statesGeo <- statesGeo %>%
 states <- statesGeo %>% 
     st_drop_geometry()
 
-#   ________________________________________________________________________________________________
-##  county boundaries                                                                           ####
+#   ____________________________________________________________________________
+##  county boundaries                                                       ####
 
 countiesGeo <- counties(year = 2020, cb = TRUE) %>% 
     rename(stcounty_fips = GEOID,
@@ -56,8 +58,8 @@ countiesGeo <- counties(year = 2020, cb = TRUE) %>%
 counties <- countiesGeo %>% 
     st_drop_geometry()
 
-#   ________________________________________________________________________________________________
-##  county subdivisions                                                                         ####
+#   ____________________________________________________________________________
+##  county subdivisions                                                     ####
 
 countySub <- read.csv("./GIS/modified/2020_SubcountyDivisions.csv")  %>% 
     padFips() %>% 
@@ -66,8 +68,8 @@ countySub <- read.csv("./GIS/modified/2020_SubcountyDivisions.csv")  %>%
     createFips() %>% 
     select(stcounty_fips, place_fips, county_name)
 
-#   ________________________________________________________________________________________________
-##  incorporated and census designated places                                                   ####
+#   ____________________________________________________________________________
+##  incorporated and census designated places                               ####
 
 ip <- majority(read.csv("./GIS/modified/2020_IPIntersections.csv")) %>% 
     padFips() %>% 

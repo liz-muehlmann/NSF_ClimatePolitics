@@ -1,16 +1,19 @@
-#################################################################################################### 
-##                                                                                                ##
-##  This file includes the custom functions used to process and merge data for local view         ## 
-##                                                                                                ##
-#################################################################################################### 
+################################################################################ 
+##                                                                            ##
+##  This file includes the custom functions used to process                   ##
+##  and merge data for local view                                             ## 
+##                                                                            ##
+##  Output:                                                                   ##
+##      None                                                                  ##
+################################################################################ 
 
-#################################################################################################### 
-##                                                                                                ##
-##                                                                                                ##
-##                                   load necessary packages                                      ##
-##                                                                                                ##   
-##                                                                                                ##
-#################################################################################################### 
+################################################################################ 
+##                                                                            ##
+##                                                                            ##
+##                          load necessary packages                           ##
+##                                                                            ##   
+##                                                                            ##
+################################################################################ 
 
 `%notin%` <- Negate(`%in%`)                        # create not in operator
 library(tidyverse)                                 # data manipulation 
@@ -21,21 +24,21 @@ options(strcode = list(insert_with_shiny = FALSE,  # set options
                        char_length = 100, 
                        hash_in_sep= TRUE))
 
-#################################################################################################### 
-##                                                                                                ##
-##                                                                                                ##
-##                              Geographic identifier functions                                   ##
-##                                                                                                ##   
-##                                                                                                ##
-#################################################################################################### 
+################################################################################ 
+##                                                                            ##
+##                                                                            ##
+##                      Geographic identifier functions                       ##
+##                                                                            ##   
+##                                                                            ##
+################################################################################ 
 
-##  ................................................................................................
-##  Calculate the majority overlap of places to county                                          ####
-##      Arguments:                                                                                ##
-##        df: a data frame                                                                        ##
-##      Returns:                                                                                  ##
-##        A data frame with only places with majority overlap on a county                         ##
-##   ...............................................................................................
+##  ............................................................................
+##  Calculate the majority overlap of places to county                      ####
+##      Arguments:                                                            ##
+##        df: a data frame                                                    ##
+##      Returns:                                                              ##
+##        A data frame with only places with majority overlap on a county     ##
+##   ...........................................................................
 
 majority <- function(df){
     df %>% mutate(coverage = round(coverage, 2)) %>% 
@@ -44,13 +47,13 @@ majority <- function(df){
         filter(coverage == max(coverage, na.rm = TRUE)) 
 }
 
-##  ................................................................................................
-##  Pad FIPS to the appropriate length                                                          ####
-##      Arguments:                                                                                ##
-##           df: a data frame with one or more geographic identifying columns.                    ##                                 
-##      Returns:                                                                                  ##
-##           A data frame with fips padded to 2, 3, 5, or 7 digits                                ##
-##   ...............................................................................................
+##  ............................................................................
+##  Pad FIPS to the appropriate length                                      ####
+##      Arguments:                                                            ##
+##           df: a data frame with one or more geographic identifying columns.##                                 
+##      Returns:                                                              ##
+##           A data frame with fips padded to 2, 3, 5, or 7 digits            ##
+##   ...........................................................................
 
 padFips <- function(df) {
     if ("stcounty_fips" %in% colnames(df)) {
@@ -88,13 +91,13 @@ padFips <- function(df) {
     return(df)
 }
 
-##  ................................................................................................
-##  Create missing FIPS columns.                                                                ####
-##      Arguments:                                                                                ##
-##           df: a data frame with one or more geographic identifying columns.                    ##                                 
-##      Returns:                                                                                  ##
-##           A data frame with state, county, and state+county FIPS                               ##
-##   ...............................................................................................
+##  ............................................................................
+##  Create missing FIPS columns.                                            ####
+##      Arguments:                                                            ##
+##           df: a data frame with one or more geographic identifying columns.##                                 
+##      Returns:                                                              ##
+##           A data frame with state, county, and state+county FIPS           ##
+##   ...........................................................................
 
 createFips <- function(df){
     # create state and county fips if not already in the data
@@ -103,14 +106,16 @@ createFips <- function(df){
             mutate(stcounty_fips = str_sub(tract_fips, 1, 5))
     }
     
-    if ("stcounty_fips" %in% colnames(df) & !("state_fips" %in% colnames(df)) & !("county_fips" %in% colnames(df))) {
+    if ("stcounty_fips" %in% colnames(df) & !("state_fips" %in% colnames(df)) 
+        & !("county_fips" %in% colnames(df))) {
         df <- df %>%
             mutate(state_fips = str_sub(stcounty_fips, 0, 2),
                    county_fips = str_sub(stcounty_fips, 3, 5))
     }
     
     # create stcounty_fips if not already in the data
-    if (("state_fips" %in% colnames(df)) & ("county_fips" %in% colnames(df)) & !("stcounty_fips" %in% colnames(df))) {
+    if (("state_fips" %in% colnames(df)) & ("county_fips" %in% colnames(df)) 
+        & !("stcounty_fips" %in% colnames(df))) {
         df <- df %>%
             mutate(stcounty_fips = paste(state_fips, county_fips, sep=""))
     }
@@ -118,42 +123,49 @@ createFips <- function(df){
     return(df)
 }
 
-##  ................................................................................................
-##  Fix 2020 county names and fips.                                                             ####
-##      Arguments:                                                                                ##
-##           df: a data frame with one or more geographic identifying columns.                    ##                                 
-##      Returns:                                                                                  ##
-##           A data frame with corrected 2020 county information.                                 ##
-##   ...............................................................................................
+##  ............................................................................
+##  Fix 2020 county names and fips.                                         ####
+##      Arguments:                                                            ##
+##           df: a data frame with one or more geographic identifying columns.##                                 
+##      Returns:                                                              ##
+##           A data frame with corrected 2020 county information.             ##
+##   ...........................................................................
 
 fixCounties2020 <- function(df){
     # 2-digit state + 3 digit county
     if ("stcounty_fips" %in% colnames(df)) {
         df <- df %>%
-            mutate(stcounty_fips = ifelse(stcounty_fips == 46113, 46102, stcounty_fips),
-                   stcounty_fips = ifelse(stcounty_fips == 51515, 51019, stcounty_fips),
-                   stcounty_fips = ifelse(stcounty_fips == 51560, 51005, stcounty_fips))
+            mutate(stcounty_fips = ifelse(stcounty_fips == 46113, 46102, 
+                                          stcounty_fips),
+                   stcounty_fips = ifelse(stcounty_fips == 51515, 51019, 
+                                          stcounty_fips),
+                   stcounty_fips = ifelse(stcounty_fips == 51560, 51005, 
+                                          stcounty_fips))
     }
     
     # fix county names 
     if ("county_name" %in% colnames(df)) {
         df <- df %>% 
-            mutate(county_name = ifelse(stcounty_fips == "46102", "Oglala Lakota County", county_name),
-                   county_name = ifelse(stcounty_fips == "11001", "District of Columbia", county_name),
-                   county_name = ifelse(stcounty_fips == "35013", "Dona Ana County", county_name),
-                   county_name = ifelse(stcounty_fips == "51560", "Alleghany County", county_name))
+            mutate(county_name = ifelse(stcounty_fips == "46102", 
+                                        "Oglala Lakota County", county_name),
+                   county_name = ifelse(stcounty_fips == "11001", 
+                                        "District of Columbia", county_name),
+                   county_name = ifelse(stcounty_fips == "35013", 
+                                        "Dona Ana County", county_name),
+                   county_name = ifelse(stcounty_fips == "51560", 
+                                        "Alleghany County", county_name))
        
     }
     return(df)
 }
 
-##  ................................................................................................
-##  Exclude Alaska, Hawaii, and the U.S. territories                                            ####
-##      Arguments:                                                                                ##
-##           df: a data frame with one or more geographic identifying columns.                    ##                                 
-##      Returns:                                                                                  ##
-##           A data frame with only the contiguous 48 states.                                     ##
-##   ...............................................................................................
+##  ............................................................................
+##  Exclude Alaska, Hawaii, and the U.S. territories                        ####
+##      Arguments:                                                            ##
+##           df: a data frame with one or more geographic identifying columns.##                                 
+##      Returns:                                                              ##
+##           A data frame with only the contiguous 48 states.                 ##
+##   ...........................................................................
 
 excludeStates <- function(df) {
     # keep only the contiguous 48 states & the District of Columbia  
@@ -188,21 +200,21 @@ excludeStates <- function(df) {
     return(df)
 }
 
-#################################################################################################### 
-##                                                                                                ##
-##                                                                                                ##
-##                              Data specific functions                                           ##
-##                                                                                                ##   
-##                                                                                                ##
-#################################################################################################### 
+################################################################################ 
+##                                                                            ##
+##                                                                            ##
+##                              Data specific functions                       ##
+##                                                                            ##   
+##                                                                            ##
+################################################################################ 
 
-##  ................................................................................................
-##  Refactor the USDA rural-urban values to three categories                                    ####
-##      Arguments:                                                                                ##
-##           df: a data frame with a rural-urbaneographic identifying columns.                    ##                                 
-##      Returns:                                                                                  ##
-##           A data frame with only the contiguous 48 states.                                     ##
-##   ...............................................................................................
+##  ............................................................................
+##  Refactor the USDA rural-urban values to three categories                ####
+##      Arguments:                                                            ##
+##           df: a data frame with a rural-urbaneographic identifying columns.##                                 
+##      Returns:                                                              ##
+##           A data frame with only the contiguous 48 states.                 ##
+##   ...........................................................................
 
 rural_urban <- function(df){
     df %>% mutate(rural_urban_5pt = case_when(rural_urban == 4 ~ 4,
@@ -220,7 +232,9 @@ rural_urban <- function(df){
                                                   rural_urban == 5 ~ 3,
                                                   rural_urban == 7 ~ 3,
                                                   rural_urban == 9 ~ 3,
-                                                  .default = as.numeric(rural_urban))) %>% 
-        select(stcounty_fips, state_fips, county_fips, rural_urban, rural_urban_5pt, rural_urban_3pt)
+                                                  .default = 
+                                                  as.numeric(rural_urban))) %>% 
+        select(stcounty_fips, state_fips, county_fips, rural_urban, 
+               rural_urban_5pt, rural_urban_3pt)
 }
 
