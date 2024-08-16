@@ -20,7 +20,6 @@
 #   load preliminaries and data                                             ####
 
 library(lubridate)          # work with dates
-library(survival)
 source("./LocalView/code/processing_scripts/regression_prelims.r") 
 load("./LocalView/data/modified/allData_transcriptLevel.rdata")
 load("./LocalView/data/modified/fema_disasterYear.rdata")
@@ -32,7 +31,7 @@ lv <- allData_transcriptLevel %>%
   ) %>%
   select(-transcript_year, -transcript_day, -transcript_month, -starts_with("fema_"))
 
-# n = 18,836
+# n = 30,135
 fema <- fema %>%
   mutate(declaration_date = make_date(fema_year, fema_month, fema_day)) %>%
   select(-fema_year, -fema_month, -fema_day)

@@ -33,7 +33,7 @@ fema <- read.csv("./LocalView/data/original/2023_FEMA.csv") %>%
   ) %>%
   mutate(fema_day = str_sub(date, 0, 2)) %>%
   filter(
-    fema_year >= 2009 & fema_year < 2023,
+    fema_year >= 2009 & fema_year < 2023, # changed to 2004 for the fema/time
     fema_incidentType == "Coastal Storm" |
     fema_incidentType == "Fire" |
     fema_incidentType == "Flood" |
