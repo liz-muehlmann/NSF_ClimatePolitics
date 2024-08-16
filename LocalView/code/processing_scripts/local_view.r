@@ -97,34 +97,51 @@ lvClean_transcript <- rbind(lvPlace, lvCounty, lvCountySub) %>%
     select(-state_fips, -county_fips) %>% 
     createFips()
 
-# save(lvClean_transcript, file = "./LocalView/data/modified/lv_clean_transcript.rdata")
+# save(lvClean_transcript, file = "./LocalView/data/modified/lvClean_transcript.rdata")
 
 #   ____________________________________________________________________________
 #   calculate climate change use by meeting                                 ####
 
 lvClean_noScript <- lvClean_transcript %>% 
-    mutate(n_ccMentions = str_count(caption_text_clean, "climate change"),   # number of climate change mentions in each transcript
-           ccBinary = ifelse(n_ccMentions > 0, 1, 0)) %>%                    # binary indicator 1 = climate change mentioned 0 = no climate change mention
+    mutate(caption_text_clean = str_to_lower(caption_text_clean),               # convert caption_text_clean column to lower case
+           n_ccMentions = str_count(caption_text_clean, "climate change"),      # raw number of climate change mentions
+           n_gwMentions = str_count(caption_text_clean, "global warming"),      # raw number of global warming mentions
+           n_ccgwMentions = ifelse(n_ccMentions == 0 & n_gwMentions == 0,       # total number of CC & GW mentions; 0 if neither CC or GW mentioned
+                                  0, (n_ccMentions + n_gwMentions)), 
+           ccBinary = ifelse(n_ccMentions > 0, 1, 0),                           # binary indicator; 1 = CC mention, 0 = no CC mention
+           gwBinary = ifelse(n_gwMentions > 0, 1, 0),                           # binary indicator; 1 = GW mention, 0 = no GW mention 
+           ccgwBinary = ifelse(n_ccgwMentions > 0, 1, 0)) %>%                   # binary indicator; 1 = CC or GW mention, 0 = no mention
     select(-caption_text_clean)
 
-# save(lvClean_noScript, file = "./LocalView/data/modified/lv_clean_noTranscript.rdata")
+# save(lvClean_noScript, file = "./LocalView/data/modified/lvClean_noTranscript.rdata")
 
 #   ____________________________________________________________________________
 #   aggregate local view data to the county level (n 3,668)                 ####
 
 lv_countyYear_noNA <- lvClean_noScript %>% 
     group_by(transcript_year, stcounty_fips) %>% 
-    mutate(n_transcripts = n(),                                               # number of transcripts in a county-year
-           n_meetingTypes = n_distinct(meeting_type),                         # number of meeting types in a county-year
-           n_scriptCCMention = sum(ccBinary),                                 # number of transcripts with at least one mention of climate change in a county-year
-           n_ccMentions = sum(n_ccMentions),                                  # total number of climate change mentions in a county-year
-           ccBinary = ifelse(n_ccMentions > 0, 1, 0),                         # binary indicator 1 = climate change mentioned in the county-year, 0 = no climate change mention
-           prop_ccMentions = (n_ccMentions/n_transcripts),                    # proportion of total climate change mentions in a given county-year
-           prop_scriptCCMention = n_scriptCCMention/n_transcripts) %>%        # proportion of transcripts with at least one climate change mention in a given county-year         
+    mutate(n_transcripts = n(),                                                 # number of transcripts in a county-year
+           n_meetingTypes = n_distinct(meeting_type),                           # number of meeting types in a county-year
+           n_ccMentions = sum(n_ccMentions),                                    # number of climate change meetings in a county-year
+           n_gwMentions = sum(n_gwMentions),                                    # number of global warming meetings in a county-year
+           n_ccgwMentions = sum(n_ccgwMentions),                                # number of CC or GW meetings in a county-year
+           n_scriptCC = sum(ccBinary),                                          # number of transcripts with at least one mention of climate change
+           n_scriptGW = sum(gwBinary),                                          # number of transcripts with at least one mention of global warming
+           n_scriptCCGW = sum(ccgwBinary),                                      # number of transcripts with at least one mention of CC or GW
+           ccBinary = ifelse(n_ccMentions > 0, 1, 0),                           # binary indicator; 1 = county had at least one mention of CC in a county-year
+           gwBinary = ifelse(n_gwMentions > 0, 1, 0),                           # binary indicator; 1 = county had at least one mention of GW in a county-year
+           ccgwBinary = ifelse(n_ccgwMentions > 0, 1, 0),                       # binary indicator; 1 = county had at least one mention of CC or GW in that year
+           prop_ccMentions = n_ccMentions/n_transcripts,                        # proportion of climate change mentions in a county-year
+           prop_gwMentions = n_gwMentions/n_transcripts,                        # proportion of global warming mentions in a county-year
+           prop_ccgwMentions = n_ccgwMentions/n_transcripts,                    # proportion of CC or GW mentions in a county-year 
+           prop_scriptCC = n_scriptCC/n_transcripts,
+           prop_scriptGW = n_scriptGW/n_transcripts,
+           prop_scriptCCGW = n_scriptCCGW/n_transcripts) %>%                    # proportion of transcripts with at least one mention CC or GW mention
     distinct(transcript_year, stcounty_fips, .keep_all = TRUE) %>% 
     ungroup() %>% 
-    select(state_name, state_fips, county_name, county_fips, transcript_year, 
-           ccBinary, starts_with(c("n_", "prop_"))) %>% 
+    select(transcript_year, state_name, state_fips, county_name, county_fips,
+           stcounty_fips, ccBinary, gwBinary, ccgwBinary, 
+           starts_with(c("n_", "prop_"))) %>% 
     left_join(counties)
 
 # save(lv_countyYear_noNA, file = "./LocalView/data/modified/lv_countyYear_noNA.rdata")

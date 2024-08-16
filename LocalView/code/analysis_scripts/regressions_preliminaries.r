@@ -4,6 +4,25 @@
 ##                                                                            ##
 ################################################################################
 
+
+##  ............................................................................
+##  Relevel the Rural-Urban codes so Suburban is default                    ####
+##      Arguments:                                                            ##
+##        df: a data frame                                                    ##
+##      Returns:                                                              ##
+##        A data frame with Rural, Suburban, Rural; Suburban is defgault      ##
+##   ...........................................................................
+
+refactor_ru <- function(df){
+  df %>% 
+    mutate(rural_urban_3pt = case_when(rural_urban_3pt == 1 ~ "Urban",
+                                       rural_urban_3pt == 2 ~ "Suburban",
+                                       rural_urban_3pt == 3 ~ "Rural"),
+           rural_urban_3pt = as.factor(rural_urban_3pt),
+           rural_urban_3pt = fct_relevel(rural_urban_3pt, c("Suburban", "Urban", 
+                                                            "Rural")))
+}
+
 #   ____________________________________________________________________________
 #   load packages and data                                                  ####
 
@@ -14,12 +33,17 @@ library(gt) # save regressions
 library(strcode) # easy code separators
 options(strcode = list(
   insert_with_shiny = FALSE, # set options
-  char_length = 100,
+  char_length = 80,
   hash_in_sep = TRUE
 ))
 
-load("./LocalView/data/modified/allData_noNA.rdata")
-load("./LocalView/data/modified/allData_withNA.rdata")
+load("./LocalView/data/modified/allData_noNA.rdata") 
+load("./LocalView/data/modified/allData_withNA.rdata") 
+load("./LocalView/data/modified/allData_transcriptLevel.rdata")
+
+allData_noNA <- refactor_ru(allData_noNA)
+allData_withNA <- refactor_ru(allData_withNA)
+allData_transcriptLevel <- refactor_ru(allData_transcriptLevel)
 
 
 # #   __________________________________________________________________________
@@ -33,7 +57,7 @@ load("./LocalView/data/modified/allData_withNA.rdata")
 
 ## formatting ##################################################################
 ##                                                                            ##
-##                                     Regression Formatting                  ##
+##                          Regression Formatting                             ##
 ##                                                                            ##
 ################################################################################
 ##  ............................................................................
@@ -48,11 +72,12 @@ gof_omit <- "DF|Deviance|R2 Adj.|AIC|BIC|Log.Lik.|F|RMSE"
 stars <- c("*" = 0.05, "**" = 0.01)
 
 ##  ............................................................................
-##  title and notes                                                         ####
+##  title and notes ccgw mention ~ DVP                                      ####
 
 title_inclusion <- "What Predicts Selection Into Our Sample"
 title_substantive <- "Linear Regression Democratic Vote Percentage's 
-                      Effect on Proportion of Climate Change Mentions"
+                      Effect on Proportion of Climate Change or Global Warming
+                      Mentions"
 notes <- "Notes: Cell entries are linear regression coefficients 
           with standard errors in parentheses."
 
@@ -83,3 +108,32 @@ coef <- c(
   `as.factor(transcript_year)2022` = "2022",
   `as.factor(transcript_year)2023` = "2023"
 )
+
+##  ............................................................................
+##  title and notes ccgwMention ~ days since declaration                    ####
+
+title_fema <- "Linear Regression Climate Change or Global Warming Mention's 
+               and Days Since Declaration"
+notes_fema <- "Notes: Cell entries are linear regression coefficients 
+          with standard errors in parentheses."
+
+coef_fema <- c(
+  `(Intercept)` = "Constant",
+  DVP = "Democratic Voting Percentage",
+  `as.factor(rural_urban_3pt)2` = "Suburban",
+  `as.factor(rural_urban_3pt)3` = "Rural",
+  `as.factor(days_since_decFactor)2 months` = "2 months",
+  `as.factor(days_since_decFactor)3 months` = "3 months",
+  `as.factor(days_since_decFactor)4 months` = "4 months",
+  `as.factor(days_since_decFactor)5 months` = "5 months",
+  `as.factor(days_since_decFactor)6+ months` = "6+ months",
+  `census_division2` = "Middle Atlantic",
+  `census_division3` = "East North Central",
+  `census_division4` = "West North Central",
+  `census_division5` = "South Atlantic",
+  `census_division6` = "East South Central",
+  `census_division7` = "West South Central",
+  `census_division8` = "Mountain",
+  `census_division9` = "Pacific"
+)
+

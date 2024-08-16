@@ -22,13 +22,13 @@ source("./LocalView/code/analysis_scripts/regressions_preliminaries.r")
 #   ____________________________________________________________________________
 #   Substantive Main Model                                                  ####
 
-main_model <- lm(prop_ccMentions ~ DVP, data = allData_withNA)
+main_model <- lm(prop_ccgwMentions ~ DVP, data = allData_withNA)
 
 ##  ............................................................................
 ##   Substantive Model with Controls                                        ####
 
 model_controls <- lm(
-  prop_ccMentions ~ DVP + log(total_pop) + log(med_hhic) + med_age +
+  prop_ccgwMentions ~ DVP + log(total_pop) + log(med_hhic) + med_age +
     perc_white + edu_percentPop + as.factor(rural_urban_3pt) +
     overall_cvi + as.factor(fema_binary),
   data = allData_withNA
@@ -38,26 +38,25 @@ model_controls <- lm(
 ##   Substantive Model with Census Division Fixed Effects                   ####
 
 model_divisionFE <- plm(
-  prop_ccMentions ~ DVP + log(total_pop) + log(med_hhic) + med_age + perc_white +
-    edu_percentPop + as.factor(rural_urban_3pt) + overall_cvi +
-    as.factor(fema_binary),
+  prop_ccgwMentions ~ DVP + log(total_pop) + log(med_hhic) + med_age + 
+    perc_white + edu_percentPop + as.factor(rural_urban_3pt) + overall_cvi +
+    as.factor(fema_binary) + as.factor(transcript_year),
   data = allData_withNA, index = c("census_division"), model = "within"
 )
 
 ##  ............................................................................
 ##   Substantive Model with Time as a Linear Variable                       ####
 
-model_linear_time <- lm(prop_ccMentions ~ DVP + log(total_pop) + log(med_hhic) +
+model_linear_time <- lm(prop_ccgwMentions ~ DVP + log(total_pop) + log(med_hhic) +
   med_age + perc_white + edu_percentPop +
   as.factor(rural_urban_3pt) + overall_cvi +
-  as.factor(fema_binary) +
-  as.numeric(transcript_year), data = allData_withNA)
+  as.factor(fema_binary) +  as.numeric(transcript_year), data = allData_withNA)
 
 
 ##  ............................................................................
 ##  Substantive Model with Time as a Dummy Variable                         ####
 
-model_dummy_time <- lm(prop_ccMentions ~ DVP + log(total_pop) + log(med_hhic) +
+model_dummy_time <- lm(prop_ccgwMentions ~ DVP + log(total_pop) + log(med_hhic) +
   med_age + perc_white + edu_percentPop +
   as.factor(rural_urban_3pt) + overall_cvi +
   as.factor(fema_binary) +
@@ -74,13 +73,13 @@ for (y in unique(allData_noNA$transcript_year)) {
     ## 2010 has no transcripts in with prior year FEMA declaration
 
     m_sub <- lm(
-      prop_ccMentions ~ DVP + perc_white + log(med_hhic) + edu_percentPop +
+      prop_ccgwMentions ~ DVP + perc_white + log(med_hhic) + edu_percentPop +
         as.factor(rural_urban_3pt) + overall_cvi + log(total_pop) + fema_binary,
       data = df
     )
   } else {
     m_sub <- lm(
-      prop_ccMentions ~ DVP + perc_white + log(med_hhic) + edu_percentPop +
+      prop_ccgwMentions ~ DVP + perc_white + log(med_hhic) + edu_percentPop +
         as.factor(rural_urban_3pt) + overall_cvi + log(total_pop) +
         as.factor(fema_binary),
       data = df
@@ -110,7 +109,7 @@ for (y in unique(allData_noNA$transcript_year)) {
 
 ##  ............................................................................
 #   save substantive regressions 2017-2023                                  ####
-
+# 
 # modelsummary(list("2017" = substantive_2017,
 #                   "2018" = substantive_2018,
 #                   "2019" = substantive_2019,
@@ -146,14 +145,14 @@ for (y in unique(allData_noNA$transcript_year)) {
 #   ____________________________________________________________________________
 #   Substantive Main Model                                                  ####
 
-main_model <- lm(prop_scriptCCMention ~ DVP, data = allData_withNA)
+main_model <- lm(prop_scriptCCGW ~ DVP, data = allData_withNA)
 
 ##  ............................................................................
 ##   Substantive Model with Controls                                        ####
 
 
 model_controls <- lm(
-  prop_scriptCCMention ~ DVP + log(total_pop) + log(med_hhic) + med_age +
+  prop_scriptCCGW ~ DVP + log(total_pop) + log(med_hhic) + med_age +
     perc_white + edu_percentPop + as.factor(rural_urban_3pt) + overall_cvi +
     as.factor(fema_binary),
   data = allData_withNA
@@ -163,7 +162,7 @@ model_controls <- lm(
 ##   Substantive Model with Census Division Fixed Effects                   ####
 
 model_divisionFE <- plm(
-  prop_scriptCCMention ~ DVP + log(total_pop) + log(med_hhic) + med_age +
+  prop_scriptCCGW ~ DVP + log(total_pop) + log(med_hhic) + med_age +
     perc_white + edu_percentPop + as.factor(rural_urban_3pt) + overall_cvi +
     as.factor(fema_binary),
   data = allData_withNA, index = c("census_division"), model = "within"
@@ -172,7 +171,7 @@ model_divisionFE <- plm(
 ##  ............................................................................
 ##   Substantive Model with Time as a Linear Variable                       ####
 
-model_linear_time <- lm(prop_scriptCCMention ~ DVP + log(total_pop) +
+model_linear_time <- lm(prop_scriptCCGW ~ DVP + log(total_pop) +
   log(med_hhic) + med_age + perc_white + edu_percentPop +
   as.factor(rural_urban_3pt) + overall_cvi + as.factor(fema_binary) +
   as.numeric(transcript_year), data = allData_withNA)
@@ -181,7 +180,7 @@ model_linear_time <- lm(prop_scriptCCMention ~ DVP + log(total_pop) +
 ##  ............................................................................
 ##  Substantive Model with Time as a Dummy Variable                         ####
 
-model_dummy_time <- lm(prop_scriptCCMention ~ DVP + log(total_pop) +
+model_dummy_time <- lm(prop_scriptCCGW ~ DVP + log(total_pop) +
   log(med_hhic) + med_age + perc_white + edu_percentPop +
   as.factor(rural_urban_3pt) + overall_cvi + as.factor(fema_binary) +
   as.factor(transcript_year), data = allData_withNA)
@@ -197,13 +196,13 @@ for (y in unique(allData_noNA$transcript_year)) {
     ## 2010 has no transcripts in with prior year FEMA declaration
 
     m_sub <- lm(
-      prop_scriptCCMention ~ DVP + perc_white + log(med_hhic) + edu_percentPop +
+      prop_scriptCCGW ~ DVP + perc_white + log(med_hhic) + edu_percentPop +
         as.factor(rural_urban_3pt) + overall_cvi + log(total_pop) + fema_binary,
       data = df
     )
   } else {
     m_sub <- lm(
-      prop_scriptCCMention ~ DVP + perc_white + log(med_hhic) + edu_percentPop +
+      prop_scriptCCGW ~ DVP + perc_white + log(med_hhic) + edu_percentPop +
         as.factor(rural_urban_3pt) + overall_cvi + log(total_pop) +
         as.factor(fema_binary),
       data = df
@@ -248,4 +247,4 @@ for (y in unique(allData_noNA$transcript_year)) {
 #              gof_map = gof,
 #              notes = notes,
 #              output = "./LocalView/results/regressions/substance/2017-2023_Substantive_propScript.docx")
-#
+

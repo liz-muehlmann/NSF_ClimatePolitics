@@ -25,6 +25,13 @@
 ##    Methodology is available upon request.                                  ##               
 ##                                                                            ##
 ################################################################################
+#   ____________________________________________________________________________
+#   keywords in context                                                     ####
+#   This section pulls various keywords in context using the local view data
+#   Hurricane, Tornado, Wildfire, Heatwave, Extreme Heat, Tropical Storm
+#   Flood (-ing, -s, -ed), drought, and wind
+
+
 
 ### libraries ##################################################################
 ##                                                                            ##
@@ -40,70 +47,6 @@ source("./Code/LocalView/Analysis/processing.r")
 ##                      text analysis using quanteda                          ##
 ##                                                                            ##
 ################################################################################
-## create corpus
-corpus <- corpus(lv, text_field = "caption_text_clean")
-
-## define stop words 
-custom_stopwords <- c("pause", 
-                      "music", 
-                      "um", 
-                      "uh", 
-                      "okay", 
-                      "really", 
-                      "hi", 
-                      "hello", 
-                      "goodbye",
-                      "bye",
-                      "thanks", 
-                      "thank you", 
-                      "oh", 
-                      "please", 
-                      "mr", 
-                      "mrs", 
-                      "dr", 
-                      "sir", 
-                      "just", 
-                      "thank", 
-                      "like", 
-                      "alright", 
-                      "welcome", 
-                      "good",
-                      "fellas", 
-                      "y'all",
-                      "yeah")
-
-## tokenize corpus 
-tokens <- corpus %>% 
-    quanteda::tokens(remove_punct = TRUE,
-                     remove_url = TRUE,
-                     remove_symbols = TRUE,
-                     remove_numbers = TRUE) %>% 
-    tokens_remove(c(stopwords("en"), custom_stopwords))  %>% 
-    tokens_tolower() 
-docvars_df <- docvars(tokens)
-docvars_df$docname <- paste("text", 1:nrow(docvars_df), sep="")
-
-## define hazard disaster words
-hazard_disaster <- quanteda::dictionary(list(hazard = c(
-    "climate change",
-    "extreme weather",
-    "storm*",
-    "sea level ris*",
-    "erod*",
-    "eros*",
-    "flood*",
-    "wind*",
-    "wildfire",
-    "tornado"),
-    disaster = c("hurricane*",
-                 "hurricane ike",
-                 "hurricane harvey",
-                 "hurricane dolly",
-                 "hurricane laura",
-                 "hurricane rita",
-                 "hurricane irma",
-                 "hurricane imelda",
-                 "hurricane ian")))
 
 # keyword in context (Hazard Disaster words)
 kwic <- kwic(tokens, pattern = hazard_disaster)

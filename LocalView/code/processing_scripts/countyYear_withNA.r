@@ -40,7 +40,7 @@ library(tidyverse) # data manipulation
 library(strcode) # easy code separators
 options(strcode = list(
   insert_with_shiny = FALSE, # set options
-  char_length = 100,
+  char_length = 80,
   hash_in_sep = TRUE
 ))
 

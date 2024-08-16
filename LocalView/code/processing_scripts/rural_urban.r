@@ -14,7 +14,7 @@
 #   ____________________________________________________________________________
 #   load libraries and custom functions                                     ####
 
-source("./LocalView/code/processing_scripts/preliminaries.r")      
+source("./LocalView/code/processing_scripts/regression_prelims.r") 
 
 #   ____________________________________________________________________________    
 #   USDA Rural-Urban Designations                                           ####            

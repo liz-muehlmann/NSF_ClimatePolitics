@@ -50,7 +50,7 @@ library(openxlsx)                                  # save tables
 library(flextable)                                 # make tables
 library(strcode)                                   # easy code separators
 options(strcode = list(insert_with_shiny = FALSE,  # set options
-                       char_length = 100, 
+                       char_length = 80, 
                        hash_in_sep= TRUE))
 
 load("./LocalView/data/modified/lv_clean_noTranscript.rdata")
@@ -161,7 +161,7 @@ for(state in unique(lvClean_noScript$state_name)){
         select(transcript_year, n_counties_inYear) %>%
         distinct(transcript_year, .keep_all = TRUE) %>%
         pivot_wider(names_from = transcript_year, 
-                    values_from=n_counties_inYear) %>% 
+                    values_from = n_counties_inYear) %>% 
         mutate(across(where(is.numeric), as.character))
     
     n_unique_allYears <- s %>% 
@@ -205,3 +205,25 @@ for(state in unique(lvClean_noScript$state_name)){
         #                              state, ".docx"))
     
 }
+################################################################################
+
+s <- lvClean_noScript %>% 
+    filter(state_name == state) %>% 
+    group_by(transcript_year, county_name) %>% 
+    summarize(n_script = n(),
+              n_script_ccMention = sum(ccBinary),
+              total_ccMention = sum(n_ccMentions)) %>% 
+    ungroup() %>% 
+    mutate(n_distinct_counties = n_distinct(county_name), 
+           n_script_ccMention = paste("(", n_script_ccMention, ")", 
+                                      sep = "")) %>% 
+    group_by(transcript_year) %>% 
+    mutate(n_counties_inYear = n_distinct(county_name),
+           nScript_nCC = paste(n_script, n_script_ccMention, sep = " "))
+
+totals <- lvClean_noScript %>% 
+    group_by(state_name) %>% 
+    mutate(state_n_ccMentions = sum(n_ccMentions),
+           state_transcripts_ccMentions = sum(ccBinary)) %>% 
+    select(state_name, state_n_ccMentions, state_transcripts_ccMentions) %>% 
+    distinct(state_name, .keep_all = TRUE)

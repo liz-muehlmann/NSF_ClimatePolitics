@@ -1,7 +1,6 @@
 ################################################################################ 
 ##                                                                            ##
-##  This file includes the custom functions used to process                   ##
-##  and merge data for local view                                             ## 
+##  This file includes the custom functions used to process local view data.  ##
 ##                                                                            ##
 ##  Output:                                                                   ##
 ##      None                                                                  ##
@@ -20,8 +19,9 @@ library(tidyverse)                                 # data manipulation
 library(tidycensus)                                # ACS data
 library(readxl)                                    # work with xlsx files (CVI)
 library(strcode)                                   # easy code separators
+library(quanteda)                                  # text analysis
 options(strcode = list(insert_with_shiny = FALSE,  # set options
-                       char_length = 100, 
+                       char_length = 80, 
                        hash_in_sep= TRUE))
 
 ################################################################################ 

@@ -18,7 +18,7 @@
 
 #   ____________________________________________________________________________
 #   load libraries and custom functions                                     ####
-source("./LocalView/code/processing_scripts/preliminaries.r")
+source("./LocalView/code/processing_scripts/regression_prelims.r")
 library(tigris)                                 # download geographic boundaries
 library(sf)                                     # work with shapefiles
 

@@ -27,25 +27,27 @@ fema <- read.csv("./LocalView/data/original/2023_FEMA.csv") %>%
     fema_declarationType = declarationType,
     fema_incidentType = incidentType
   ) %>%
-  separate(declarationDate, into = c("fema_year", "fema_month", "date"),
-           sep = "-") %>%
+  separate(declarationDate,
+    into = c("fema_year", "fema_month", "date"),
+    sep = "-"
+  ) %>%
   mutate(fema_day = str_sub(date, 0, 2)) %>%
   filter(
     fema_year >= 2009 & fema_year < 2023,
     fema_incidentType == "Coastal Storm" |
-      fema_incidentType == "Fire" |
-      fema_incidentType == "Flood" |
-      fema_incidentType == "Freezing" |
-      fema_incidentType == "Hurricane" |
-      fema_incidentType == "Mud/Landslide" |
-      fema_incidentType == "Severe Ice Storm" |
-      fema_incidentType == "Severe Storm" |
-      fema_incidentType == "Snowstorm" |
-      fema_incidentType == "Tornado" |
-      fema_incidentType == "Typhoon" |
-      fema_incidentType == "Winter Storm" |
-      fema_incidentType == "Tropical Storm" |
-      fema_incidentType == "Tsunami"
+    fema_incidentType == "Fire" |
+    fema_incidentType == "Flood" |
+    fema_incidentType == "Freezing" |
+    fema_incidentType == "Hurricane" |
+    fema_incidentType == "Mud/Landslide" |
+    fema_incidentType == "Severe Ice Storm" |
+    fema_incidentType == "Severe Storm" |
+    fema_incidentType == "Snowstorm" |
+    fema_incidentType == "Tornado" |
+    fema_incidentType == "Typhoon" |
+    fema_incidentType == "Winter Storm" |
+    fema_incidentType == "Tropical Storm" |
+    fema_incidentType == "Tsunami"
   ) %>%
   padFips() %>%
   createFips() %>%
@@ -56,8 +58,8 @@ fema <- read.csv("./LocalView/data/original/2023_FEMA.csv") %>%
   ) %>%
   ungroup() %>%
   select(
-    fema_id, fema_year, fema_month, fema_day, fema_declarationType, 
-    fema_incidentType,state_fips, county_fips, stcounty_fips, 
+    fema_id, fema_year, fema_month, fema_day, fema_declarationType,
+    fema_incidentType, state_fips, county_fips, stcounty_fips,
     fema_decInCountyYear, fema_decTypeCountyYear
   ) %>%
   excludeStates()
@@ -116,7 +118,9 @@ for (y in unique(fema$fema_year)) {
 ## n = 43,519
 fema_countyYear <- bind_rows(f_merged) %>%
   mutate(transcript_year = as.character(transcript_year)) %>%
-  select(stcounty_fips, fema_year, transcript_year, fema_decInCountyYear, 
-         fema_decTypeCountyYear, fema_binary)
+  select(
+    stcounty_fips, fema_year, transcript_year, fema_decInCountyYear,
+    fema_decTypeCountyYear, fema_binary
+  )
 
 # save(fema_countyYear, file = "./LocalView/data/modified/fema_countyYear_withNA.rdata")

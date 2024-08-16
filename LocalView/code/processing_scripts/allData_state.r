@@ -41,7 +41,7 @@
 #   ____________________________________________________________________________
 #   load preliminaries and data                                             ####
 
-source("./LocalView/code/processing_scripts/preliminaries.r")
+source("./LocalView/code/processing_scripts/regression_prelims.r") 
 load("./LocalView/data/modified/allData_withNA.rdata")
 
 
@@ -58,10 +58,20 @@ allData_state <- allData_withNA %>%
     state_n_transcripts = sum(n_transcripts, na.rm = TRUE),
     state_n_meetingTypes = sum(n_meetingTypes, na.rm = TRUE),
     state_n_ccMentions = sum(n_ccMentions, na.rm = TRUE),
+    state_n_gwMentions = sum(n_gwMentions, na.rm = TRUE),
+    state_n_ccgwMentions = sum(n_ccgwMentions, na.rm = TRUE),
     state_ccBinary = ifelse(state_n_ccMentions > 0, 1, 0),
-    state_n_scriptCCMention = sum(n_scriptCCMention, na.rm = TRUE),
+    state_gwBinary = ifelse(state_n_gwMentions > 0, 1, 0),
+    state_ccgwBinary = ifelse(state_n_ccgwMentions > 0, 1, 0),
+    state_n_scriptCC = sum(n_scriptCC, na.rm = TRUE),
+    state_n_scriptGW = sum(n_scriptGW, na.rm = TRUE),
+    state_n_scriptCCGW = sum(n_scriptCCGW, na.rm = TRUE),
     state_prop_ccMentions = state_n_ccMentions / state_n_transcripts,
-    state_prop_scriptCCMentions = state_n_scriptCCMention / state_n_transcripts,
+    state_prop_gwMentions = state_n_gwMentions / state_n_transcripts,
+    state_prop_ccgwMentions = state_n_ccgwMentions / state_n_transcripts,
+    state_prop_scriptCC = state_n_scriptCC / state_n_transcripts,
+    state_prop_scriptGW = state_n_scriptGW / state_n_transcripts,
+    state_prop_scriptCCGW = state_n_scriptCCGW / state_n_transcripts,
     across(
       c(
         overall_cvi, baseline_all, baseline_health, baseline_socioEcon,
@@ -75,7 +85,10 @@ allData_state <- allData_withNA %>%
     )
   ) %>%
   select(transcript_year, starts_with("state_"), n_countiesInState) %>%
-  distinct(transcript_year, state_name, .keep_all = TRUE)
+  distinct(transcript_year, state_name, .keep_all = TRUE) %>% 
+  mutate(across(everything(), ~replace(.x, is.nan(.x), 0)))
+
+
 # save(allData_state, file = "./LocalView/data/modified/allData_State.rdata")
 
 
