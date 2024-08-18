@@ -13,20 +13,29 @@
 
 #   ____________________________________________________________________________
 #   load data                                                               ####
-source("./LocalView/code/analysis_scripts/regressions_preliminaries.r")
-load("./LocalView/data/modified/lv_fema_time.rdata")
+source("./LocalView/code/processing_scripts/regression_prelims.r")
+load("./LocalView/data/modified/lvFema_allDeclarations.rdata")
+load("./LocalView/data/modified/lvFema_transcript.rdata")
+load("./LocalView/data/modified/lvFema_all.rdata")
 
 #   ____________________________________________________________________________
-#   Substantive Main Model                                                  ####
+#   ccgwBinary ~ |number of declarations in the last five years|            ####
 
-main_model <- lm(ccgwBinary ~ as.factor(days_since_decFactor) + 
-                census_division + DVP, data = dec_nearestMeeting)
+days_fiveYears <- lm(ccgwBinary ~ nDec_FiveYears + 
+                census_division + DVP, data = lvf_transcript)
 
-# modelsummary(main_model,
+# modelsummary(days_since_dec,
 #              coef_map = coef_fema,
 #              stars = stars,
 #              title = title_fema,
 #              gof_omit = gof_omit,
 #              gof_map = gof,
 #              notes = notes_fema,
-#              output = "./LocalView/results/regressions/substance/lv_fema_time.docx")
+#              output = "gt")
+
+
+#   ____________________________________________________________________________
+#   ccgwBinary ~ days since declaration                                     ####
+
+days_sinceDec <- lm(ccgwBinary ~ time_btwn_decMeetingFactor + census_division +
+                        DVP, data = lvFema)

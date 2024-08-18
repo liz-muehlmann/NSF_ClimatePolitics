@@ -19,12 +19,12 @@
 #   ____________________________________________________________________________
 #   load preliminaries and data                                             ####
 
-library(lubridate)          # work with dates
-source("./LocalView/code/processing_scripts/regression_prelims.r") 
+library(lubridate)                                             # work with dates
+source("./LocalView/code/processing_scripts/regression_prelims.r")
 load("./LocalView/data/modified/allData_transcriptLevel.rdata")
 load("./LocalView/data/modified/fema_disasterYear.rdata")
 
-# n = 103,379
+# n = 103,350
 lv <- allData_transcriptLevel %>%
   mutate(
     meeting_date = make_date(transcript_year, transcript_month, transcript_day)
@@ -39,47 +39,72 @@ fema <- fema %>%
 #   ____________________________________________________________________________
 #   merge data                                                              ####
 
-#n = 693,562
+# all disasters, all years
+# n = 947,118
 lvFema <- left_join(lv, fema, relationship = "many-to-many") %>%
-  mutate(days_since_declaration = difftime(declaration_date, meeting_date, 
-                                           unit = "days"),
-         days_since_decFactor = case_when(days_since_declaration > 0 ~ "Declaration occurred after meeting date",
-                                          days_since_declaration == 0 ~ "Declaration occured on meeting date",
-                                          days_since_declaration >= -30 ~ "Declaration occured less than 30 days before meeting date",
-                                          days_since_declaration <= -31 &
-                                            days_since_declaration >= -60 ~ "Declaration occured 2 months before meeting date",
-                                          days_since_declaration <= -61 &
-                                            days_since_declaration >= -90 ~ "Declaration occured 3 months before meeting date",
-                                          days_since_declaration <= -91 &
-                                            days_since_declaration >= -120 ~ "Declaration occured 4 months before meeting date",
-                                          days_since_declaration <= -121 &
-                                            days_since_declaration >= -150 ~ "Declaration occured 5 months before meeting date",
-                                          days_since_declaration <= -151 &
-                                            days_since_declaration >= -364 ~ "Declaration occured 6 to 11 months before meeting date",
-                                          days_since_declaration <= -365 ~ "Declaration occured 1 or more years before meeting date",
-                                          is.na(days_since_declaration) ~ "No declaration in county")) %>% 
-  select(stcounty_fips, state_name, county_name, transcript_id, meeting_date, 
-         declaration_date, days_since_declaration, days_since_decFactor, 
-         fema_id, fema_incidentType) %>% 
-  group_by(transcript_id) %>%
   mutate(
-    min_days_before = ifelse(any(days_since_declaration < 0), 
-                             max(days_since_declaration[days_since_declaration < 0], na.rm = TRUE), 
-                             NA),
-    min_days_after = ifelse(any(days_since_declaration > 0), 
-                            min(days_since_declaration[days_since_declaration > 0], na.rm = TRUE), 
-                            NA),
-    closest_meeting = case_when(
-      days_since_declaration == min_days_before ~ "closest declaration before meeting",
-      days_since_declaration == min_days_after ~ "closest declaration after meeting",
-      TRUE ~ NA_character_
-    )
-  ) %>%
-  ungroup()
+    days_btwn_decMeeting = difftime(declaration_date, meeting_date,
+      unit = "days")) %>%
+    filter(days_btwn_decMeeting <= 0) %>%
+    mutate(
+      days_btwn_decMeeting = abs(days_btwn_decMeeting),
+      time_btwn_decMeetingFactor = case_when(
+        days_btwn_decMeeting <= 30 ~ "Zero to One month",
+        days_btwn_decMeeting >= 31 &
+          days_btwn_decMeeting <= 60 ~ "Two months",
+        days_btwn_decMeeting >= 61 &
+          days_btwn_decMeeting <= 90 ~ "Three months",
+        days_btwn_decMeeting >= 91 &
+          days_btwn_decMeeting <= 120 ~ "Four months",
+        days_btwn_decMeeting >= 121 &
+          days_btwn_decMeeting <= 150 ~ "Five months",
+        days_btwn_decMeeting >= 151 &
+          days_btwn_decMeeting <= 365 ~ "Six months to a year",
+        days_btwn_decMeeting >= 366 &
+          days_btwn_decMeeting <= 730 ~ "2 years",
+        days_btwn_decMeeting >= 731 &
+          days_btwn_decMeeting <= 1095 ~ "3 years",
+        days_btwn_decMeeting >= 1096 &
+          days_btwn_decMeeting <= 1460 ~ "4 years",
+        days_btwn_decMeeting >= 1461 &
+          days_btwn_decMeeting <= 1825 ~ "5 years",
+        days_btwn_decMeeting >= 1826 ~ "6 or more years"
+      )
+    ) %>%
+    group_by(transcript_id, time_btwn_decMeetingFactor) %>%
+    mutate(nDec_MeetingFactor = n()) %>%
+    ungroup() 
 
+# save(lvFema, file = "./LocalView/data/modified/lvFema_all.rdata")
 
- # write.csv(nearestDecl_beforeMeeting, 
-#           "./LocalView/results/summaries/LargeFiles/nearestDeclaration_beforeMeeting.csv", 
-#           row.names = FALSE)
+##  ............................................................................
+##  number of declarations last five years                                  ####
 
-# save(dec_nearestMeeting, file = "./LocalView/data/modified/lv_fema_time.rdata")
+lvf_fiveYears <- lvFema %>%
+  pivot_wider(
+    names_from = time_btwn_decMeetingFactor,
+    values_from = nDec_MeetingFactor, values_fill = 0, names_sep = "_") %>%
+  rowwise() %>%
+  mutate(nDec_FiveYears = sum(`2 years`, `5 years`, `Six months to a year`, 
+                              `3 years`, `4 years`, `Four months`, 
+                              `Three months`, `Two months`, 
+                              `Zero to One month`, `Five months`)) %>%
+  select(-`2 years`, -`5 years`, -`Six months to a year`,
+         -`3 years`, -`4 years`, -`Four months`,
+         -`Three months`, -`Two months`,
+         -`Zero to One month`, -`Five months`) %>% 
+  rename(nDec_SixYears = `6 or more years`)
+
+# save(lvf_fiveYears, file = "./LocalView/data/modified/lvFema_allDeclarations.rdata")
+
+##  ............................................................................
+##  transcript level                                                        ####
+
+# n = 103,350
+lvf_transcript <- lvf_fiveYears %>%
+  group_by(transcript_id) %>%
+  slice(which.min(days_btwn_decMeeting))  %>% 
+  ungroup() 
+
+# save(lvf_transcript, file = "./LocalView/data/modified/lvFema_transcript.rdata")
+

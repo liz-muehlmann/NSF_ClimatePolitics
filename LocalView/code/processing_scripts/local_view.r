@@ -19,7 +19,6 @@
 library(arrow)                                     # open and work with parquet format (Local View)
 library(readtext)                                  # read filepaths (Local View)
 
-
 #   ____________________________________________________________________________
 #   state and county information is necessary for aggregating to            ####
 #   the county-year level processing the geography data is done in the 
@@ -111,7 +110,8 @@ lvClean_noScript <- lvClean_transcript %>%
            ccBinary = ifelse(n_ccMentions > 0, 1, 0),                           # binary indicator; 1 = CC mention, 0 = no CC mention
            gwBinary = ifelse(n_gwMentions > 0, 1, 0),                           # binary indicator; 1 = GW mention, 0 = no GW mention 
            ccgwBinary = ifelse(n_ccgwMentions > 0, 1, 0)) %>%                   # binary indicator; 1 = CC or GW mention, 0 = no mention
-    select(-caption_text_clean)
+    select(-caption_text_clean) %>% 
+    distinct(.keep_all = TRUE)
 
 # save(lvClean_noScript, file = "./LocalView/data/modified/lvClean_noTranscript.rdata")
 
