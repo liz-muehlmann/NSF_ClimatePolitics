@@ -104,7 +104,31 @@ lvf_fiveYears <- lvFema %>%
 lvf_transcript <- lvf_fiveYears %>%
   group_by(transcript_id) %>%
   slice(which.min(days_btwn_decMeeting))  %>% 
-  ungroup() 
+  ungroup() %>% 
+  mutate(
+    days_btwn_decMeeting = abs(days_btwn_decMeeting),
+    time_btwn_decMeetingFactor = case_when(
+      days_btwn_decMeeting <= 30 ~ "Zero to One month",
+      days_btwn_decMeeting >= 31 &
+        days_btwn_decMeeting <= 60 ~ "Two months",
+      days_btwn_decMeeting >= 61 &
+        days_btwn_decMeeting <= 90 ~ "Three months",
+      days_btwn_decMeeting >= 91 &
+        days_btwn_decMeeting <= 120 ~ "Four months",
+      days_btwn_decMeeting >= 121 &
+        days_btwn_decMeeting <= 150 ~ "Five months",
+      days_btwn_decMeeting >= 151 &
+        days_btwn_decMeeting <= 365 ~ "Six months to a year",
+      days_btwn_decMeeting >= 366 &
+        days_btwn_decMeeting <= 730 ~ "2 years",
+      days_btwn_decMeeting >= 731 &
+        days_btwn_decMeeting <= 1095 ~ "3 years",
+      days_btwn_decMeeting >= 1096 &
+        days_btwn_decMeeting <= 1460 ~ "4 years",
+      days_btwn_decMeeting >= 1461 &
+        days_btwn_decMeeting <= 1825 ~ "5 years",
+      days_btwn_decMeeting >= 1826 ~ "6 or more years"
+    ))
 
 # save(lvf_transcript, file = "./LocalView/data/modified/lvFema_transcript.rdata")
 

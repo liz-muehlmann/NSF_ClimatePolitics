@@ -19,12 +19,24 @@ load("./LocalView/data/modified/lvFema_transcript.rdata")
 load("./LocalView/data/modified/lvFema_all.rdata")
 
 #   ____________________________________________________________________________
-#   ccgwBinary ~ |number of declarations in the last five years|            ####
+#   All-data all-years                                                      ####
+
+##  ............................................................................
+##   ccgwBinary ~ days since declaration                                    ####
+
+days_sinceDec_ad <- lm(ccgwBinary ~ time_btwn_decMeetingFactor + census_division +
+                        DVP, data = lvFema)
+
+#   ____________________________________________________________________________
+#   Transcript level, disaster closest to the meeting date                  ####
+
+##  ............................................................................
+##  ccgwBinary ~ |number of declarations in the last five years|            ####
 
 days_fiveYears <- lm(ccgwBinary ~ nDec_FiveYears + 
                 census_division + DVP, data = lvf_transcript)
 
-# modelsummary(days_since_dec,
+# modelsummary(days_fiveYears,
 #              coef_map = coef_fema,
 #              stars = stars,
 #              title = title_fema,
@@ -34,8 +46,17 @@ days_fiveYears <- lm(ccgwBinary ~ nDec_FiveYears +
 #              output = "gt")
 
 
-#   ____________________________________________________________________________
-#   ccgwBinary ~ days since declaration                                     ####
+##  ............................................................................
+##  ccgwBinary ~ days since declaration                                     ####
 
-days_sinceDec <- lm(ccgwBinary ~ time_btwn_decMeetingFactor + census_division +
-                        DVP, data = lvFema)
+days_sinceDec_tl <- lm(ccgwBinary ~ time_btwn_decMeetingFactor + census_division +
+                        DVP, data = lvf_transcript)
+
+# modelsummary(days_sinceDec_tl,
+#              coef_map = coef_fema,
+#              stars = stars,
+#              title = title_fema,
+#              gof_omit = gof_omit,
+#              gof_map = gof,
+#              notes = notes_fema,
+#              output = "gt")
