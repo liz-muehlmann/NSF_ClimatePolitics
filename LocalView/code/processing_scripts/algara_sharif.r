@@ -17,7 +17,7 @@
 #   ____________________________________________________________________________
 #   load libraries and custom functions                                     ####
 
-source("./LocalView/code/processing_scripts/regression_prelims.r")      
+source("./LocalView/code/processing_scripts/analysis_prelims.r")          
 
 #   ____________________________________________________________________________
 #   algara-sharif election                                                  ####

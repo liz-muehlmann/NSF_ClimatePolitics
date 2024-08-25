@@ -41,7 +41,7 @@
 #   ____________________________________________________________________________
 #   load preliminaries and data                                             ####
 
-source("./LocalView/code/processing_scripts/regression_prelims.r") 
+source("./LocalView/code/processing_scripts/analysis_prelims.r")      
 load("./LocalView/data/modified/allData_withNA.rdata")
 
 

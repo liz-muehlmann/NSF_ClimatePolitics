@@ -20,7 +20,7 @@
 #   load preliminaries and data                                             ####
 
 library(lubridate)                                             # work with dates
-source("./LocalView/code/processing_scripts/regression_prelims.r")
+source("./LocalView/code/processing_scripts/analysis_prelims.r")      
 load("./LocalView/data/modified/allData_transcriptLevel.rdata")
 load("./LocalView/data/modified/fema_disasterYear.rdata")
 
