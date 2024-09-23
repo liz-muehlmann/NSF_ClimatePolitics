@@ -18,7 +18,7 @@
 
 #   ____________________________________________________________________________
 #   load libraries and custom functions                                     ####
-source("./LocalView/code/processing_scripts/regression_prelims.r")
+
 library(tigris)                                 # download geographic boundaries
 library(sf)                                     # work with shapefiles
 
@@ -31,12 +31,17 @@ statesGeo <- statesGeo %>%
     rename(state_fips = STATEFP,
            state_name = NAME,
            census_region = REGION,
-           census_division = DIVISION) %>%
-    select(state_fips, state_name, census_division, census_region, geometry) %>% 
+           census_division = DIVISION,
+           state_abbr = STUSPS) %>%
+    select(state_fips, state_name, state_abbr, census_division, census_region, geometry) %>% 
     excludeStates()
 
+states_abbr <- statesGeo %>% 
+    st_drop_geometry() 
+
 states <- statesGeo %>% 
-    st_drop_geometry()
+    st_drop_geometry() %>% 
+    select(-state_abbr)
 
 #   ____________________________________________________________________________
 ##  county boundaries                                                       ####

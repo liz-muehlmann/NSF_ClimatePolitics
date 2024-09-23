@@ -18,58 +18,69 @@
 #   ____________________________________________________________________________
 #   load libraries
 
-import requests
 from bs4 import BeautifulSoup
+from pprint import pprint
+from urllib.parse import urlparse
+import requests
 import re
+import os
 
 #   ____________________________________________________________________________
 #   preliminaries                                                           ####
 
-save_loc = "./LocalView/data/original/noaa/"
+save_loc = "/GitHub/NSF_ClimatePolitics/LocalView/data/original/noaa/"
 url = "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/"
-regex = r"\_[d]([0-9]{4})\_"
-
-reqs = requests.get(url)
-soup = BeautifulSoup(reqs.text, 'html.parser')
-
-urls = []
-for link in soup.find_all('a'):
-    r = requests.get(url + str(page))
-    source = r.content
-    page_source = html.fromstring(source)
-    urls.extend(page_source.xpath(""))
-    link.get('href')
+pattern = "_d(\d{4})_"
+start = 2004
+end = 2024
 
 #   ____________________________________________________________________________
 #   define functions                                                        ####
 
+##  ............................................................................
+##  filter links function   
 
-
-
-
-def get_storm_links():
+def get_noaa_links():
     r = requests.get(url)
     soup = BeautifulSoup(r.content, "html.parser")
-    links = soup.findAll('a')
-    storm_links = [url + link['href'] for link in links if link['href'].endswith('.csv.gz')]
-    return storm_links
+    all_links = soup.findAll('a')
+    noaa_links = [url + link['href'] for link in all_links if link['href'].endswith('.csv.gz')]
+    filtered_links = []
+    for link in noaa_links:
+        match = re.search(pattern, link)
+        if match:
+            year = int(match.group(1))
+            if start <= year <= end:
+                filtered_links.append(link)
+    return filtered_links
 
-def download_files():
-    for link in storm_links:
+# create list of links
+noaa_links = get_noaa_links()
+
+
+##  ............................................................................
+##  download links                                                          ####
+
+def download_files(save_dir):
+    os.makedirs(save_dir, exist_ok = True)
+    for link in noaa_links:
         file_name = link.split("/")[-1]
+        file_path = os.path.join(save_dir, file_name)
+        
         print("Downloading file:%s"%file_name)
-
-r = requests.get(link, stream = TRUE)
-
-with open(file_name, 'wb') as f:
-    for chunk in r.iter_content(chunk_size = 1024*1024):
-        if chunk:
-            f.write(chunk)
-print( "%s downloaded!\n"%file_name)
-    print("All files downloaded!")
+        r = requests.get(link, stream = True)
+        
+        with open(file_name, 'wb') as f:
+            for chunk in r.iter_content(chunk_size = 1024*1024):
+                if chunk:
+                    f.write(chunk)
+                    
+        print("%s downloaded!\n"%file_name)
+        
+    print("All videos downloaded!")
     return
 
-if ___name___ == "___main___":
-    storm_links = get_storm_links()
-    download_files(storm_links)
+download_files(save_loc)
+
+
 

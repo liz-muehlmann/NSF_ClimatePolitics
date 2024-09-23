@@ -31,12 +31,7 @@ library(plm) # fixed effects
 library(modelsummary) # regression output tables
 library(gt) # save regressions
 library(strcode) # easy code separators
-options(strcode = list(
-  insert_with_shiny = FALSE, # set options
-  char_length = 80,
-  hash_in_sep = TRUE
-))
-
+library(sjPlot)
 
 load("./LocalView/data/modified/allData_noNA.rdata") 
 load("./LocalView/data/modified/allData_withNA.rdata") 

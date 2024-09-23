@@ -41,41 +41,30 @@ fema <- fema %>%
 
 # all disasters, all years
 # n = 947,118
+## NOTE: interval() returns a positive value if the start happened before the end
+## declaration (start) happened before meeting (end) the value is positive
 lvFema <- left_join(lv, fema, relationship = "many-to-many") %>%
-  mutate(
-    days_btwn_decMeeting = difftime(declaration_date, meeting_date,
-      unit = "days")) %>%
-    filter(days_btwn_decMeeting <= 0) %>%
-    mutate(
-      days_btwn_decMeeting = abs(days_btwn_decMeeting),
-      time_btwn_decMeetingFactor = case_when(
-        days_btwn_decMeeting <= 30 ~ "Zero to One month",
-        days_btwn_decMeeting >= 31 &
-          days_btwn_decMeeting <= 60 ~ "Two months",
-        days_btwn_decMeeting >= 61 &
-          days_btwn_decMeeting <= 90 ~ "Three months",
-        days_btwn_decMeeting >= 91 &
-          days_btwn_decMeeting <= 120 ~ "Four months",
-        days_btwn_decMeeting >= 121 &
-          days_btwn_decMeeting <= 150 ~ "Five months",
-        days_btwn_decMeeting >= 151 &
-          days_btwn_decMeeting <= 365 ~ "Six months to a year",
-        days_btwn_decMeeting >= 366 &
-          days_btwn_decMeeting <= 730 ~ "2 years",
-        days_btwn_decMeeting >= 731 &
-          days_btwn_decMeeting <= 1095 ~ "3 years",
-        days_btwn_decMeeting >= 1096 &
-          days_btwn_decMeeting <= 1460 ~ "4 years",
-        days_btwn_decMeeting >= 1461 &
-          days_btwn_decMeeting <= 1825 ~ "5 years",
-        days_btwn_decMeeting >= 1826 ~ "6 or more years"
-      )
-    ) %>%
-    group_by(transcript_id, time_btwn_decMeetingFactor) %>%
-    mutate(nDec_MeetingFactor = n()) %>%
-    ungroup() 
+  mutate(meeting_date = ymd(meeting_date),
+         declaration_date = ymd(declaration_date),
+         months_btwn_decMeeting = round(interval(declaration_date, meeting_date)/months(1), 2)) %>% 
+  filter(months_btwn_decMeeting >= 0) %>% 
+  mutate(time_btwn_decMeetingFactor = case_when(
+    months_btwn_decMeeting <= 1 ~ "1 month",
+    months_btwn_decMeeting <= 2 ~ "2 months",
+    months_btwn_decMeeting <= 6 ~ "3-6 months",
+    months_btwn_decMeeting <= 9 ~ "7-9 months",
+    months_btwn_decMeeting <= 12 ~ "10-12 months",
+    months_btwn_decMeeting <= 24 ~ "2 years",
+    months_btwn_decMeeting <= 36 ~ "3 years",
+    months_btwn_decMeeting <= 48 ~ "4 years",
+    months_btwn_decMeeting <= 60 ~ "5 years",
+    months_btwn_decMeeting >= 60.01 ~ "6+ years"
+  )) %>% 
+  group_by(transcript_id, time_btwn_decMeetingFactor) %>% 
+  mutate(nDec_MeetingFactor = n()) %>% 
+  ungroup()
 
-# save(lvFema, file = "./LocalView/data/modified/lvFema_all.rdata")
+save(lvFema, file = "./LocalView/data/modified/lvFema_all.rdata")
 
 ##  ............................................................................
 ##  number of declarations last five years                                  ####
@@ -85,15 +74,18 @@ lvf_fiveYears <- lvFema %>%
     names_from = time_btwn_decMeetingFactor,
     values_from = nDec_MeetingFactor, values_fill = 0, names_sep = "_") %>%
   rowwise() %>%
-  mutate(nDec_FiveYears = sum(`2 years`, `5 years`, `Six months to a year`, 
-                              `3 years`, `4 years`, `Four months`, 
-                              `Three months`, `Two months`, 
-                              `Zero to One month`, `Five months`)) %>%
-  select(-`2 years`, -`5 years`, -`Six months to a year`,
-         -`3 years`, -`4 years`, -`Four months`,
-         -`Three months`, -`Two months`,
-         -`Zero to One month`, -`Five months`) %>% 
-  rename(nDec_SixYears = `6 or more years`)
+  mutate(nDec_FiveYears = sum(`1 month`, 
+                              `2 months`, 
+                              `3-6 months`, 
+                              `7-9 months`, 
+                              `10-12 months`, 
+                              `2 years`, 
+                              `3 years`, 
+                              `4 years`, 
+                              `5 years`)) %>%
+  select(-`1 month`, -`2 months`, -`3-6 months`, -`7-9 months`, -`10-12 months`,
+         -`2 years`, -`3 years`, -`4 years`, -`5 years`) %>% 
+  rename(nDec_SixYears = `6+ years`)
 
 # save(lvf_fiveYears, file = "./LocalView/data/modified/lvFema_allDeclarations.rdata")
 
@@ -103,32 +95,20 @@ lvf_fiveYears <- lvFema %>%
 # n = 103,350
 lvf_transcript <- lvf_fiveYears %>%
   group_by(transcript_id) %>%
-  slice(which.min(days_btwn_decMeeting))  %>% 
-  ungroup() %>% 
-  mutate(
-    days_btwn_decMeeting = abs(days_btwn_decMeeting),
-    time_btwn_decMeetingFactor = case_when(
-      days_btwn_decMeeting <= 30 ~ "Zero to One month",
-      days_btwn_decMeeting >= 31 &
-        days_btwn_decMeeting <= 60 ~ "Two months",
-      days_btwn_decMeeting >= 61 &
-        days_btwn_decMeeting <= 90 ~ "Three months",
-      days_btwn_decMeeting >= 91 &
-        days_btwn_decMeeting <= 120 ~ "Four months",
-      days_btwn_decMeeting >= 121 &
-        days_btwn_decMeeting <= 150 ~ "Five months",
-      days_btwn_decMeeting >= 151 &
-        days_btwn_decMeeting <= 365 ~ "Six months to a year",
-      days_btwn_decMeeting >= 366 &
-        days_btwn_decMeeting <= 730 ~ "2 years",
-      days_btwn_decMeeting >= 731 &
-        days_btwn_decMeeting <= 1095 ~ "3 years",
-      days_btwn_decMeeting >= 1096 &
-        days_btwn_decMeeting <= 1460 ~ "4 years",
-      days_btwn_decMeeting >= 1461 &
-        days_btwn_decMeeting <= 1825 ~ "5 years",
-      days_btwn_decMeeting >= 1826 ~ "6 or more years"
-    ))
+  slice(which.min(months_btwn_decMeeting)) %>% 
+  mutate(time_btwn_decMeetingFactor = case_when(
+    months_btwn_decMeeting <= 1 ~ "1 month",
+    months_btwn_decMeeting <= 2 ~ "2 months",
+    months_btwn_decMeeting <= 6 ~ "3-6 months",
+    months_btwn_decMeeting <= 9 ~ "7-9 months",
+    months_btwn_decMeeting <= 12 ~ "10-12 months",
+    months_btwn_decMeeting <= 24 ~ "2 years",
+    months_btwn_decMeeting <= 36 ~ "3 years",
+    months_btwn_decMeeting <= 48 ~ "4 years",
+    months_btwn_decMeeting <= 60 ~ "5 years",
+    months_btwn_decMeeting >= 60.01 ~ "6+ years"
+  )) %>% 
+  ungroup()
 
 # save(lvf_transcript, file = "./LocalView/data/modified/lvFema_transcript.rdata")
 

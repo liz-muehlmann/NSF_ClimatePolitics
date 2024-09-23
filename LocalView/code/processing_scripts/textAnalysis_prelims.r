@@ -18,10 +18,6 @@
 library(tidyverse)
 library(tidytext)
 library(quanteda)
-library(strcode)                                   # easy code separators
-options(strcode = list(insert_with_shiny = FALSE,  # set options
-                       char_length = 80, 
-                       hash_in_sep= TRUE))
 options(java.parameters = "-Xmx8000m")
 
 load("./LocalView/data/modified/lvClean_transcript.rdata")
@@ -57,7 +53,7 @@ custom_stopwords <- c("pause",
                       "like", 
                       "alright", 
                       "welcome", 
-                      "good",
+                      "good bye",
                       "fellas", 
                       "y'all",
                       "yeah")
@@ -66,10 +62,10 @@ custom_stopwords <- c("pause",
 ##  tokenize corpus                                                         ####
 
 tokens <- corpus %>% 
-    quanteda::tokens(remove_punct = TRUE,
-                     remove_url = TRUE,
-                     remove_symbols = TRUE,
-                     remove_numbers = TRUE) %>% 
+    quanteda::tokens(remove_punct = FALSE,
+                     remove_url = FALSE,
+                     remove_symbols = FALSE,
+                     remove_numbers = FALSE) %>% 
     tokens_remove(c(stopwords("en"), custom_stopwords))  %>% 
     tokens_tolower() 
 
@@ -83,11 +79,12 @@ docvars_df$docname <- paste("text", 1:nrow(docvars_df), sep="")
 ##  ............................................................................
 ##  define disaster words                                                   ####
 
-disasters <- quanteda::dictionary(list(storms = c(
-    "hurricane",
-    "cyclone",
-    "typhoon",
-    "tropical storm"),
+disasters <- quanteda::dictionary(list(
+    storms = c("hurricane",
+            "cyclone",
+            "typhoon",
+            "tropical storm",
+            "tropical depression"),
     wind = c("tornado",
             "wind",
             "high wind"),
@@ -95,12 +92,15 @@ disasters <- quanteda::dictionary(list(storms = c(
              "fire"),
     flood = c("flooding",
             "flood",
-            "flooded"),
+            "flooded",
+            "floods"),
     heat = c("extreme heat",
              "heat wave",
              "heatwave",
              "heat",
-             "drought")))
+             "drought"),
+    climate = c("global warming",
+                "climate change")))
 
 
 
