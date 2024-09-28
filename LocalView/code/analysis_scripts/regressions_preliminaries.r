@@ -26,12 +26,12 @@ refactor_ru <- function(df){
 #   ____________________________________________________________________________
 #   load packages and data                                                  ####
 
-library(tidyverse) # data manipulation
-library(plm) # fixed effects
-library(modelsummary) # regression output tables
-library(gt) # save regressions
-library(strcode) # easy code separators
-library(sjPlot)
+library(tidyverse)      # data manipulation
+library(plm)            # fixed effects
+library(modelsummary)   # regression output tables
+library(gt)             # save regressions
+library(sjPlot)         # plot predictions
+library(sjmisc)         # utility functions for sjplot
 
 load("./LocalView/data/modified/allData_noNA.rdata") 
 load("./LocalView/data/modified/allData_withNA.rdata") 
