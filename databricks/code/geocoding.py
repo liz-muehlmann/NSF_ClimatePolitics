@@ -120,17 +120,18 @@ data_request = {'addressFile': upload_file,
 
 # create empty list for bad lines
 
-bad_lines = []
+bad_line_jail = []
 # define bad lines function
-def bad_line_jail(line):
-    bad_lines.append(line)
+def go_to_jail(line):
+    bad_line_jail.append(line)
+
 
 try:
     # save census response data
     sd = r.post(apiurl, data = data_request)
     
     # convert response option to pandas df
-    df = pd.read_csv(io.StringIO(sd.text), sep = ",", header = None, quoting = csv.QUOTE_ALL, on_bad_lines = bad_line_jail, engine = 'python')
+    df = pd.read_csv(io.StringIO(sd.text), sep = ",", header = None, quoting = csv.QUOTE_ALL, on_bad_lines = go_to_jail, engine = 'python')
     
     # make the data pretty
     with pd.option_context(
@@ -140,12 +141,16 @@ try:
         'display.colheader_justify', 'left'
     ):
         print(df)
-    
+except ValueError as ve:
+    bad_line_jail.append(ve)
 except Exception as e:
     print(f"Oh no! Something went wrong: {str(e)}")
 
+## remove temporary file
+os.remove(temp_fp)
 
-print(bad_lines)
+
+print(bad_line_jail)
 
 
 
