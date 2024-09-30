@@ -64,7 +64,7 @@ lvFema <- left_join(lv, fema, relationship = "many-to-many") %>%
   mutate(nDec_MeetingFactor = n()) %>% 
   ungroup()
 
-save(lvFema, file = "./LocalView/data/modified/lvFema_all.rdata")
+# save(lvFema, file = "./LocalView/data/modified/lvFema_all.rdata")
 
 ##  ............................................................................
 ##  number of declarations last five years                                  ####
@@ -111,4 +111,12 @@ lvf_transcript <- lvf_fiveYears %>%
   ungroup()
 
 # save(lvf_transcript, file = "./LocalView/data/modified/lvFema_transcript.rdata")
+
+
+##  ............................................................................
+##  transcripts with five or more declarations in the last five years       ####
+
+nDec_fivePlus <- lvf_transcript %>%
+  filter(nDec_FiveYears > 0 |
+         nDec_SixYears > 0)
 

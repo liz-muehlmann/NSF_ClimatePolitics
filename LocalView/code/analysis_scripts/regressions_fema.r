@@ -122,12 +122,8 @@ plot_model(days_sinceDectl_int, type = "int",  mdrt.values = "meansd")  +
          x = "Number of Disaster Declarations Last Five Years (Factor)",
          y = "Predicted values of Climate Change or Global Warming") 
 
-##  ............................................................................
-##  transcripts with five or more declarations in the last five years       ####
-nDec_fivePlus <- lvf_transcript %>% 
-    filter(nDec_FiveYearsFactor == 5 |
-           nDec_FiveYearsFactor == 6) 
-
+#   ____________________________________________________________________________
+#   add in political lean | transcript level                                ####
 
 tl_withLean <- lvf_transcript %>% 
     mutate(party_lean = ifelse(round(DVP, 2) <= .50, "Leans Republican", "Leans Democratic")) 
@@ -139,6 +135,10 @@ ggplot(tl_withLean, aes(x = n_ccgwMentions, fill = party_lean)) +
     theme_minimal() +
     scale_fill_manual(values = c("Leans Republican" = "red", "Leans Democratic" = "blue"))
 
+
+
+##  ............................................................................
+##  political lean | place level                                            ####
 
 place_withLean <- tl_withLean %>% 
     group_by(place_fips, party_lean)%>%
