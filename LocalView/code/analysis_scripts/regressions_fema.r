@@ -135,8 +135,6 @@ ggplot(tl_withLean, aes(x = n_ccgwMentions, fill = party_lean)) +
     theme_minimal() +
     scale_fill_manual(values = c("Leans Republican" = "red", "Leans Democratic" = "blue"))
 
-
-
 ##  ............................................................................
 ##  political lean | place level                                            ####
 
