@@ -22,6 +22,8 @@
 library(tigris)                                 # download geographic boundaries
 library(sf)                                     # work with shapefiles
 
+source("./LocalView/code/processing_scripts/analysis_prelims.r")
+
 #   ____________________________________________________________________________
 ##  state boundaries                                                        ####
 

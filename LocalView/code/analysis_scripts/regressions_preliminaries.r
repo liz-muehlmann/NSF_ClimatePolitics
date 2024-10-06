@@ -10,7 +10,7 @@
 ##      Arguments:                                                            ##
 ##        df: a data frame                                                    ##
 ##      Returns:                                                              ##
-##        A data frame with Rural, Suburban, Rural; Suburban is defgault      ##
+##        A data frame with Rural, Suburban, Rural; Suburban is default      ##
 ##   ...........................................................................
 
 refactor_ru <- function(df){
@@ -32,15 +32,6 @@ library(modelsummary)   # regression output tables
 library(gt)             # save regressions
 library(sjPlot)         # plot predictions
 library(sjmisc)         # utility functions for sjplot
-
-load("./LocalView/data/modified/allData_noNA.rdata") 
-load("./LocalView/data/modified/allData_withNA.rdata") 
-load("./LocalView/data/modified/allData_transcriptLevel.rdata")
-
-allData_noNA <- refactor_ru(allData_noNA)
-allData_withNA <- refactor_ru(allData_withNA)
-allData_transcriptLevel <- refactor_ru(allData_transcriptLevel)
-
 
 # #   __________________________________________________________________________
 # #   group by year and state+county FIPS                                   ####
@@ -133,3 +124,43 @@ coef_fema <- c(
   `census_division9` = "Pacific"
 )
 
+
+#   ____________________________________________________________________________
+#   improve lm function for adding controls                                 ####
+
+better_lm <- function(data,
+                  iv,
+                  dv,
+                  controls,
+                  row.name = iv,
+                  add.controls = NULL,
+                  rm.controls = NULL,
+                  caption = NULL) {
+  model <-
+    better_lm_return(data,
+                       iv,
+                       dv,
+                       controls,
+                       add.controls,
+                       rm.controls)
+  return((model))
+}
+
+
+better_lm_return <- function(data, iv, dv, controls, 
+                             add.controls = NULL, rm.controls = NULL) {
+  controls <- controls[!controls %in% rm.controls]
+  if (!is.null(add.controls)) {
+    controls <- unique(c(controls, add.controls))
+  }
+  
+  # Only include controls if there are any
+  if (length(controls) > 0) {
+    controls <- paste(controls, collapse = " + ")
+    iv <- paste(iv, controls, sep = " + ")
+  }
+  
+  formula <- paste(dv, iv, sep = " ~ ")
+  model <- lm(formula, data = data)
+  return(model)
+}

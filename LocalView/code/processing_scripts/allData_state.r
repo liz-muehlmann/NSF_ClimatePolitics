@@ -42,16 +42,16 @@
 #   load preliminaries and data                                             ####
 
 source("./LocalView/code/processing_scripts/analysis_prelims.r")      
-load("./LocalView/data/modified/allData_withNA.rdata")
+load("./LocalView/data/modified/allData_countyLevel_withNA.rdata")
 
 
-allData_state <- allData_withNA %>%
+allData_state <- allData_countyLevel_withNA %>%
   group_by(transcript_year, state_name) %>%
   mutate(
     state_total_pop = sum(total_pop),
-    state_fema_decInStateYear = sum(fema_decInCountyYear, na.rm = TRUE),
-    state_fema_binary = ifelse(state_fema_decInStateYear > 0, 1, 0),
-    state_fema_propCountyWithDec = sum(fema_binary) / n_countiesInState,
+    state_fema_decInStateYear = sum(fema_nDecCountyYear, na.rm = TRUE),
+    state_fema_decBinary = ifelse(state_fema_decInStateYear > 0, 1, 0),
+    state_fema_propCountyWithDec = sum(fema_decBinary) / n_countiesInState,
     state_total_votes = sum(total_votes),
     state_DVP = sum(DEM) / state_total_votes,
     state_RVP = sum(REP) / state_total_votes,

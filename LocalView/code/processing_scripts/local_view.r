@@ -101,7 +101,7 @@ lvClean_transcript <- rbind(lvPlace, lvCounty, lvCountySub) %>%
 #   ____________________________________________________________________________
 #   calculate climate change use by meeting                                 ####
 
-lvClean_noScript <- lvClean_transcript %>% 
+lvClean_noTranscript <- lvClean_transcript %>% 
     mutate(caption_text_clean = str_to_lower(caption_text_clean),               # convert caption_text_clean column to lower case
            n_ccMentions = str_count(caption_text_clean, "climate change"),      # raw number of climate change mentions
            n_gwMentions = str_count(caption_text_clean, "global warming"),      # raw number of global warming mentions
@@ -113,12 +113,12 @@ lvClean_noScript <- lvClean_transcript %>%
     select(-caption_text_clean) %>% 
     distinct(.keep_all = TRUE)
 
-# save(lvClean_noScript, file = "./LocalView/data/modified/lvClean_noTranscript.rdata")
+# save(lvClean_noTranscript, file = "./LocalView/data/modified/lvClean_noTranscript.rdata")
 
 #   ____________________________________________________________________________
 #   aggregate local view data to the county level (n 3,668)                 ####
 
-lv_countyYear_noNA <- lvClean_noScript %>% 
+lv_countyLevel_noNA <- lvClean_noTranscript %>% 
     group_by(transcript_year, stcounty_fips) %>% 
     mutate(n_transcripts = n(),                                                 # number of transcripts in a county-year
            n_meetingTypes = n_distinct(meeting_type),                           # number of meeting types in a county-year
@@ -144,22 +144,22 @@ lv_countyYear_noNA <- lvClean_noScript %>%
            starts_with(c("n_", "prop_"))) %>% 
     left_join(counties)
 
-# save(lv_countyYear_noNA, file = "./LocalView/data/modified/lv_countyYear_noNA.rdata")
+# save(lv_countyLevel_noNA, file = "./LocalView/data/modified/lv_countyLevel_noNA.rdata")
 
 #   ____________________________________________________________________________
 #   merge with all counties                                                 ####
 #     NA indicates there was no transcript in that county for that year 
 #     (n = 43,512)
 
-lv_countyYear_withNA <- list()
-for(y in unique(lv_countyYear_noNA$transcript_year)) {
-    lv_countyYear_withNA[[y]] <- lv_countyYear_noNA %>%
+lv_countyLevel_withNA <- list()
+for(y in unique(lv_countyLevel_noNA$transcript_year)) {
+    lv_countyLevel_withNA[[y]] <- lv_countyLevel_noNA %>%
         filter(transcript_year == y) %>%
         select(-transcript_year) %>%
         right_join(counties) %>%
         mutate(transcript_year = y,
                has_transcript = ifelse(is.na(n_meetingTypes), 0, 1))
 }
-lv_countyYear_withNA <- bind_rows(lv_countyYear_withNA)
+lv_countyLevel_withNA <- bind_rows(lv_countyLevel_withNA)
 
-# save(lv_countyYear_withNA, file = "./LocalView/data/modified/lv_countyYear_withNA.rdata")
+# save(lv_countyLevel_withNA, file = "./LocalView/data/modified/lv_countyLevel_withNA.rdata")

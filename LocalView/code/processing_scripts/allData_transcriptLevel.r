@@ -35,32 +35,25 @@
 #   ____________________________________________________________________________
 #   load libraries                                                          ####
 
-library(tidyverse) # data manipulation
+library(tidyverse)          # data manipulation
 `%notin%` <- Negate(`%in%`) # create not in operator
-library(strcode) # easy code separators
-options(strcode = list(
-    insert_with_shiny = FALSE, # set options
-    char_length = 80,
-    hash_in_sep = TRUE
-))
 
 #   ____________________________________________________________________________
 #   load data                                                               ####
 
-source("./LocalView/code/processing_scripts/geography.r")
-load("./LocalView/data/modified/lvClean_noTranscript.rdata")
-load("./LocalView/data/modified/cvi_county.rdata")
-load("./LocalView/data/modified/fema_countyYear_withNA.rdata")
-load("./LocalView/data/modified/acs.rdata")
-load("./LocalView/data/modified/algara.rdata")
-load("./LocalView/data/modified/rural_urban.rdata")
+source("./LocalView/code/processing_scripts/geography.r")           # county data
+load("./LocalView/data/modified/lvClean_noTranscript.rdata")        # local view
+load("./LocalView/data/modified/cvi_county.rdata")                  # CVI
+load("./LocalView/data/modified/fema_countyLevel.rdata")            # FEMA
+load("./LocalView/data/modified/acs.rdata")                         # ACS
+load("./LocalView/data/modified/algara.rdata")                      # elections
+load("./LocalView/data/modified/rural_urban.rdata")                 # rural-urban
 
 #   ____________________________________________________________________________
 #   merge county data with local view                                       ####
 
-lvClean_noScript <- left_join(lvClean_noScript, counties, 
+lvCounties <- left_join(lvClean_noTranscript, counties, 
                               relationship="many-to-one")
-
 
 #   ____________________________________________________________________________
 #   separate american community survey                                      ####
@@ -68,7 +61,6 @@ lvClean_noScript <- left_join(lvClean_noScript, counties,
 for (y in unique(acs$acs_year)) {
     a <- acs %>%
         filter(acs_year == y)
-    
     assign(paste("acs", y, sep = ""), a)
 }
 
@@ -77,8 +69,8 @@ for (y in unique(acs$acs_year)) {
 
 lv_acs <- list()
 
-for (y in unique(lvClean_noScript$transcript_year)) {
-    ad <- lvClean_noScript %>%
+for (y in unique(lvCounties$transcript_year)) {
+    ad <- lvCounties %>%
         filter(transcript_year == y)
     
     if (y <= 2014) {
@@ -185,7 +177,7 @@ lvacsru_algara <- bind_rows(lvacsru_algara)
 allData_transcriptLevel <- left_join(lvacsru_algara, cvi,
                             by = "stcounty_fips",
                             relationship = "many-to-one") %>%
-    left_join(fema_countyYear) %>%
+    left_join(fema_countyLevel) %>%
     relocate(census_division, census_region, transcript_year,
              .after = county_fips) %>%
     relocate(ru_year, .after = edu_percentPop)

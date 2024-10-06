@@ -1,18 +1,15 @@
 ### file description ###########################################################
 ##                                                                            ##
-## This file uses the complete clean local view data without transcripts to   ##
-##      calculate the number of days between a FEMA disaster declaration and  ##
-##      the meeting date                                                      ##
+## This file processes the National Oceanic and Atmospheric Association data  ##
 ##                                                                            ##
 ##      Data included:                                                        ##
 ##          Local View (2010-2023)                                            ##
 ##              https://doi.org/10.7910/DVN/NJTBEM                            ##
 ##              ./processing_scripts/local_view.r                             ##
-##          FEMA (2010-2023)                                                  ##
-##              https://www.fema.gov/openfema-data-page/disaster-declarations-summaries-v2        
+##          NOAA (2009-2023)                                                  ##
+##              https://www.ncdc.noaa.gov/stormevents/ftp.jsp                 ##        
 ##                                                                            ##
 ## Output:                                                                    ##
-##      /LocalView/results/summaries/LargeFiles/nearestDeclaration_beforeMeeting.csv
 ##                                                                            ##
 ################################################################################
 
@@ -27,7 +24,6 @@ library(fs)
 source("./LocalView/code/processing_scripts/analysis_prelims.r")      
 source("./LocalView/code/processing_scripts/geography.r")
 load("./LocalView/data/modified/allData_transcriptLevel.rdata")
-load("./LocalView/data/modified/fema_disasterYear.rdata")
 
 #   ____________________________________________________________________________
 #   remove unneeded data form geography.r file                              ####

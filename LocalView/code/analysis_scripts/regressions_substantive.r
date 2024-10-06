@@ -18,6 +18,15 @@
 #   Load preliminaries file                                                 ####
 source("./LocalView/code/analysis_scripts/regressions_preliminaries.r")
 
+load("./LocalView/data/modified/allData_countyLevel_noNA.rdata") 
+load("./LocalView/data/modified/allData_countyLevel_withNA.rdata") 
+load("./LocalView/data/modified/allData_transcriptLevel.rdata")
+
+allData_noNA <- refactor_ru(allData_noNA)
+allData_withNA <- refactor_ru(allData_withNA)
+allData_transcriptLevel <- refactor_ru(allData_transcriptLevel)
+
+
 
 #   ____________________________________________________________________________
 #   Substantive Main Model                                                  ####

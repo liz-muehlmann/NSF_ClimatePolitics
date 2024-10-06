@@ -14,12 +14,13 @@
 #   ____________________________________________________________________________
 #   load libraries and custom functions                                     ####
 
+source("./LocalView/code/processing_scripts/analysis_prelims.r")
 source("./LocalView/code/processing_scripts/geography.r")
 
 #   ____________________________________________________________________________
 #   FEMA disaster declarations                                              ####
 
-fema <- read.csv("./LocalView/data/original/2023_FEMA.csv") %>%
+fema_declarationLevel <- read.csv("./LocalView/data/original/2023_FEMA.csv") %>%
   rename(
     fema_id = id,
     state_fips = fipsStateCode,
@@ -53,26 +54,26 @@ fema <- read.csv("./LocalView/data/original/2023_FEMA.csv") %>%
   createFips() %>%
   group_by(fema_year, stcounty_fips) %>%
   mutate(
-    fema_decInCountyYear = n(),
-    fema_decTypeCountyYear = n_distinct(fema_declarationType)
+    fema_nDecCountyYear = n(),
+    fema_nDecTypeCountyYear = n_distinct(fema_declarationType)
   ) %>%
   ungroup() %>%
   select(
     fema_id, fema_year, fema_month, fema_day, fema_declarationType,
     fema_incidentType, state_fips, county_fips, stcounty_fips,
-    fema_decInCountyYear, fema_decTypeCountyYear
+    fema_nDecCountyYear, fema_nDecTypeCountyYear
   ) %>%
   excludeStates()
 
-# save(fema, file = "./LocalView/data/modified/fema_disasterYear.rdata")
+# save(fema_declarationLevel, file = "./LocalView/data/modified/fema_declarationLevel.rdata")
 
 ##  ............................................................................
 # create county-year level fema data                                        ####
 
 ## loop through fema and merge it with county data
 f_merged <- list()
-for (y in unique(fema$fema_year)) {
-  f <- fema %>%
+for (y in unique(fema_declarationLevel$fema_year)) {
+  f <- fema_declarationLevel %>%
     distinct(stcounty_fips, .keep_all = TRUE) %>%
     filter(fema_year == y)
 
@@ -83,7 +84,7 @@ for (y in unique(fema$fema_year)) {
       mutate(
         fema_year = as.numeric(y),
         transcript_year = fema_year + 1,
-        fema_binary = ifelse(is.na(fema_decInCountyYear), 0, 1)
+        fema_decBinary = ifelse(is.na(fema_nDecCountyYear), 0, 1)
       )
   } else if (y >= 2010 & y <= 2014) {
     f_merged[[y]] <- f %>%
@@ -92,7 +93,7 @@ for (y in unique(fema$fema_year)) {
       mutate(
         fema_year = as.numeric(y),
         transcript_year = fema_year + 1,
-        fema_binary = ifelse(is.na(fema_decInCountyYear), 0, 1)
+        fema_decBinary = ifelse(is.na(fema_nDecCountyYear), 0, 1)
       )
   } else if (y >= 2015 & y <= 2019) {
     f_merged[[y]] <- f %>%
@@ -101,7 +102,7 @@ for (y in unique(fema$fema_year)) {
       mutate(
         fema_year = as.numeric(y),
         transcript_year = fema_year + 1,
-        fema_binary = ifelse(is.na(fema_decInCountyYear), 0, 1)
+        fema_decBinary = ifelse(is.na(fema_nDecCountyYear), 0, 1)
       )
   } else {
     f_merged[[y]] <- f %>%
@@ -110,17 +111,19 @@ for (y in unique(fema$fema_year)) {
       mutate(
         fema_year = as.numeric(y),
         transcript_year = fema_year + 1,
-        fema_binary = ifelse(is.na(fema_decInCountyYear), 0, 1)
+        fema_decBinary = ifelse(is.na(fema_nDecCountyYear), 0, 1)
       )
   }
 }
 
 ## n = 43,519
-fema_countyYear <- bind_rows(f_merged) %>%
-  mutate(transcript_year = as.character(transcript_year)) %>%
+fema_countyLevel <- bind_rows(f_merged) %>%
+  mutate(transcript_year = as.character(transcript_year),
+         fema_nDecTypeCountyYear = ifelse(is.na(fema_nDecTypeCountyYear), 0, fema_nDecTypeCountyYear),
+         fema_nDecCountyYear = ifelse(is.na(fema_nDecCountyYear), 0, fema_nDecCountyYear)) %>%
   select(
-    stcounty_fips, fema_year, transcript_year, fema_decInCountyYear,
-    fema_decTypeCountyYear, fema_binary
+    stcounty_fips, fema_year, transcript_year, fema_nDecCountyYear,
+    fema_nDecTypeCountyYear, fema_decBinary
   )
 
-# save(fema_countyYear, file = "./LocalView/data/modified/fema_countyYear_withNA.rdata")
+# save(fema_countyLevel, file = "./LocalView/data/modified/fema_countyLevel.rdata")

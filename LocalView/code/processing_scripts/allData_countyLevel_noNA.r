@@ -41,17 +41,13 @@
 
 library(tidyverse)                                 # data manipulation 
 `%notin%` <- Negate(`%in%`)                        # create not in operator
-library(strcode)                                   # easy code separators
-options(strcode = list(insert_with_shiny = FALSE,  # set options
-                       char_length = 80, 
-                       hash_in_sep= TRUE))
 
 #   ____________________________________________________________________________
 #   load data                                                               ####
 
-load("./LocalView/data/modified/lv_countyYear_noNA.rdata")
+load("./LocalView/data/modified/lv_countyLevel_noNA.rdata")
 load("./LocalView/data/modified/cvi_county.rdata")
-load("./LocalView/data/modified/fema_countyYear_withNA.rdata")
+load("./LocalView/data/modified/fema_countyLevel.rdata")
 load("./LocalView/data/modified/acs.rdata")
 load("./LocalView/data/modified/algara.rdata")
 load("./LocalView/data/modified/rural_urban.rdata")
@@ -73,8 +69,8 @@ for(y in unique(acs$acs_year)) {
 
 lv_acs <- list()
 
-for (y in unique(lv_countyYear_noNA$transcript_year)){
-    ad <- lv_countyYear_noNA %>% 
+for (y in unique(lv_countyLevel_noNA$transcript_year)){
+    ad <- lv_countyLevel_noNA %>% 
         filter(transcript_year == y)
     
     if (y <= 2014){
@@ -201,12 +197,12 @@ lvacsru_algara <- bind_rows(lvacsru_algara)
 #   merge all data with climate change vulnerability &                      ####
 #   fema disaster declarations            
 
-allData_noNA <- left_join(lvacsru_algara, cvi, 
+allData_countyLevel_noNA <- left_join(lvacsru_algara, cvi, 
                             by = "stcounty_fips", 
                             relationship = "many-to-one") %>% 
-    left_join(fema_countyYear) %>% 
+    left_join(fema_countyLevel) %>% 
     relocate(census_division, census_region, transcript_year, 
              .after = county_fips) %>% 
     relocate(ru_year, .after = edu_percentPop)
 
-# save(allData_noNA, file = "./LocalView/data/modified/allData_noNA.rdata")
+save(allData_countyLevel_noNA, file = "./LocalView/data/modified/allData_countyLevel_noNA.rdata")
