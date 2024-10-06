@@ -20,6 +20,11 @@ load("./LocalView/data/modified/lvFema_transcriptLevel.rdata")
 lvFema_transcriptLevel$nDec_fiveYearsFactor <- as.factor(lvFema_transcriptLevel$nDec_fiveYears)
 lvFema_transcriptLevel$nDec_sixYearsFactor <- as.factor(lvFema_transcriptLevel$nDec_sixYears)
 lvFema_transcriptLevel$transcript_year <- as.numeric(str_sub(lvFema_transcriptLevel$meeting_date, 1,4))
+lvFema_transcriptLevel$transcript_yearFactor <- as.factor(lvFema_transcriptLevel$transcript_year)
+
+## add in party lean
+lvFema_transcriptLevel <- lvFema_transcriptLevel %>% 
+    mutate(party_lean = ifelse(round(DVP, 2) <= .50, "Leans Republican", "Leans Democratic")) 
 
 #   ____________________________________________________________________________
 #   define control variables
@@ -46,13 +51,13 @@ rq1ba <- plot_model(rq1b,
            terms = "transcript_year",
            colors = "viridis") +
     theme_sjplot(base_size = 12, base_family = "serif") +
-    labs(title = "Predicted Values of Climate Change or Global Warming Mentions By Year",
+    labs(title = "Predicted Values of Climate Change or Global Warming Mention",
          x = "Meeting Year",
-         y = "Predicted values of Climate Change or Global Warming") 
+         y = "Predicted values of Climate Change or Global Warming (Binary)") 
 
 rq1c <- better_lm(data = lvFema_transcriptLevel,
-          dv = "ccgwBinary",
-          iv = "census_division",
+          dv.y = "ccgwBinary",
+          iv.x = "census_division",
           controls = lvFema_transcriptLevel.controls)
 
 
@@ -60,152 +65,58 @@ rq1c <- better_lm(data = lvFema_transcriptLevel,
 ##  ............................................................................
 ##  RQ2: Does this vary by vote share?                                      ####
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+rq2a <- lm(ccgwBinary ~ DVP + census_division + transcript_year, 
+           data = lvFema_transcriptLevel)
+
+rq2b <- lm(ccgwBinary ~ DVP*transcript_yearFactor + census_division,
+           data = lvFema_transcriptLevel)
+
+rq2ba <- plot_model(rq2b, type = "int") + 
+    scale_colour_manual(values = c('#fe0000',
+                                   '#fe6a00',
+                                   '#ffd800',
+                                   '#00fe21',
+                                   '#0094fe',
+                                   '#0026ff',
+                                   '#b100fe',
+                                   '#800001',
+                                   '#803400',
+                                   '#806b00',
+                                   '#007f0e',
+                                   '#00497e',
+                                   '#001280',
+                                   '#590080')) +
+    theme_sjplot(base_size = 12, base_family = "serif") +
+    labs(title = "Interaction between DVP & Transcript Year",
+         x ="Democratic Vote Percentage",
+         y =  "Climate Change or Global Warming Mention (Binary)") 
+
+rq2c <- better_lm(data = lvFema_transcriptLevel,
+                  dv.y = "ccgwBinary",
+                  iv.x = "DVP",
+                  controls = lvFema_transcriptLevel.controls,
+                  add.controls = "census_division")
+
+
+##  ............................................................................
+##  RQ3: Do natural disasters act as focusing events?                       ####
+
+rq3a <- lm(ccgwBinary ~ nDec_fiveYears + census_division, lvFema_transcriptLevel)
+
+rq3b <- lm(ccgwBinary ~ time_btwn_decMeetingFactor + census_division, data = lvFema_transcriptLevel)
 
 
 
 ##  ............................................................................
-##  ccgwBinary ~ |number of declarations in the last five years|            ####
+##  RQ4: Does this close the partisan gap in # mentions?                    ####
 
-days_fiveYears <- lm(ccgwBinary ~ nDec_FiveYears + census_division + 
-                         DVP, data = lvFema_transcriptLevel)
+rq4a <- lm(ccgwBinary ~ nDec_fiveYears*DVP + census_division, data = lvFema_transcriptLevel)
 
-# modelsummary(days_fiveYears,
-#              coef_map = coef_fema,
-#              stars = stars,
-#              title = title_fema,
-#              gof_omit = gof_omit,
-#              gof_map = gof,
-#              notes = notes_fema,
-#              output = "gt")
-
-##  ............................................................................
-##  ccgwBinary ~ days since declaration                                     ####
-
-days_sinceDec_tl <- lm(ccgwBinary ~ time_btwn_decMeetingFactor + census_division +
-                        DVP, data = lvFema_transcriptLevel)
-
-# modelsummary(days_sinceDec_tl,
-#              coef_map = coef_fema,
-#              stars = stars,
-#              title = title_fema,
-#              gof_omit = gof_omit,
-#              gof_map = gof,
-#              notes = notes_fema,
-#              output = "gt")
-
-plot_model(days_sinceDec_tl, 
-           type = "pred", 
-           terms = "time_btwn_decMeetingFactor",
-           colors = "viridis") +
+rq4ab <- plot_model(rq4a, type = "int") +
     theme_sjplot(base_size = 12, base_family = "serif") +
-    labs(title = "Predicted Values of Climate Change or Global Warming use",
-         x = "Time between FEMA declaration and meeting (Factor)",
-         y = "Predicted values of Climate Change or Global Warming") 
-
-##  ............................................................................
-##  ccgwBinary ~ days since declaration interaction                         ####
-
-days_sinceDectl_int <- lm(ccgwBinary ~ time_btwn_decMeetingFactor + census_division +
-                           DVP + DVP*time_btwn_decMeetingFactor, 
-                       data = lvFema_transcriptLevel)
-
-## interaction
-plot_model(days_sinceDectl_int, type = "int") + 
-    theme_sjplot(base_size = 12, base_family = "serif") +
-    labs(title = "Predicted Values of Climate Change or Global Warming mention",
-         x = "Time between FEMA declaration and meeting (Factor)",
-         y = "Predicted values of Climate Change or Global Warming") 
-
-## interaction with mean/standard deviation
-plot_model(days_sinceDectl_int, type = "int", mdrt.values = "meansd") +
-    theme_sjplot(base_size = 12, base_family = "serif") +
-    labs(title = "Predicted Values of Climate Change or Global Warming mention",
-         x = "Time between FEMA declaration and meeting (Factor)",
-         y = "Predicted values of Climate Change or Global Warming") 
-
-
-##  ............................................................................
-##  ccgwBinary ~ nDec_FiveYearsFactor
-
-n_Dectl_int <- lm(ccgwBinary ~ nDec_FiveYearsFactor + census_division +
-                              DVP + DVP*nDec_FiveYearsFactor, 
-                          data = lvFema_transcriptLevel)
-
-
-plot_model(days_sinceDectl_int, type = "int",  mdrt.values = "meansd")  +
-    theme_sjplot(base_size = 12, base_family = "serif") +
-    labs(title = "Predicted Values of Climate Change or Global Warming mention",
-         x = "Number of Disaster Declarations Last Five Years (Factor)",
-         y = "Predicted values of Climate Change or Global Warming") 
+    labs(title = "Interaction between Number of Declarations in the last five years",
+         x ="Number of declarations in the last five years",
+         y =  "Climate Change or Global Warming Mention (Binary)") 
 
 #   ____________________________________________________________________________
 #   add in political lean | transcript level                                ####
@@ -227,16 +138,12 @@ place_withLean <- tl_withLean %>%
     group_by(place_fips, party_lean)%>%
     summarize(place_nDec = sum(nDec_FiveYears), .groups = "drop")
     
-ggplot(place_withLean, aes(x = place_nDec, fill = party_lean)) +
+lvFema_transcriptLevel %>%
+    group_by(place_fips, party_lean) %>%
+    summarize(nDec_fiveYears = sum(nDec_fiveYears, na.rm = TRUE)) %>% 
+    ggplot(aes(x = nDec_fiveYears, fill = party_lean)) +
     geom_histogram(alpha = 0.6, bins = 30) +
-    labs(x = "Number of Declarations", y = "Number of Places", title = "Histogram of Declarations by Partisanship") +
+    labs(x = "Number of Declarations", y = "Frequency", title = "Histogram of Declarations by Partisanship (last five years)") +
     theme_minimal() +
     scale_fill_manual(values = c("Leans Republican" = "red", "Leans Democratic" = "blue"))
-
-
-
-
-
-
-
 

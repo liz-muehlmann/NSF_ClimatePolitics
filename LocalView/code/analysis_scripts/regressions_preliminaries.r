@@ -129,17 +129,17 @@ coef_fema <- c(
 #   improve lm function for adding controls                                 ####
 
 better_lm <- function(data,
-                  iv,
-                  dv,
+                  iv.x,
+                  dv.y,
                   controls,
-                  row.name = iv,
+                  row.name = iv.x,
                   add.controls = NULL,
                   rm.controls = NULL,
                   caption = NULL) {
   model <-
     better_lm_return(data,
-                       iv,
-                       dv,
+                       iv.x,
+                       dv.y,
                        controls,
                        add.controls,
                        rm.controls)
@@ -147,7 +147,7 @@ better_lm <- function(data,
 }
 
 
-better_lm_return <- function(data, iv, dv, controls, 
+better_lm_return <- function(data, iv.x, dv.y, controls, 
                              add.controls = NULL, rm.controls = NULL) {
   controls <- controls[!controls %in% rm.controls]
   if (!is.null(add.controls)) {
@@ -157,10 +157,10 @@ better_lm_return <- function(data, iv, dv, controls,
   # Only include controls if there are any
   if (length(controls) > 0) {
     controls <- paste(controls, collapse = " + ")
-    iv <- paste(iv, controls, sep = " + ")
+    iv.x <- paste(iv.x, controls, sep = " + ")
   }
   
-  formula <- paste(dv, iv, sep = " ~ ")
+  formula <- paste(dv.y, iv.x, sep = " ~ ")
   model <- lm(formula, data = data)
   return(model)
 }
