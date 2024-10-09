@@ -1,3 +1,29 @@
+## load libraries
+library(sparklyr)
+library(dplyr)
+library(DBI)
+library(httr)
+library(jsonlite)
+library(fs)
+library(stringr)
+
+## create driver & point it to default location
+sc = spark_connect(method = 'databricks')
+tbl_change_db(sc, 'main.weber_lab')
+
+#geo_tx <- tbl(sc, "geo") |>
+# filter(Residence_Addresses_State == "TX") |>
+# mutate(row_index = monotonically_increasing_id())
+#
+### make sure all the columns and their data types are correct before processing
+#glimpse(geo_tx)
+#
+### register with spark
+#sdf_copy_to(sc, geo_tx, name = "texas", overwrite = T) 
+
+#geo_tx <- tbl(sc, "geo_tx") |>
+#  mutate(geocoder = NA)
+
 process_geocode_batch <- function(df) {
   # Create address dataframe
   addresses <- df %>%
@@ -49,3 +75,5 @@ colnames(results_df) <- c("row_index", "Input Address", "Match Flag", "Match Typ
     mutate(tf = "true")
   return(df)
  }
+
+ 

@@ -1,8 +1,15 @@
-############################# PRELIMINARIES #############################
+# %md
+# # Geocoding Texas Addresses
+# The code in this notebook takes the addresses in Texas, geocodes them using the Census geocoder, and updates the ```geo_tx``` table with the new information.
+
 ## import libraries
 from pyspark.sql.functions import *
 from pyspark.sql import SparkSession
 import tempfile, os, csv, io, time, random, math, logging, requests as r, pandas as pd
+
+## start session
+spark = SparkSession.builder.appName("DatabricksConnection").getOrCreate()
+spark.sql("USE main.weber_lab")
 
 ## format logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -14,7 +21,6 @@ geocoded_columns = [
     "state_fips", "county_fips", "tract_id", "block_id"
 ]
 
-############################# DEFINE FUNCTIONS #############################
 ## define function to handle bad lines
 bad_line_jail = []
 def go_to_jail(line):
@@ -83,13 +89,6 @@ def query_api(chunk):
         logging.error(f"There was a problem querying the API: {str(e)}")
         return None
     
-
-############################# CREATE GEO TX TABLE #############################
-## start session
-spark = SparkSession.builder.appName("DatabricksConnection").getOrCreate()
-spark.sql("USE main.weber_lab")
-
-## create copy of geo table
 geo_copy = spark.table("geo")
 
 ## filter for texas addresses
@@ -107,13 +106,10 @@ geo_tx = geo_tx.select(
 geo_tx.createOrReplaceTempView("geo_tx")
 spark.sql("CREATE TABLE IF NOT EXISTS main.weber_lab.geo_tx AS SELECT * FROM geo_tx")
 
-############################# CREATE SAMPLE TABLE #############################
-
 sample = geo_tx.limit(20)
 sample.createOrReplaceTempView("sample")
 spark.sql("CREATE TABLE IF NOT EXISTS main.weber_lab.sample AS SELECT * FROM sample")
 
-############################# BATCH PROCESSING #############################
 ## chunk preliminaries
 chunk_size = 5
 n_rows_original = spark.sql("SELECT COUNT(*) FROM main.weber_lab.sample").first()[0]  
