@@ -116,7 +116,7 @@ for (y in unique(fema_declarationLevel$fema_year)) {
   }
 }
 
-## n = 43,519
+## n = 43,512
 fema_countyLevel <- bind_rows(f_merged) %>%
   mutate(transcript_year = as.character(transcript_year),
          fema_nDecTypeCountyYear = ifelse(is.na(fema_nDecTypeCountyYear), 0, fema_nDecTypeCountyYear),
