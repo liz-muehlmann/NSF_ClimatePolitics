@@ -9,18 +9,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 ## define return columns
 geocoded_columns = [
-    "row_index",
-    "address_in",
-    "match_flag",
-    "match_type",
-    "address_out",
-    "long_lat",
-    "tiger_edge",
-    "street_side",
-    "state_fips",
-    "county_fips",
-    "tract_id",
-    "block_id"
+    "row_index", "address_in", "match_flag", "match_type",
+    "address_out", "long_lat", "tiger_edge", "street_side",
+    "state_fips", "county_fips", "tract_id", "block_id"
 ]
 
 ############################# DEFINE FUNCTIONS #############################
@@ -34,20 +25,24 @@ def go_to_jail(line):
     
 ## define api query function
 def query_api(chunk):
-    api_columns = [
+
+    api_url = "https://geocoding.geo.census.gov/geocoder/geographies/addressbatch"
+
+    try:
+        ## create csv for census api
+        api_columns = [
         "row_index",
         "Residence_Addresses_AddressLine",
         "Residence_Addresses_City",
         "Residence_Addresses_State",
         "Residence_Addresses_Zip"
-    ]
-    
-    addresses = chunk.select(api_columns).toPandas()
-    api_url = "https://geocoding.geo.census.gov/geocoder/geographies/addressbatch"
+        ]
 
-    try:
-        ## create csv for census api
+        addresses = chunk.select(api_columns).toPandas()
+
         addresses_csv = addresses.to_csv(index=False, header=False)
+
+        ## set query details
         upload_file = {
             "addressFile": ("addresses.csv", addresses_csv, "text/csv")
         }
@@ -57,7 +52,7 @@ def query_api(chunk):
             "vintage": "Census2020_Current"
         }
 
-        ## save api response
+        ## query api & save
         response = r.post(api_url, files=upload_file, data=data_request)
         response.raise_for_status()
         # logging.info(f"API response for chunk: {response.text}")
@@ -79,7 +74,7 @@ def query_api(chunk):
         if "geocoder" not in geocoded_results.columns:
             geocoded_results["geocoder"] = None
 
-        ## change geocoder to Census for use in loop
+        ## change geocoder to census for use in loop
         geocoded_results["geocoder"] = "Census"
         # print(f"The results of the query are: ", geocoded_results)
         return geocoded_results
@@ -90,6 +85,10 @@ def query_api(chunk):
     
 
 ############################# CREATE GEO TX TABLE #############################
+## start session
+spark = SparkSession.builder.appName("DatabricksConnection").getOrCreate()
+spark.sql("USE main.weber_lab")
+
 ## create copy of geo table
 geo_copy = spark.table("geo")
 
@@ -108,6 +107,12 @@ geo_tx = geo_tx.select(
 geo_tx.createOrReplaceTempView("geo_tx")
 spark.sql("CREATE TABLE IF NOT EXISTS main.weber_lab.geo_tx AS SELECT * FROM geo_tx")
 
+############################# CREATE SAMPLE TABLE #############################
+
+sample = geo_tx.limit(20)
+sample.createOrReplaceTempView("sample")
+spark.sql("CREATE TABLE IF NOT EXISTS main.weber_lab.sample AS SELECT * FROM sample")
+
 ############################# BATCH PROCESSING #############################
 ## chunk preliminaries
 chunk_size = 5
@@ -116,6 +121,7 @@ n_chunks = math.ceil(n_rows_original / chunk_size)
 chunks_processed = 0
 
 while True:
+
     ## create new chunk
     new_chunk = spark.sql(f"SELECT * FROM main.weber_lab.sample WHERE geocoder IS NULL LIMIT {chunk_size}".format(chunk_size))
     # print(f"New chunk looks like this: ", new_chunk.select(geocoded_columns).show())
@@ -140,7 +146,8 @@ while True:
     geocoded_temp.createOrReplaceTempView("geocode_spark")
     spark.sql("CREATE OR REPLACE TABLE main.weber_lab.geocoded_spark AS SELECT * FROM geocode_spark")
     
-        rows_before = spark.sql("SELECT COUNT(*) FROM main.weber_lab.sample WHERE geocoder IS NULL").first()[0]
+    ## count processed rows for progress
+    rows_before = spark.sql("SELECT COUNT(*) FROM main.weber_lab.sample WHERE geocoder IS NULL").first()[0]
     
     ## update sample table
     spark.sql("""
