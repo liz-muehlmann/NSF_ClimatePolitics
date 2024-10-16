@@ -143,7 +143,9 @@ lvFema_transcriptLevel %>%
     summarize(nDec_fiveYears = sum(nDec_fiveYears, na.rm = TRUE)) %>% 
     ggplot(aes(x = nDec_fiveYears, fill = party_lean)) +
     geom_histogram(alpha = 0.6, bins = 30) +
-    labs(x = "Number of Declarations", y = "Frequency", title = "Histogram of Declarations by Partisanship (last five years)") +
+    labs(x = "Number of Declarations", 
+         y = "Frequency", 
+         title = "Histogram of Declarations by Partisanship (last five years)") +
     theme_minimal() +
     scale_fill_manual(values = c("Leans Republican" = "red", "Leans Democratic" = "blue"))
 

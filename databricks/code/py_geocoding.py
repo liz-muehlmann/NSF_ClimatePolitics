@@ -138,8 +138,8 @@ while True:
     logging.info(f"Processing chunk {chunks_processed + 1}/{n_chunks}...")
 
     ## register query results with spark
-    geocoded_temp = spark.createDataFrame(query_results)
-    geocoded_temp.createOrReplaceTempView("geocode_spark")
+    geocoded_spark = spark.createDataFrame(query_results)
+    geocoded_spark.createOrReplaceTempView("geocoded_spark")
     spark.sql("CREATE OR REPLACE TABLE main.weber_lab.geocoded_spark AS SELECT * FROM geocode_spark")
     
     ## count processed rows for progress
