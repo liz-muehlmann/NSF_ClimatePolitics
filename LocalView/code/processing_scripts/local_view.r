@@ -5,8 +5,8 @@
 ##          Local View (2010-2023)                                            ##
 ##              https://doi.org/10.7910/DVN/NJTBEM                            ##  
 ## Output:                                                                    ##
-##      /LocalView/data/modified/lv_clean_transcript.rdata                    ##
-##      /LocalView/data/modified/lv_clean_noTranscript.rdata                  ##
+##      /LocalView/data/modified/lvClean_transcript.rdata                     ##
+##      /LocalView/data/modified/lvClean_noTranscript.rdata                   ##
 ##      /LocalView/data/modified/lv_countyYear_noNA.rdata                     ##
 ##      /LocalView/data/modified/lv_countyYear_withNA.rdata                   ##
 ##                                                                            ##    
@@ -163,3 +163,12 @@ for(y in unique(lv_countyLevel_noNA$transcript_year)) {
 lv_countyLevel_withNA <- bind_rows(lv_countyLevel_withNA)
 
 # save(lv_countyLevel_withNA, file = "./LocalView/data/modified/lv_countyLevel_withNA.rdata")
+
+##  ............................................................................
+##  lv Sample                                                               ####
+
+sample_lvTranscript <- lvClean_noTranscript %>% slice_sample(n = 50, replace = FALSE)
+# write.csv(sample_lvTranscript, "./LocalView/data/samples/lvTranscript_sample.csv", row.names = FALSE)
+
+sample_lvCounty <- lv_countyLevel_noNA %>% slice_sample(n = 50, replace = FALSE)
+# write.csv(sample_lvCounty, "./LocalView/data/samples/lvCounty_sample.csv", row.names = FALSE)

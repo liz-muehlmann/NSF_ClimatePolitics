@@ -16,6 +16,11 @@
 
 #   ____________________________________________________________________________
 #   Load preliminaries file                                                 ####
+
+library(fixest)
+library(sandwich)
+library(lmtest)
+
 source("./LocalView/code/analysis_scripts/regressions_preliminaries.r")
 
 load("./LocalView/data/modified/allData_countyLevel_noNA.rdata") 

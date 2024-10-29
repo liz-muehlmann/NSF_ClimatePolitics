@@ -62,3 +62,10 @@ ruralUrban <- rbind(ru03, ru13, ru23)
 
 # save(ruralUrban, file = "./LocalView/data/modified/rural_urban.rdata")
 
+
+##  ............................................................................
+##  rural-urban 
+
+sample_ru <- ruralUrban[sample(nrow(ruralUrban), 50), ]
+# write.csv(sample_ru, "./LocalView/data/samples/ru_sample.csv", row.names = FALSE)
+

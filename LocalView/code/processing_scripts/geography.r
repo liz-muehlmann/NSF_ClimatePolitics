@@ -84,6 +84,12 @@ ip <- majority(read.csv("./GIS/modified/2020_IPIntersections.csv")) %>%
 cdp <- majority(read.csv("./GIS/modified/2020_CDPIntersections.csv")) %>% 
     padFips() %>% 
     createFips()
-ipcdp <- rbind(ip, cdp) %>% 
+ipcdp <- rbind(ip, cdp) %>%
     select(-place_name, -coverage)
+
+##  ............................................................................
+##  ipcdp Sample                                                            ####
+
+sample_ipcdp <- ipcdp %>% slice_sample(n = 50, replace = FALSE)
+# write.csv(sample_ipcdp, "./LocalView/data/samples/ipcdp_sample.csv", row.names = FALSE)
 

@@ -45,3 +45,10 @@ algara <- pres_elections_release %>%
     select(stcounty_fips, election_year, DVP, RVP, DEM, REP, total_votes)
 
 # save(algara, file = "./LocalView/data/modified/algara.rdata")
+
+##  ............................................................................
+##  Algara-sharif Sample                                                    ####
+
+sample_algaraSharif <- algara %>% sample_n(50)
+# write.csv(sample_algaraSharif, "./LocalView/data/samples/algaraSharif_sample.csv", row.names = FALSE)
+

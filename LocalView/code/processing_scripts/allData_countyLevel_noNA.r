@@ -205,4 +205,4 @@ allData_countyLevel_noNA <- left_join(lvacsru_algara, cvi,
              .after = county_fips) %>% 
     relocate(ru_year, .after = edu_percentPop)
 
-save(allData_countyLevel_noNA, file = "./LocalView/data/modified/allData_countyLevel_noNA.rdata")
+# save(allData_countyLevel_noNA, file = "./LocalView/data/modified/allData_countyLevel_noNA.rdata")

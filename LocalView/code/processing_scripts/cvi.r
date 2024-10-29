@@ -50,3 +50,10 @@ cvi <- read_xlsx("./LocalView/data/original/202310_CVI.xlsx",
   fixCounties2020()
 
 # save(cvi, file = "./LocalView/data/modified/cvi_county.rdata")
+
+##  ............................................................................
+##  CVI Sample                                                              ####
+
+sample_cvi <- cvi %>% sample_n(50)
+# write.csv(sample_cvi, "./LocalView/data/samples/cvi_sample.csv", row.names = FALSE)
+

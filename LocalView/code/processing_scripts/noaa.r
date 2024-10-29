@@ -117,6 +117,12 @@ all_zones <- all_details %>%
 
 
 
+#   ____________________________________________________________________________
+#   sample
+
+sample_noaa <- all_details[sample(nrow(all_details), 50), ]
+# write.csv(sample_noaa, "./LocalView/data/samples/noaa_sample.csv", row.names = FALSE)
+
 
 
 

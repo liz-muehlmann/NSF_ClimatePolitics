@@ -56,7 +56,7 @@ acs_vars <- c("B02001_002E",        # white
 ##  ............................................................................
 ##  download and clean ACS years (2010, 2015, 2020)                         ####
 
-# acs <- list()
+acs <- list()
 
 for(y in acs_years) {
     df <- get_acs(geography = "county", year = y, geometry = FALSE, 
@@ -121,7 +121,11 @@ acs <- rbind(acs2010, acs2015, acs2020)
 # save(acs, file = "./LocalView/data/modified/acs.rdata")
 
 
+##  ............................................................................
+##  ACS Sample                                                              ####
 
+sample_acs <- acs %>% sample_n(50)
+# write.csv(sample_acs, "./LocalView/data/samples/acs_sample.csv", row.names = FALSE)
 
 
 

@@ -127,3 +127,13 @@ fema_countyLevel <- bind_rows(f_merged) %>%
   )
 
 # save(fema_countyLevel, file = "./LocalView/data/modified/fema_countyLevel.rdata")
+
+##  ............................................................................
+##  FEMA Sample                                                             ####
+
+sample_femaDecLevel <- fema_declarationLevel %>% sample_n(50)
+# write.csv(sample_femaDecLevel, "./LocalView/data/samples/femaDecLevel_sample.csv", row.names = FALSE)
+
+sample_femaCountyLevel <- fema_countyLevel %>% sample_n(50)
+# write.csv(sample_femaCountyLevel, "./LocalView/data/samples/femaCountyLevel_sample.csv", row.names = FALSE)
+
