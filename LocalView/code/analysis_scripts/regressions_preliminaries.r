@@ -27,11 +27,12 @@ refactor_ru <- function(df){
 #   load packages and data                                                  ####
 
 library(tidyverse)      # data manipulation
-library(plm)            # fixed effects
 library(modelsummary)   # regression output tables
 library(gt)             # save regressions
 library(sjPlot)         # plot predictions
 library(sjmisc)         # utility functions for sjplot
+library(lfe)            # fixed effects & clustered standard errors
+library(stargazer)      # descriptive table output
 
 # #   __________________________________________________________________________
 # #   group by year and state+county FIPS                                   ####

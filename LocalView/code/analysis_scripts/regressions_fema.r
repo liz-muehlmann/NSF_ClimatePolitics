@@ -14,46 +14,29 @@
 #   ____________________________________________________________________________
 #   load data                                                               ####
 
-library(fixest)
-library(sandwich)
-library(lmtest)
-
 source("./LocalView/code/analysis_scripts/regressions_preliminaries.r")
-load("./LocalView/data/modified/lvFema_transcriptLevel.rdata") 
+load("./LocalView/data/modified/lvFema_transcriptLevel.rdata")
 
-lvFema_transcriptLevel$nDec_fiveYearsFactor <- as.factor(lvFema_transcriptLevel$nDec_fiveYears)
-lvFema_transcriptLevel$nDec_sixYearsFactor <- as.factor(lvFema_transcriptLevel$nDec_sixYears)
-lvFema_transcriptLevel$transcript_year <- as.numeric(str_sub(lvFema_transcriptLevel$meeting_date, 1,4))
-lvFema_transcriptLevel$transcript_yearFactor <- as.factor(lvFema_transcriptLevel$transcript_year)
-lvFema_transcriptLevel <- lvFema_transcriptLevel %>% mutate(log_totalpop = log(total_pop),
-                                                            log_medhhic = log(med_hhic))
-
-
-## add in party lean
 lvFema_transcriptLevel <- lvFema_transcriptLevel %>% 
-    mutate(party_lean = ifelse(round(DVP, 2) <= .50, "Leans Republican", "Leans Democratic")) 
+    mutate(nDec_fiveYearsFactor = as.factor(nDec_fiveYears),
+           nDec_sixYearsFactor = as.factor(nDec_sixYears),
+           transcript_year = as.numeric(str_sub(meeting_date, 1, 4)),
+           transcript_yearFactor = as.factor(transcript_year),
+           log_totalPop = log(total_pop),
+           log_medhhic = log(med_hhic),
+           party_lean = ifelse(round(DVP, 2) <= .50, 
+                               "Leans Republican", "Leans Democratic")) 
 
 #   ____________________________________________________________________________
-#   define control variables
-
-lvFema_transcriptLevel.controls <-c("rural_urban_3pt", 
-                                     "log_totalpop",
-                                     "log_medhhic",
-                                     "perc_white",
-                                     "edu_percentPop",
-                                     "overall_cvi",
-                                     "med_age")
-
-#   ____________________________________________________________________________
-#   Transcript level, disaster closest to the meeting date                  ####
-
-##  ............................................................................
-##  RQ1: Is climate change being discussed? And how?
+#  RQ1: Is climate change being discussed? And how?                         ####
 
 rq1a <- lm(ccgwBinary ~ census_division + transcript_year, data = lvFema_transcriptLevel)
 rq1a_clustered <- vcovCL(rq1a, cluster = ~place_fips)
 summary_rq1a_clustered <- coeftest(rq1a, vcov = rq1a_clustered)
 
+rq1av2 <- lm_robust(ccgwBinary ~ census_division + transcript_year, 
+                    data = lvFema_transcriptLevel,
+                    clusters = place_fips)
 rq1b <- lm(ccgwBinary ~ census_division + as.factor(transcript_year), data = lvFema_transcriptLevel)
 rq1b_clustered <- vcovCL(rq1b, cluster = ~place_fips)
 summary_rq1b_clustered <- coeftest(rq1b, vcov = rq1b_clustered)

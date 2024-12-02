@@ -36,7 +36,6 @@ place_geo <- st_read("./GIS/original/2020_CensusSubNational/tlgdb_2020_a_us_subs
          place_shape = SHAPE) %>% 
   rbind(cdp_geo)
 
-
 # n = 103,350
 lv <- allData_transcriptLevel %>%
   mutate(
@@ -143,10 +142,17 @@ lvFema_crosstab <- lvFema_transcriptLevel %>%
 #   add in geographic boundaries                                            ####
 
 lvFema_counties <- countiesGeo %>% 
-  select(stcounty_fips, n_countiesInState, geometry) %>% 
-  right_join(lvFema_transcriptLevel, by = "stcounty_fips", relationship = "one-to-many")
+  select(stcounty_fips, geometry) %>% 
+  right_join(lvFema_transcriptLevel, by = "stcounty_fips", relationship = "one-to-many") 
+
+lvFema_counties_allYears <- lvFema_counties %>% 
+  group_by(stcounty_fips) %>% 
+  mutate(nTranscript_County_AllYears = n()) %>% 
+  ungroup() %>% 
+  distinct(stcounty_fips, .keep_all = TRUE)
 
 # st_write(lvFema_counties, "./GIS/modified/lvFema_transcriptLevel_counties.gpkg")
+# st_write(lvFema_counties_allYears, "./GIS/modified/lvFema_transcriptLevel_counties_allYears.gpkg")
 
 
 lvFema_places <- lvFema_transcriptLevel %>% left_join(place_geo, by = "place_fips")

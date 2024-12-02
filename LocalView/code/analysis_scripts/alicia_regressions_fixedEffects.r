@@ -9,20 +9,48 @@ names(allData_transcriptLevel)
 allData_transcriptLevel$place_fips_factor <- as.factor(allData_transcriptLevel$place_fips)
 allData_transcriptLevel$transcript_year_num <- as.numeric(allData_transcriptLevel$transcript_year)
 
-allData_transcriptLevel <- allData_transcriptLevel %>% group_by(place_fips) %>% mutate(ccgwBinary_mean_place = mean(ccgwBinary))
-allData_transcriptLevel <- allData_transcriptLevel %>% group_by(stcounty_fips) %>% mutate(ccgwBinary_mean_county = mean(ccgwBinary))
 
-allData_transcriptLevel <- allData_transcriptLevel %>% group_by(place_fips) %>% mutate(DVP_mean_place = mean(DVP))
-allData_transcriptLevel <- allData_transcriptLevel %>% group_by(stcounty_fips) %>% mutate(DVP_mean_county = mean(DVP))
+## ccgw and dvp means within place or county -- all data set
+## mean of observations in data set
+allData_transcriptLevel <- allData_transcriptLevel %>% 
+  group_by(place_fips) %>% 
+  mutate(ccgwBinary_mean_place = mean(ccgwBinary))
 
-allData_transcriptLevel <- allData_transcriptLevel %>% group_by(place_fips) %>% mutate(n_place = length(place_fips))
-allData_transcriptLevel <- allData_transcriptLevel %>% group_by(stcounty_fips) %>% mutate(n_county = length(stcounty_fips))
+allData_transcriptLevel <- allData_transcriptLevel %>% 
+  group_by(stcounty_fips) %>% 
+  mutate(ccgwBinary_mean_county = mean(ccgwBinary))
 
-allData_transcriptLevel <- allData_transcriptLevel %>% group_by(place_fips) %>% mutate(unique_years_place = length(unique(transcript_year)))
-allData_transcriptLevel <- allData_transcriptLevel %>% group_by(stcounty_fips) %>% mutate(unique_years_county = length(unique(transcript_year)))
+allData_transcriptLevel <- allData_transcriptLevel %>% 
+  group_by(place_fips) %>% 
+  mutate(DVP_mean_place = mean(DVP))
 
+allData_transcriptLevel <- allData_transcriptLevel %>% 
+  group_by(stcounty_fips) %>% 
+  mutate(DVP_mean_county = mean(DVP))
+
+allData_transcriptLevel <- allData_transcriptLevel %>% 
+  group_by(place_fips) %>% 
+  mutate(n_place = length(place_fips))
+
+allData_transcriptLevel <- allData_transcriptLevel %>% 
+  group_by(stcounty_fips) %>% 
+  mutate(n_county = length(stcounty_fips))
+
+
+allData_transcriptLevel <- allData_transcriptLevel %>% 
+  group_by(place_fips) %>% 
+  mutate(unique_years_place = length(unique(transcript_year)))
+
+allData_transcriptLevel <- allData_transcriptLevel %>% 
+  group_by(stcounty_fips) %>% 
+  mutate(unique_years_county = length(unique(transcript_year)))
+
+## subtract off the means
+## mechanically -- this does the same thing as the felm!
+## this is what a FE does!
 allData_transcriptLevel$dvp_demean_place <- allData_transcriptLevel$DVP - allData_transcriptLevel$DVP_mean_place
 allData_transcriptLevel$ccgw_demean_place <- allData_transcriptLevel$ccgwBinary - allData_transcriptLevel$ccgwBinary_mean_place
+
 
 table(allData_transcriptLevel$n_place)                # 53 singletons -- very few! good!
 mean(allData_transcriptLevel$n_place==1)              # tiny share, so non-consideration won't affect results
@@ -141,7 +169,8 @@ pl_fe_bivar$coefficients
 pl_fe_year <- felm(ccgwBinary ~ DVP + transcript_year|place_fips|0|place_fips, data=allData_transcriptLevel)
 pl_2fe_bivar <- felm(ccgwBinary ~ DVP |place_fips + transcript_year|0|place_fips, data=allData_transcriptLevel)
 pl_2fe_bivar$coefficients
-stargazer(pl_demean, pl_fe_bivar, pl_fe_year, pl_2fe_bivar, type="text")
+stargazer(pl_de
+          mean, pl_fe_bivar, pl_fe_year, pl_2fe_bivar, type="text")
 
 # check that running place dummies is same as lfe -- yes
 pl_all_dum <- felm(ccgwBinary ~ DVP + rural_urban_3pt + log(total_pop) + log(med_hhic) + perc_white + edu_percentPop + place_fips_factor + transcript_year |0|0|place_fips, data=allData_transcriptLevel)
