@@ -43,6 +43,8 @@ library(sjPlot)
 library(sjlabelled)
 library(sjmisc)
 
+load("./LocalView/data/modified/allData_transcriptLevel.rdata")
+
 ## state abbreviations
 s_abbr <- states() %>%
   filter(STATEFP <= "56" & STATEFP != "02") %>%
@@ -405,11 +407,27 @@ lvf_transcript %>%
     title = "Days between dec and meeting (disasters between 0-2 years)"
   )
 
+################################################################################
+##                                                                            ##
+##                            cc mention by year                              ##
+##                                                                            ##
+################################################################################
 
-
-
-
-
+# stacked bar chart                                                         ####
+allData_transcriptLevel %>% 
+  group_by(transcript_year, ccgwBinary) %>% 
+  summarize(n_transcript_ccgwBinary = n()) %>% 
+  # distinct(transcript_year, .keep_all = TRUE) %>% 
+  ggplot(aes(fill=as.factor(ccgwBinary), y=n_transcript_ccgwBinary, x=transcript_year)) + 
+  geom_bar(position="stack", stat="identity") +
+  theme_minimal() +
+  guides(fill = guide_legend(title = "Legend:")) +
+  labs(title = "Number of Transcripts by Climate Change or Global Warming Mention by Year",
+       x = "Transcript Year",
+       y = "Number of Transcripts") +
+  scale_fill_discrete(labels=c('No Mention', 'Climate Change or Global Warming Mention')) +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size=11))
 
 
 

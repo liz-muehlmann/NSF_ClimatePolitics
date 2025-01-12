@@ -1,0 +1,44 @@
+
+Table 1: Is Climate Change Being Discussed
+=================================================================================
+                                                     Dependent variable:         
+                                            -------------------------------------
+                                            Climate Change/Global Warming Mention
+---------------------------------------------------------------------------------
+Intercept                                                  0.0003                
+                                                           (0.007)               
+Democratic Voting Percentage                               -0.068                
+                                                           (0.056)               
+Rural Urban 3pt                                             0.070                
+                                                           (0.058)               
+Log of Total Population                                     0.015                
+                                                           (0.037)               
+Log of Median Household Income                            0.217***               
+                                                           (0.062)               
+Percent White, non-Hispanic                               0.005***               
+                                                           (0.001)               
+Percent of Population with a College Degree                -0.015                
+                                                           (0.017)               
+Meeting Year                                               -0.024                
+                                                           (0.016)               
+Census Division 2                                          -0.032*               
+                                                           (0.017)               
+Census Division 3                                          -0.016                
+                                                           (0.017)               
+Census Division 4                                          -0.029*               
+                                                           (0.017)               
+Census Division 5                                          -0.007                
+                                                           (0.019)               
+Census Division 6                                          -0.007                
+                                                           (0.018)               
+Census Division 7                                          0.047*                
+                                                           (0.025)               
+Census Division 8                                        -10.057***              
+                                                           (2.747)               
+---------------------------------------------------------------------------------
+Observations                                               103,350               
+R2                                                          0.038                
+Adjusted R2                                                 0.038                
+Residual Std. Error                                  0.194 (df = 103335)         
+=================================================================================
+Note:                                                 *p<0.1; **p<0.05; ***p<0.01
