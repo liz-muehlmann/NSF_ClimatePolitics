@@ -17,6 +17,7 @@ library(marginaleffects)        # marginal effects
 library(ggplot2)                # plot themes
 library(modelsummary)           # regression outputs
 library(gt)                     # regression outputs
+library(flextable)
 
 #   ____________________________________________________________________________
 #   customize goodness of fitness                                           ####
@@ -62,19 +63,26 @@ gof_pml <- list(
 )
 
 # model coefficients to include in output
-all_coefs <- c(`(Intercept)` = "Constant",
+all_coefs <- c(# `(Intercept)` = "Constant",  per alicia do not include
                DVP = "Democratic Vote Percentage",
                anyDec_fiveYears = "Had Any Declaration Last 5 Years",
                nDec_fiveYears = "Number of Declarations Last 5 Years",
+               anyEpisode_fiveYears = "Had Any Episode Last 5 Years",
+               nEpisode_fiveYears = "Number of Episodes Last 5 Years",
                rural_urban_3pt = "Rural Urban 3pt",
                `log(total_pop)` = "Log of Total Population",
-               log_totalpop = "Log of Total Population",
+               log_totalPop = "Log of Total Population",
                log_medhhic = "Log of Median Household Income",
                `log(med_hhic)` = "Log of Median Household Income",
                perc_white = "Percent White, Non-Hispanic",
                edu_percentPop = "Percent of Population with a College Degree",
                transcript_year = "Meeting Year",
                overall_cvi = "Overall Climate Vulnerability",
+               `nDec_fiveYears:DVP` = "Number of Declarations x DVP",
+               `anyDec_fiveYears:DVP` = "Any Declaration x DVP",
+               `nEpisode_fiveYears:DVP` = "Number of Episodes x DVP",
+               `anyEpisode_fiveYears:DVP` = "Any Episode x DVP",
+               `DVP:transcript_year` = "DVP x Meeting Year",
                census_division1 = "Census Division 1",
                census_division2 = "Census Division 2",
                census_division3 = "Census Division 3",
@@ -96,6 +104,50 @@ all_coefs <- c(`(Intercept)` = "Constant",
                `as.factor(transcript_year)2020` = "2020",
                `as.factor(transcript_year)2021` = "2021",
                `as.factor(transcript_year)2022` = "2022",
-               `as.factor(transcript_year)2023` = "2023"
+               `as.factor(transcript_year)2023` = "2023",
+               `DVP:as.factor(transcript_year)2011` = "DVP x 2011",
+               `DVP:as.factor(transcript_year)2012` = "DVP x 2012",
+               `DVP:as.factor(transcript_year)2013` = "DVP x 2013",
+               `DVP:as.factor(transcript_year)2014` = "DVP x 2014",
+               `DVP:as.factor(transcript_year)2015` = "DVP x 2015",
+               `DVP:as.factor(transcript_year)2016` = "DVP x 2016",
+               `DVP:as.factor(transcript_year)2017` = "DVP x 2017",
+               `DVP:as.factor(transcript_year)2018` = "DVP x 2018",
+               `DVP:as.factor(transcript_year)2019` = "DVP x 2019",
+               `DVP:as.factor(transcript_year)2020` = "DVP x 2020",
+               `DVP:as.factor(transcript_year)2021` = "DVP x 2021",
+               `DVP:as.factor(transcript_year)2022` = "DVP x 2022",
+               `DVP:as.factor(transcript_year)2023` = "DVP x 2023"
                
 )
+
+dv_header <- function(ft) {
+    ft %>% 
+        add_header_row(values = c("",
+                                  "Dependent Variable:
+                              Climate Change/
+                              Global Warming Mention"),
+                       colwidths = c(1,1)) %>% 
+        align(align = c("center"), part = "header") %>% 
+        padding(padding = 0, part = "all")
+}
+
+
+fema_noaa_header <- function(ft) {
+    ft %>% 
+        add_header_row(values = c(" ", "FEMA", "NOAA"), colwidths = c(1,2,2)) %>% 
+        add_header_row(values = c("",
+                                  "Dependent Variable:
+                              Climate Change/
+                              Global Warming Mention"),
+                       colwidths = c(1,4)) %>% 
+        align(align = c("center"), part = "header") %>% 
+        padding(padding = 0, part = "all")
+}
+
+fmt_me <- function(ft) {
+    ft %>% 
+        flextable() %>% 
+        colformat_double(big.mark = ",", digits = 2, na_str = "N/A")
+}
+
