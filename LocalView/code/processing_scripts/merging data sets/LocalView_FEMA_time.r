@@ -22,7 +22,7 @@
 library(lubridate)                                             # work with dates
 
 source("./LocalView/code/processing_scripts/individual data sets/geography.r")    
-load("./LocalView/data/modified/merged_datasets/allData_transcriptLevel.rdata")
+load("./LocalView/data/modified/individual_datasets/lvClean_noTranscript.rdata")
 load("./LocalView/data/modified/individual_datasets/fema_declarationLevel.rdata")
 
 cdp_geo <- st_read("./GIS/original/2020_CensusSubNational/tlgdb_2020_a_us_substategeo.gdb", layer = "Census_Designated_Place") %>% 
@@ -37,8 +37,7 @@ place_geo <- st_read("./GIS/original/2020_CensusSubNational/tlgdb_2020_a_us_subs
   rbind(cdp_geo)
 
 # n = 103,350
-lv <- allData_transcriptLevel %>%
-  select(-transcript_day, -transcript_month, -starts_with(c("fema_", "n_", "nEpisode", "months_", "n_event", "time")))
+lv <- lvClean_noTranscript 
 
 # n = 30,135
 fema <- fema_declarationLevel %>%
@@ -49,7 +48,7 @@ fema <- fema_declarationLevel %>%
 #   merge data                                                              ####
 
 # all disasters, all years
-# n = 693,397
+# n = 1,124,723
 ## NOTE: interval() returns a positive value if the start happened before the end
 ## declaration (start) happened before meeting (end) the value is positive
 lvFema <- left_join(lv, fema, by = "stcounty_fips", relationship = "many-to-many") %>%
@@ -93,8 +92,7 @@ lvFema <- left_join(lv, fema, by = "stcounty_fips", relationship = "many-to-many
     nDec_oneYear = sum(time_btwn_decMeetingFactor %in%
                              c("1 month", "2 months", "3-6 months", "7-9 months", 
                                "10-12 months")),
-    nDec_twoYears = sum(time_btwn_decMeetingFactor %in%
-                              c("2 years"),
+    nDec_twoYears = sum(time_btwn_decMeetingFactor == "2 years"),
     nDec_fiveYears = replace_na(nDec_fiveYears, 0),
     nDec_sixYears = replace_na(nDec_sixYears, 0)) %>% 
   ungroup()
@@ -110,6 +108,7 @@ dec_after_meeting <- lvFema %>%
   anti_join(nearest_dec, by = "transcript_id") %>% 
   distinct(transcript_id, .keep_all = TRUE)
 
+# n = 103,350
 lvFema_transcriptLevel <- bind_rows(nearest_dec, dec_after_meeting)
 
 # save(lvFema_transcriptLevel, file = "./LocalView/data/modified/merged_datasets/lvFema_transcriptLevel.rdata")

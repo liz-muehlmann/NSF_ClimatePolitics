@@ -21,7 +21,7 @@
 library(lubridate)                                             # work with dates
 
 source("./LocalView/code/processing_scripts/individual data sets/geography.r")    
-load("./LocalView/data/modified/merged_datasets/allData_transcriptLevel.rdata")
+load("./LocalView/data/modified/individual_datasets/lvClean_noTranscript.rdata")
 load("./LocalView/data/modified/individual_datasets/noaa_episodeCountyLevel.rdata")
 
 cdp_geo <- st_read("./GIS/original/2020_CensusSubNational/tlgdb_2020_a_us_substategeo.gdb", layer = "Census_Designated_Place") %>% 
@@ -36,11 +36,7 @@ place_geo <- st_read("./GIS/original/2020_CensusSubNational/tlgdb_2020_a_us_subs
     rbind(cdp_geo)
 
 # n = 103,350
-lv <- allData_transcriptLevel %>%
-    mutate(
-        meeting_date = make_date(transcript_year, transcript_month, transcript_day)
-    ) %>%
-    select(-transcript_day, -transcript_month, -starts_with(c("fema_", "noaa_", "n_")))
+lv <-  lvClean_noTranscript 
 
 noaa <- noaa_episodeCountyLevel %>% 
     select(-state_fips)
@@ -90,8 +86,7 @@ lvNoaa <- left_join(lv, noaa, by = "stcounty_fips", relationship = "many-to-many
         nEpisode_oneYear = sum(time_btwn_episodeMeetingFactor %in%
                                c("1 month", "2 months", "3-6 months", "7-9 months", 
                                  "10-12 months")),
-        nEpisode_twoYears = sum(time_btwn_episodeMeetingFactor %in%
-                               c("2 years")),
+        nEpisode_twoYears = sum(time_btwn_episodeMeetingFactor == "2 years"),
         nEpisode_fiveYears = replace_na(nEpisode_fiveYears, 0),
         nEpisode_sixYears = replace_na(nEpisode_sixYears, 0)) %>% 
     ungroup()
@@ -109,7 +104,7 @@ episode_after_meeting <- lvNoaa %>%
 
 lvNoaa_transcriptLevel <- bind_rows(nearest_episode, episode_after_meeting)
 
-save(lvNoaa_transcriptLevel, file = "./LocalView/data/modified/merged_datasets/lvNoaa_transcriptLevel.rdata")
+# save(lvNoaa_transcriptLevel, file = "./LocalView/data/modified/merged_datasets/lvNoaa_transcriptLevel.rdata")
 
 
 #   ____________________________________________________________________________

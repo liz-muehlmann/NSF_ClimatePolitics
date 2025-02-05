@@ -181,11 +181,12 @@ lvACSruAlgaraCVI_transcriptLevel <- left_join(lvacsru_algara, cvi,
              .after = county_fips) %>%
     relocate(ru_year, .after = edu_percentPop)
 
-# save(allData_transcriptLevel, file = "./LocalView/data/modified/merged_datasets/allData_transcriptLevel.rdata")
-
+# save(lvACSruAlgaraCVI_transcriptLevel, file = "./LocalView/data/modified/merged_datasets/lvACSruAlgaraCVI_transcriptLevel.rdata")
 
 allData_transcriptLevel <- left_join(lvacsru_algara, cvi,
                                      by = "stcounty_fips",
                                      relationship = "many-to-one") %>%
     left_join(lvFema_transcriptLevel) %>%
     left_join(lvNoaa_transcriptLevel) 
+
+# save(allData_transcriptLevel, file = "./LocalView/data/modified/merged_datasets/allData_transcriptLevel.rdata")

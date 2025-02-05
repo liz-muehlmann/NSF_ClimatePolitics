@@ -69,6 +69,14 @@ all_coefs <- c(# `(Intercept)` = "Constant",  per alicia do not include
                nDec_fiveYears = "Number of Declarations Last 5 Years",
                anyEpisode_fiveYears = "Had Any Episode Last 5 Years",
                nEpisode_fiveYears = "Number of Episodes Last 5 Years",
+               anyDec_oneYear = "Any Declaration in the Last Year",
+               anyEpisode_oneYear = "Had any Episode in the Last Year",
+               nDec_oneYear = "Number of Declarations in the Last Year",
+               nEpisode_oneYear = "Number of Episodes in the Last Year",
+               anyDec_twoYears = "Any Declaration in the Last Two Years",
+               anyEpisode_twoYears = "Any Episodes in the Last Two Years",
+               nDec_twoYears = "Number of Declarations in the Last Two Years",
+               nEpisode_twoYears = "Number of Episodes in the Last Two Years",
                rural_urban_3pt = "Rural Urban 3pt",
                `log(total_pop)` = "Log of Total Population",
                log_totalPop = "Log of Total Population",
@@ -82,7 +90,15 @@ all_coefs <- c(# `(Intercept)` = "Constant",  per alicia do not include
                `anyDec_fiveYears:DVP` = "Any Declaration x DVP",
                `nEpisode_fiveYears:DVP` = "Number of Episodes x DVP",
                `anyEpisode_fiveYears:DVP` = "Any Episode x DVP",
-               `DVP:transcript_year` = "DVP x Meeting Year",
+               `transcript_year:DVP` = "DVP x Meeting Year",
+               `anyDec_oneYear:DVP` = "DVP x Any Declaration in the Last Year",
+               `anyEpisode_oneYear:DVP` = "DVP x Had any Episode in the Last Year",
+               `nDec_oneYear:DVP` = "DVP x Number of Declarations in the Last Year",
+               `nEpisode_oneYear:DVP` = "DVP x Number of Episodes in the Last Year",
+               `anyDec_twoYears:DVP` = "DVP x Any Declaration in the Last Two Years",
+               `anyEpisode_twoYears:DVP` = "DVP x Any Episodes in the Last Two Years",
+               `nDec_twoYears:DVP` = "DVP x Number of Declarations in the Last Two Years",
+               `nEpisode_twoYears:DVP` = "DVP x Number of Episodes in the Last Two Years",
                census_division1 = "Census Division 1",
                census_division2 = "Census Division 2",
                census_division3 = "Census Division 3",
@@ -124,10 +140,7 @@ all_coefs <- c(# `(Intercept)` = "Constant",  per alicia do not include
 dv_header <- function(ft) {
     ft %>% 
         add_header_row(values = c("",
-                                  "Dependent Variable:
-                              Climate Change/
-                              Global Warming Mention"),
-                       colwidths = c(1,1)) %>% 
+                                  "Dependent Variable: Climate Change/Global Warming Mention")) %>% 
         align(align = c("center"), part = "header") %>% 
         padding(padding = 0, part = "all")
 }
@@ -137,9 +150,7 @@ fema_noaa_header <- function(ft) {
     ft %>% 
         add_header_row(values = c(" ", "FEMA", "NOAA"), colwidths = c(1,2,2)) %>% 
         add_header_row(values = c("",
-                                  "Dependent Variable:
-                              Climate Change/
-                              Global Warming Mention"),
+                                  "Dependent Variable: Climate Change/Global Warming Mention"),
                        colwidths = c(1,4)) %>% 
         align(align = c("center"), part = "header") %>% 
         padding(padding = 0, part = "all")
@@ -148,6 +159,21 @@ fema_noaa_header <- function(ft) {
 fmt_me <- function(ft) {
     ft %>% 
         flextable() %>% 
-        colformat_double(big.mark = ",", digits = 2, na_str = "N/A")
+        colformat_double(big.mark = ",", digits = 2, na_str = "N/A") %>% 
+        labelizor(labels = c(edu_percentPop = "Percent of Population with a College Degree",
+                    log_medhhic = "Log of Median Household Income",
+                    log_totalPop = "Log of Total Population",
+                    overall_cvi = "Overall Climate Vulnerability",
+                    perc_white = "Percent White, Non-Hispanic",
+                    rural_urban_3pt = "Rural Urban 3pt",
+                    transcript_year = "Meeting Year")) %>% 
+        set_header_labels(term = "Variable",
+                          estimate = "Estimate",
+                          std.error = "Standard Error",
+                          statistic = "Statistic",
+                          p.value = "p-value",
+                          s.value = "s-value",
+                          conf.low = "Confidence Low",
+                          conf.high = "Confidence High")
 }
 

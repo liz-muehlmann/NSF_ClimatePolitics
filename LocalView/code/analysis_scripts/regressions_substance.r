@@ -29,7 +29,10 @@ allData_transcriptLevel <- allData_transcriptLevel %>%
 #   table design                                                            ####
 
 set_flextable_defaults(
-    font.size = 12, font.family = "Garamond",
+    font.size = 12, 
+    font.family = "Garamond",
+    line_spacing = 1,
+    padding = 0,
     table.layout = "autofit")
 
 #   ____________________________________________________________________________
@@ -55,12 +58,11 @@ modelsummary(rq1,
              title = "Table 1: Is Climate Change Being Mentioned?",
              output = "flextable") %>% 
     add_header_row(values = c("",
-                              "Dependent Variable:
-                              Climate Change/
-                              Global Warming Mention"),
+                              "Dependent Variable: 
+                              Climate Change/Global Warming Mention"),
                      colwidths = c(1,1)) %>% 
     align(align = c("center"), part = "header") #%>% 
-    # save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq1_Table1.docx")
+    # save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq1_Table1.docx")
 
 ##  ............................................................................
 ##  RQ1 - ROBUSTNESS CHECKS                                                 ####
@@ -81,8 +83,8 @@ modelsummary(rq1.1,
              gof_map = gof_pml,
              title = "Table 1.1: Penalized Maximum Likelihood",
              output = "flextable") %>% 
-    dv_header() # %>% 
-    # save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq1_Table1-1_PML.docx")
+    dv_header()  #%>% 
+    #save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq1_Table1-1_PML.docx")
              
 
 
@@ -96,9 +98,10 @@ rq1.1a <- marginaleffects::avg_slopes(rq1.1,
                                                     "transcript_year",
                                                     "overall_cvi")) 
 
-# rq1.1a %>% fmt_me()  %>%
-#     save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq1_Table1-1a_ME.docx")
-# 
+rq1.1a %>% 
+    fmt_me()  #%>%
+    # save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq1_Table1-1a_ME.docx")
+
 
 ### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
 ###  RQ1.2 - Time as a Factor Variable                                      ####
@@ -118,7 +121,7 @@ modelsummary(rq1.2,
              title = "Table 1.2: Is Climate Change Being Discussed (Linear Time)?",
              output = "flextable") %>% 
     dv_header() #%>% 
-    # save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq1_Table1-2.docx")
+    # save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq1_Table1-2.docx")
 
 #   ____________________________________________________________________________
 ##  RQ2 - DOES CC/GW MENTION VARY BY VOTE SHARE?                            ####
@@ -155,13 +158,11 @@ modelsummary(list(rq2, rq2_int_linear),
              title = "Table 2: Do Climate Change/Global Warming Mentions Vary by Vote Percentage?",
              output = "flextable") %>%
     add_header_row(values = c("",
-                              "Dependent Variable:
-                              Climate Change/
-                              Global Warming Mention"),
+                              "Dependent Variable: Climate Change/Global Warming Mention"),
                    colwidths = c(1,2)) %>% 
     align(align = c("center"), part = "header") %>% 
-    padding(padding = 0, part = "all")
-    # save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq2_Table2.docx")
+    padding(padding = 0, part = "all") #%>% 
+    # save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq2_Table2.docx")
 
 ##  ............................................................................
 ##  RQ2 - ROBUSTNESS CHECKS                                                 ####
@@ -185,7 +186,7 @@ modelsummary(rq2.1,
              title = "Table 2.1: Within Effects with County Fixed Effects",
              output = "flextable") %>% 
     dv_header() # %>% 
-    # save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq2_Table2-1.docx")
+    # save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq2_Table2-1.docx")
 
 ### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
 ### RQ2.2 - Penalized Maximum Likelihood                                    ####
@@ -204,7 +205,7 @@ modelsummary(rq2.2,
              title = "Table 2.2: Penalized Maximum Likelihood",
              output = "flextable") %>% 
     dv_header() # %>% 
-    # save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq2_Table2-2.docx")
+    # save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq2_Table2-2.docx")
 
 ## Table 2.1a: Penalized Maximum Likelihood Marginal Effects - Average Slopes
 rq2.2a <- marginaleffects::avg_slopes(rq2.2, 
@@ -217,8 +218,9 @@ rq2.2a <- marginaleffects::avg_slopes(rq2.2,
                                                    "transcript_year",
                                                    "overall_cvi"))
 
-# rq2.2a %>% fmt_me() %>% 
-#     save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq2_Table 2-2a_ME.docx")
+rq2.2a %>%
+    fmt_me() #%>% 
+    # save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq2_Table 2-2a_ME.docx")
 
 ### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
 ### RQ2.3 - Between effects with DVP; Factor time                                   ####
@@ -236,8 +238,8 @@ modelsummary(rq2.3,
              # glance = glance_custom.pml,
              title = "Table 2.3: Between Effects, Time as a Factor",
              output = "flextable") %>% 
-    dv_header() #  %>% 
-    # save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq2_Table2-3.docx")
+    dv_header()   #%>% 
+    # save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq2_Table2-3.docx")
 
 #   ____________________________________________________________________________
 ##  RQ3 - ARE THERE MORE MENTIONS OF CC/GW AFTER NATURAL DISASTERS/EXTREME EVENTS? ####
@@ -296,7 +298,7 @@ modelsummary(list(rq3_anyDec, rq3_nDec, rq3_anyEpisode, rq3_nEpisode),
              title = "Table 3: Is a place more likely to mention climate change/global warming after natural disasters/extreme events?",
              output = "flextable") %>% 
     fema_noaa_header() #%>%
-    # save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq3_Table3.docx")
+    # save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq3_Table3.docx")
 
 #   ____________________________________________________________________________
 ##  RQ4 - DO EXTREME WEATHER EVENTS CLOSE THE PARTISAN GAP IN MENTIONS?     ####
@@ -349,8 +351,8 @@ modelsummary(list(rq4_anyDecdvp, rq4_ndecdvp, rq4_anyEpidvp, rq4_nEpisodedvp),
              glance = glance_custom.felm,
              title = "Table 4: Do extreme weather events close the partisan gap in mentions?",
              output = "flextable") %>% 
-    fema_noaa_header() #%>%
-    # save_as_docx(path = "./LocalView/results/regressions/substance/250122_rq4_Table4.docx")
+    fema_noaa_header()# %>%
+    # save_as_docx(path = "./LocalView/results/regressions/substance/250129_rq4_Table4.docx")
 
 
 ##  ............................................................................
