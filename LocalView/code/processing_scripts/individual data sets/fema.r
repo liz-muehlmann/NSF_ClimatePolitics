@@ -7,7 +7,10 @@
 ##              https://www.fema.gov/openfema-data-page/disaster-declarations-summaries-v2
 ##                                                                            ##
 ## Output:                                                                    ##
-##      /LocalView/data/modified/fema_countyYear_withNA.rdata                 ##
+##      /LocalView/data/modified/individual_datasets/fema_declarationLevel.rdata
+##      /LocalView/data/modified/individual_datasets/fema_countyLevel.rdata   ##
+##      /LocalView/data/samples/femaDecLevel_sample.csv                       ##
+##      /LocalView/data/samples/femaCountyLevel_sample.csv                    ##
 ##                                                                            ##
 ################################################################################
 

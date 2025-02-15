@@ -3,13 +3,12 @@
 ## This file processes the National Oceanic and Atmospheric Association data  ##
 ##                                                                            ##
 ##      Data included:                                                        ##
-##          Local View (2010-2023)                                            ##
-##              https://doi.org/10.7910/DVN/NJTBEM                            ##
-##              ./processing_scripts/local_view.r                             ##
 ##          NOAA (2009-2023)                                                  ##
 ##              https://www.ncdc.noaa.gov/stormevents/ftp.jsp                 ##        
 ##                                                                            ##
-## Output:                                                                    ##
+##      Output:                                                                 
+##          /LocalView/data/modified/individual_datasets/noaa_episodeCountyLevel.rdata
+##          /LocalView/data/modified/individual_datasets/noaa_countyLevel.rdata 
 ##                                                                            ##
 ################################################################################
 
@@ -157,7 +156,7 @@ noaa_episodeCountyLevel <- files %>%
            noaa_episode_endDate = ymd(noaa_episode_endDate),
            noaa_nEventsInEpisode = n(),
            noaa_nEventTypesInEpisode = n_distinct(event_type)) %>% 
-    select(episode_id, event_id, state_fips, noaa_year, event_type,      # select variables of interest
+    select(episode_id, event_id, state_fips, noaa_year, event_type,             # select variables of interest
            cz_type, cz_fips, cz_name, noaa_episode_injuriesDirect, 
            noaa_episode_injuriesIndirect, noaa_episode_deathsDirect, 
            noaa_episode_deathsIndirect, noaa_episode_damagedProperty,
